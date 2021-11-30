@@ -1,0 +1,122 @@
+group 'de.tudresden.inf.st'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'jastadd'
+apply plugin: 'application'
+apply plugin: 'idea'
+
+mainClassName = 'de.tudresden.inf.st.openapi'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.12.1'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.12.1'
+    implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.12.1'
+    implementation group: 'net.sf.beaver', name: 'beaver-rt', version: '0.9.11'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.8'
+    implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.9.8'
+    implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.4'
+    implementation group: 'com.flipkart.zjsonpatch', name: 'zjsonpatch', version: '0.4.11'
+
+
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.7.0'
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.7.0'
+    testImplementation group: 'com.jayway.jsonpath', name: 'json-path', version: '2.6.0'
+}
+
+buildscript {
+    repositories.mavenCentral()
+    dependencies {
+        classpath 'org.jastadd:jastaddgradle:1.13.3'
+    }
+}
+
+
+jar {
+  manifest {
+    attributes(
+      'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
+      'Main-Class': 'de.tudresden.inf.st.openapi'
+    )
+  }
+}
+
+test {
+    useJUnitPlatform()
+
+    maxHeapSize = '1G'
+}
+
+File genSrc = file("src/gen/java")
+sourceSets.main.java.srcDir genSrc
+idea.module.generatedSourceDirs += genSrc
+
+jastadd {
+
+    configureModuleBuild()
+    modules {
+
+        //noinspection GroovyAssignabilityCheck
+        module("openapispecification") {
+
+            java {
+                basedir "src/main/java/"
+                include "**/*.java"
+            }
+
+            jastadd {
+                basedir "src/main/jastadd/"
+                include "**/*.ast"
+                include "**/*.jadd"
+                include "**/*.jrag"
+            }
+
+            scanner {
+                //include "src/main/jastadd/OpenAPISpecification.flex"
+            }
+
+            parser {
+               //include "src/main/jastadd/OpenAPISpecification.parser"
+            }
+
+        }
+    }
+
+    module = "openapispecification"
+
+    astPackage = 'de.tudresden.inf.st.openapi.ast'
+    genDir = 'src/gen/java'
+
+    buildInfoDir = 'src/gen-res'
+    parser.name = 'OpenAPIParser'
+
+    scanner.genDir = "src/gen/java/de/tudresden/inf/st/most/jastadd/scanner"
+    parser.genDir = "src/gen/java/de/tudresden/inf/st/most/jastadd/parser"
+
+    jastaddOptions = [
+            "--lineColumnNumbers",
+            "--List=JastAddList",
+            "--safeLazy",
+            "--rewrite=cnta",
+//        "--debug",
+//        "--cache=all",
+//        "--concurrent",
+//        "--cache=none",
+//        "--flush=api",
+//        "--incremental=param,debug",
+//        "--tracing",
+//        "--visitCheck=true",
+    ]
+
+    cleanGen.doFirst {
+        delete "src/gen"
+        delete "src/gen-res"
+    }
+}
