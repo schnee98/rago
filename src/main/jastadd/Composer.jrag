@@ -379,8 +379,13 @@ aspect Composer {
     Parameter parameter = new Parameter();
     ParameterReference p = (ParameterReference) parameterOb;
 
-    if (!p.getRef().isEmpty())
-      parameter.setRef(p.getRef());
+    if (!p.getRef().isEmpty()) {
+      try {
+        parameter.setReference(new org.openapi4j.core.model.v3.OAI3Context(new URL("")), new URL(""), p.getRef());
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
 
     return parameter;
   }
@@ -437,8 +442,13 @@ aspect Composer {
     RequestBody requestBody = new RequestBody();
     RequestBodyReference r = (RequestBodyReference) requestBodyOb;
 
-    if (!r.getRef().isEmpty())
-      requestBody.setRef(r.getRef());
+    if (!r.getRef().isEmpty()) {
+      try {
+        requestBody.setReference(new org.openapi4j.core.model.v3.OAI3Context(new URL("")), new URL(""), r.getRef());
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
 
     return requestBody;
   }
@@ -519,8 +529,13 @@ aspect Composer {
     Response response = new Response();
     ResponseReference r = (ResponseReference) responseOb;
 
-    if (!r.getRef().isEmpty())
-      response.setRef(r.getRef());
+    if (!r.getRef().isEmpty()) {
+      try {
+        response.setReference(new org.openapi4j.core.model.v3.OAI3Context(new URL("")), new URL(""), r.getRef());
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
 
     return response;
   }
@@ -557,8 +572,13 @@ aspect Composer {
     Callback callback = new Callback();
     CallbackReference c = (CallbackReference) callbackOb;
 
-    if (!c.getRef().isEmpty())
-      callback.setRef(c.getRef());
+    if (!c.getRef().isEmpty()) {
+      try {
+        callback.setReference(new org.openapi4j.core.model.v3.OAI3Context(new URL("")), new URL(""), c.getRef());
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
 
     return callback;
   }
@@ -605,8 +625,13 @@ aspect Composer {
     Link link = new Link();
     LinkReference l = (LinkReference) linkOb;
 
-    if (!l.getRef().isEmpty())
-      link.setRef(l.getRef());
+    if (!l.getRef().isEmpty()) {
+      try {
+        link.setReference(new org.openapi4j.core.model.v3.OAI3Context(new URL("")), new URL(""), l.getRef());
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
 
     return link;
   }
@@ -637,8 +662,13 @@ aspect Composer {
     Header header = new Header();
     HeaderReference h = new HeaderReference();
 
-    if (!h.getRef().isEmpty())
-      header.setRef(h.getRef());
+    if (!h.getRef().isEmpty()) {
+      try {
+        header.setReference(new org.openapi4j.core.model.v3.OAI3Context(new URL("")), new URL(""), h.getRef());
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
 
     return header;
   }
@@ -700,8 +730,13 @@ aspect Composer {
     org.openapi4j.parser.model.v3.Schema schema = new org.openapi4j.parser.model.v3.Schema();
     SchemaReference s = (SchemaReference) schemaOb;
 
-    if (!s.getRef().isEmpty())
-      schema.setRef(s.getRef());
+    if (!s.getRef().isEmpty()) {
+      try {
+        schema.setReference(new org.openapi4j.core.model.v3.OAI3Context(new URL("")), new URL(""), s.getRef());
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
 
     return schema;
   }
@@ -871,8 +906,13 @@ aspect Composer {
     SecurityScheme securityScheme = new SecurityScheme();
     SecuritySchemeReference s = (SecuritySchemeReference) securitySchemeOb;
 
-    if (!s.getRef().isEmpty())
-      securityScheme.setRef(s.getRef());
+    if (!s.getRef().isEmpty()) {
+      try {
+        securityScheme.setReference(new org.openapi4j.core.model.v3.OAI3Context(new URL("")), new URL(""), s.getRef());
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
 
     return securityScheme;
   }
