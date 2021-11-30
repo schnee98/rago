@@ -1,0 +1,83 @@
+aspect Reference {
+
+    syn ParameterObject ParameterOb.parameterObject();
+    eq ParameterObject.parameterObject() = this;
+    eq ParameterReference.parameterObject() {
+        for( ParameterTuple t : root().parameterTuples() ){
+        if( t.getKey().equals(getRef().substring(getRef().lastIndexOf("/")+1, getRef().length())) )
+            return t.getParameterOb().parameterObject();
+        }
+        return new ParameterObject();
+    }
+
+    syn SchemaObject SchemaOb.schemaObject();
+    eq SchemaObject.schemaObject() = this;
+    eq SchemaReference.schemaObject() {
+        for( SchemaTuple t : root().schemaTuples() ){
+        if( t.getKey().equals(getRef().substring(getRef().lastIndexOf("/")+1, getRef().length())) )
+            return t.getSchemaOb().schemaObject();
+        }
+        return new SchemaObject();
+    }
+
+    syn RequestBodyObject RequestBodyOb.requestBodyObject();
+    eq RequestBodyObject.requestBodyObject() = this;
+    eq RequestBodyReference.requestBodyObject() {
+        for( RequestBodyTuple t : root().requestBodyTuples() ){
+        if( t.getKey().equals(getRef().substring(getRef().lastIndexOf("/")+1, getRef().length())) )
+        return t.getRequestBodyOb().requestBodyObject();
+        }
+        return new RequestBodyObject();
+    }
+
+    syn ResponseObject ResponseOb.responseObject();
+    eq ResponseObject.responseObject() = this;
+    eq ResponseReference.responseObject() {
+        for( ResponseTuple t : root().responseTuples() ){
+        if( t.getKey().equals(getRef().substring(getRef().lastIndexOf("/")+1, getRef().length())) )
+        return t.getResponseOb().responseObject();
+        }
+        return new ResponseObject();
+    }
+
+    syn CallbackObject CallbackOb.callbackObject();
+    eq CallbackObject.callbackObject() = this;
+    eq CallbackReference.callbackObject() {
+        for( CallbackTuple t : root().callbackTuples() ){
+        if( t.getKey().equals(getRef().substring(getRef().lastIndexOf("/")+1, getRef().length())) )
+        return t.getCallbackOb().callbackObject();
+        }
+        return new CallbackObject();
+    }
+
+    syn LinkObject LinkOb.linkObject();
+    eq LinkObject.linkObject() = this;
+    eq LinkReference.linkObject() {
+        for( LinkTuple t : root().linkTuples() ){
+        if( t.getKey().equals(getRef().substring(getRef().lastIndexOf("/")+1, getRef().length())) )
+        return t.getLinkOb().linkObject();
+        }
+        return new LinkObject();
+    }
+
+    syn HeaderObject HeaderOb.headerObject();
+    eq HeaderObject.headerObject() = this;
+    eq HeaderReference.headerObject() {
+        for( HeaderTuple t : root().headerTuples() ){
+        if( t.getKey().equals(getRef().substring(getRef().lastIndexOf("/")+1, getRef().length())) )
+        return t.getHeaderOb().headerObject();
+        }
+        return new HeaderObject();
+    }
+
+    syn SecuritySchemeObject SecuritySchemeOb.securitySchemeObject();
+    eq SecuritySchemeObject.securitySchemeObject() = this;
+    eq SecuritySchemeReference.securitySchemeObject() {
+        for( SecuritySchemeTuple t : root().securitySchemeTuples() ){
+        if( t.getKey().equals(getRef().substring(getRef().lastIndexOf("/")+1, getRef().length())) )
+        return t.getSecuritySchemeOb().securitySchemeObject();
+        }
+        return new SecuritySchemeObject();
+    }
+
+}

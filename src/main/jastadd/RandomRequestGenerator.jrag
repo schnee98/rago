@@ -1,0 +1,191 @@
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import javax.net.ssl.HttpsURLConnection;
+import java.util.Random;
+import java.util.stream.IntStream;
+
+aspect RandomRequestGenerator{
+
+    syn String ParameterObject.randomPathParameter(String pathRef){
+        Random rand = new Random();
+        SchemaObject s=getSchemaOb().schemaObject();
+        String pathPart=pathRef.substring(pathRef.indexOf("{"),pathRef.indexOf("}")+1);
+
+        if(s.getType().equals("string"))
+        pathRef=pathRef.replace(pathPart,generateRandomString(rand,s.getEnumObjs()));
+        else if(s.getType().equals("integer"))
+        pathRef=pathRef.replace(pathPart,generateRandomInt(rand,
+        -1, // s.getMinimum() != null ? s.getMinimum().intValue() : -1,
+        10 // s.getMaximum() != null ? s.getMaximum().intValue() : -1
+        ));
+        return pathRef;
+    }
+
+    syn String ParameterObject.randomQueryParameter(String pathRef){
+        Random rand = new Random();
+        SchemaObject s=getSchemaOb().schemaObject();
+
+        if(s.getType().equals("string"))
+        pathRef=pathRef+"?"+getName()+"="+generateRandomString(rand,s.getEnumObjs());
+        else if(s.getType().equals("integer"))
+        pathRef=pathRef+"?"+getName()+"="+generateRandomInt(rand,
+        -1, // s.getMinimum() != null ? s.getMinimum().intValue() : -1,
+        10); // s.getMaximum() != null ? s.getMaximum().intValue() : -1
+        else if(s.getType().equals("array")){
+        if(s.getItemsSchema().getSchemaOb().schemaObject().getType().equals("string")){
+        for(EnumObj e:s.getItemsSchema().getSchemaOb().schemaObject().getEnumObjs())
+        pathRef=rand.nextDouble()< 0.5?pathRef+"&"+getName()+"="+e.getEnumOb():pathRef;
+        }
+        else if(s.getItemsSchema().getSchemaOb().schemaObject().getType().equals("integer")){
+        for(int i=0;i< 5;i++)
+        pathRef=pathRef+"&"+getName()+"="+generateRandomInt(rand,
+        -1, // s.getMinimum() != null ? s.getMinimum().intValue() : -1,
+        10); // s.getMaximum() != null ? s.getMaximum().intValue() : -1
+        }
+        pathRef=pathRef.replaceFirst("&","?");
+        }
+        return pathRef;
+    }
+
+syn boolean OpenAPIObject.generateRequests(){
+        try{
+        for(PathsObject p:getPathsObjects())
+        p.generateUrl();} catch (Exception e) {
+            return false;
+        }
+        }
+
+        inh boolean PathsObject.generateUrl();
+        eq OpenAPIObject.getPathsObject(int i).generateUrl(){
+        try{
+        PathItemObject p=getPathsObject(i).getPathItemObject();
+        String path=getServerObject(0).getUrl();
+
+        if(p.hasGet())
+        p.getGet().generateRandomUrl(path+getPathsObject(i).getRef());
+        else if(p.hasPost())
+        p.getPost().generateRandomUrl(path+getPathsObject(i).getRef());
+
+        return true;}catch(Exception e){
+            return false;
+        }
+        }
+
+        syn boolean Get.generateRandomUrl(String pathRef){
+        try{
+        for(ParameterOb o:getOperationObject().getParameterObs()){
+        ParameterObject p=o.parameterObject();
+        if(p.getIn().equals("path"))
+            pathRef=p.randomPathParameter(pathRef);
+        else if(p.getIn().equals("query"))
+            pathRef=p.randomQueryParameter(pathRef);
+        }
+        System.out.println("Generated path : "+pathRef);
+
+        URL url=new URL(pathRef);
+        HttpsURLConnection con=(HttpsURLConnection)url.openConnection();
+        con.setRequestProperty("User-Agent","Mozilla/5.0"); // add request header
+
+        con.setRequestMethod("GET"); // optional default is GET
+
+        int responseCode=con.getResponseCode();
+        BufferedReader in=new BufferedReader(new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuffer response=new StringBuffer();
+
+        while((inputLine=in.readLine())!=null){
+        response.append(inputLine);
+        }
+        in.close();
+
+        // print result
+        System.out.println("HTTP status code (GET) : "+responseCode);
+        //System.out.println("Response : " + response.toString());
+        for(ResponseTuple t:getOperationObject().getResponseTuples()){
+        if(t.getKey().equals("200")&&responseCode==200){
+        //System.out.println("Response successfully saved!");
+        SchemaOb respSchema=t.getResponseOb().responseObject().getContentTuple(0).getMediaTypeObject().getSchemaOb();
+        if(respSchema.schemaObject().getType().equals("array"))
+        getOperationObject().writeDictionaryWithArray(respSchema,response.toString());
+        else
+        getOperationObject().writeDictionary(respSchema,response.toString());
+        }
+        }
+        return true;
+        }catch(Exception e){
+        System.out.println(e.toString());
+        return false;
+        }
+        }
+        syn boolean Post.generateRandomUrl(String pathRef){
+        try{
+        for(ParameterOb o:getOperationObject().getParameterObs()){
+        ParameterObject p=o.parameterObject();
+        if(p.getIn().equals("path"))
+        pathRef=p.randomPathParameter(pathRef);
+        else if(p.getIn().equals("query"))
+        pathRef=p.randomQueryParameter(pathRef);
+        }
+        System.out.println("Generated path : "+pathRef);
+
+        URL url=new URL(pathRef);
+        HttpsURLConnection con=(HttpsURLConnection)url.openConnection();
+
+
+        con.setRequestMethod("POST"); // HTTP POST
+        con.setRequestProperty("User-Agent","Mozilla/5.0"); // add request header
+        con.setDoOutput(true); // POST
+
+        int responseCode=con.getResponseCode();
+        BufferedReader in=new BufferedReader(new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuffer response=new StringBuffer();
+
+        while((inputLine=in.readLine())!=null){
+        response.append(inputLine);
+        }
+        in.close();
+
+        // print result
+        System.out.println("HTTP status code (POST) : "+responseCode);
+        //System.out.println("Response : " + response.toString());
+        for(ResponseTuple t:getOperationObject().getResponseTuples()){
+        if(t.getKey().equals("200")&&responseCode==200){
+        //System.out.println("Response successfully saved!");
+        SchemaOb respSchema=t.getResponseOb().responseObject().getContentTuple(0).getMediaTypeObject().getSchemaOb();
+        if(respSchema.schemaObject().getType().equals("array"))
+        getOperationObject().writeDictionaryWithArray(respSchema,response.toString());
+        else
+        getOperationObject().writeDictionary(respSchema,response.toString());
+        }
+        }return true;
+        }catch(Exception e){
+        System.out.println(e.toString());
+        return false;
+        }
+        }
+
+syn String ParameterObject.generateRandomString(Random rand,JastAddList<EnumObj> objs){
+        if(objs.getNumChild()!=0)
+        return objs.getChild(rand.nextInt(objs.getNumChild())).getEnumOb().toString();
+
+        return rand
+        .ints(97,123)
+        .limit(10)
+        .collect(StringBuilder::new,StringBuilder::appendCodePoint,StringBuilder::append)
+        .toString();
+        }
+
+syn String ParameterObject.generateRandomInt(Random rand,int minimum,int maximum){
+        if(minimum>-1&&maximum>0)
+        return String.valueOf(rand.nextInt(minimum+maximum)-minimum);
+        else if(minimum>-1)
+        return String.valueOf(rand.nextInt()+minimum);
+        else if(maximum>0)
+        return String.valueOf(rand.nextInt(maximum));
+        return String.valueOf(rand.nextInt());
+        }
+        }
