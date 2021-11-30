@@ -1,0 +1,7 @@
+.gradle/
+src/gen
+src/gen-res
+.idea/
+build/
+out/
+logs/
