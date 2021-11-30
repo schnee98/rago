@@ -3,195 +3,199 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 aspect InferParameter{
-        syn String PropertyItem.writePropertyName(SchemaOb schema,PropertyItem p)=((SchemaReference)schema).getRef().substring(((SchemaReference)schema).getRef().lastIndexOf("/")+1)+p.getName();
+  syn String PropertyItem.writePropertyName(SchemaOb schema,PropertyItem p)=((SchemaReference) schema).getRef().substring(((SchemaReference) schema).getRef().lastIndexOf("/") + 1) + p.getName();
 
-        syn String PropertyItem.writePropertyValue(JsonNode node,PropertyItem p)=node.get(p.getName()).toString().startsWith("\"")&&node.get(p.getName()).toString().endsWith("\"")?node.get(p.getName()).toString().substring(1,node.get(p.getName()).toString().length()-1):node.get(p.getName()).toString();
+  syn String PropertyItem.writePropertyValue(JsonNode node,PropertyItem p)=node.get(p.getName()).toString().startsWith("\"") && node.get(p.getName()).toString().endsWith("\"") ? node.get(p.getName()).toString().substring(1, node.get(p.getName()).toString().length() - 1) : node.get(p.getName()).toString();
 
-        coll Set<InferredParameter> OpenAPIObject.collectInferredParameters()[new HashSet<InferredParameter>()];
-        InferredParameter contributes this
-        to OpenAPIObject.collectInferredParameters();
+  coll Set<InferredParameter> OpenAPIObject.collectInferredParameters()[new HashSet<InferredParameter>()];
+  InferredParameter contributes this
+    to OpenAPIObject.collectInferredParameters();
 
-        syn String InferredParameter.name()=getParameter().substring(0,getParameter().indexOf("?"));
-        syn String InferredParameter.value()=getParameter().substring(getParameter().indexOf("?")+1);
+  syn String InferredParameter.name()=getParameter().substring(0, getParameter().indexOf("?"));
+  syn String InferredParameter.value()=getParameter().substring(getParameter().indexOf("?") + 1);
 
-public void OpenAPIObject.generateRequestsWithInferredParameters()throws Exception{
-        Set<String> urls=new HashSet<>();
+  public void OpenAPIObject.generateRequestsWithInferredParameters()throws Exception{
+    Set<String> urls = new HashSet<>();
 
-        generateRequests();
+    generateRequests();
 
-        for(PathsObject p:getPathsObjects())
-        p.inferUrl();
-        }
+    for (PathsObject p : getPathsObjects())
+      p.inferUrl();
+  }
 
-        inh boolean PathsObject.inferUrl();
-        eq OpenAPIObject.getPathsObject(int i).inferUrl(){
-        PathItemObject p=getPathsObject(i).getPathItemObject();
-        String path=getServerObject(0).getUrl();
+  inh boolean PathsObject.inferUrl();
+  eq OpenAPIObject.getPathsObject(int i).inferUrl(){
+    PathItemObject p = getPathsObject(i).getPathItemObject();
+    String path = getServerObject(0).getUrl();
 
-        if(p.hasGet())
-        p.getGet().inferRandomUrl(path+getPathsObject(i).getRef(),p.getGet().getOperationObject());
-        else if(p.hasPost())
-        p.getPost().inferRandomUrl(path+getPathsObject(i).getRef(),p.getPost().getOperationObject());
+    if (p.hasGet())
+      p.getGet().inferRandomUrl(path + getPathsObject(i).getRef(), p.getGet().getOperationObject());
+    else if (p.hasPost())
+      p.getPost().inferRandomUrl(path + getPathsObject(i).getRef(), p.getPost().getOperationObject());
 
-        return true;
-        }
+    return true;
+  }
 
-        syn String Get.inferRandomUrl(String pathRef,OperationObject operationObject){
-        List<String> paths=new ArrayList<>();
+  syn String Get.inferRandomUrl(String pathRef,OperationObject operationObject){
+    List<String> paths = new ArrayList<>();
 
-        for(ParameterOb o:operationObject.getParameterObs()){
-        ParameterObject p=o.parameterObject();
-        SchemaObject s=p.getSchemaOb().schemaObject();
+    for (ParameterOb o : operationObject.getParameterObs()) {
+      ParameterObject p = o.parameterObject();
+      SchemaObject s = p.getSchemaOb().schemaObject();
 
-        // check if the parameter is in type 'path'.
-        if(p.getIn().equals("path"))
-        paths=p.addinfPathParameters(pathRef,paths);
+      // check if the parameter is in type 'path'.
+      if (p.getIn().equals("path"))
+        paths = p.addinfPathParameters(pathRef, paths);
         // check if the parameter is in type 'query'
-        else if(p.getIn().equals("query"))
-        paths=p.addinfQueryParameters(pathRef,paths);
+      else if (p.getIn().equals("query"))
+        paths = p.addinfQueryParameters(pathRef, paths);
 
-        System.out.println(paths.size()+" Paths are inferred.");
-        }
-        for(String path:paths)
-        connectGET(path);
-        return pathRef;
-        }
+      System.out.println(paths.size() + " Paths are inferred.");
+    }
+    for (String path : paths)
+      connectGET(path);
+    return pathRef;
+  }
 
-        syn String Post.inferRandomUrl(String pathRef,OperationObject operationObject){
-        List<String> paths=new ArrayList<>();
+  syn String Post.inferRandomUrl(String pathRef,OperationObject operationObject){
+    List<String> paths = new ArrayList<>();
 
-        for(ParameterOb o:operationObject.getParameterObs()){
-        ParameterObject p=o.parameterObject();
-        SchemaObject s=p.getSchemaOb().schemaObject();
+    for (ParameterOb o : operationObject.getParameterObs()) {
+      ParameterObject p = o.parameterObject();
+      SchemaObject s = p.getSchemaOb().schemaObject();
 
-        // check if the parameter is in type 'path'.
-        if(p.getIn().equals("path"))
-        paths=p.addinfPathParameters(pathRef,paths);
+      // check if the parameter is in type 'path'.
+      if (p.getIn().equals("path"))
+        paths = p.addinfPathParameters(pathRef, paths);
         // check if the parameter is in type 'query'
-        else if(p.getIn().equals("query"))
-        paths=p.addinfQueryParameters(pathRef,paths);
+      else if (p.getIn().equals("query"))
+        paths = p.addinfQueryParameters(pathRef, paths);
 
-        System.out.println(paths.size()+" Paths are inferred.");
-        }
-        for(String path:paths)
-        connectPOST(path);
-        return pathRef;
-        }
+      System.out.println(paths.size() + " Paths are inferred.");
+    }
+    for (String path : paths)
+      connectPOST(path);
+    return pathRef;
+  }
 
-        syn List<String> ParameterObject.addinfPathParameters(String pathRef,List<String> paths){
-        for(InferredParameter i:root().collectInferredParameters()){
-        // get the field which must be modified
-        String pathPart=pathRef.substring(pathRef.indexOf("{"),pathRef.indexOf("}")+1);
-        // case insensitive comparison of parameter name and name of inferred parameters
-        if(getName().equalsIgnoreCase(i.name()))
+  syn List<String> ParameterObject.addinfPathParameters(String pathRef,List<String> paths){
+    for (InferredParameter i : root().collectInferredParameters()) {
+      // get the field which must be modified
+      String pathPart = pathRef.substring(pathRef.indexOf("{"), pathRef.indexOf("}") + 1);
+      // case insensitive comparison of parameter name and name of inferred parameters
+      if (getName().equalsIgnoreCase(i.name()))
         // add inferred parameter in url
-        paths.add(pathRef.replace(pathPart,i.value()));
-        }
-        return paths;
-        }
+        paths.add(pathRef.replace(pathPart, i.value()));
+    }
+    return paths;
+  }
 
-        syn List<String> ParameterObject.addinfQueryParameters(String pathRef,List<String> paths){
-        SchemaObject s=getSchemaOb().schemaObject();
-        // check if query parameter is in type 'array'
-        if(s.getType().equals("array")){
-        for(InferredParameter i:root().collectInferredParameters()){
+  syn List<String> ParameterObject.addinfQueryParameters(String pathRef,List<String> paths){
+    SchemaObject s = getSchemaOb().schemaObject();
+    // check if query parameter is in type 'array'
+    if (s.getType().equals("array")) {
+      for (InferredParameter i : root().collectInferredParameters()) {
         // case insensitive comparison of parameter name and name of inferred parameters
-        if(getName().equalsIgnoreCase(i.name()))
-        // add inferred parameter in url
-        pathRef=pathRef+"&"+getName()+"="+i.value();
-        }
-        paths.add(pathRef.replaceFirst("&","?"));
-        }else{
-        for(InferredParameter i:root().collectInferredParameters()){
+        if (getName().equalsIgnoreCase(i.name()))
+          // add inferred parameter in url
+          pathRef = pathRef + "&" + getName() + "=" + i.value();
+      }
+      paths.add(pathRef.replaceFirst("&", "?"));
+    } else {
+      for (InferredParameter i : root().collectInferredParameters()) {
         // case insensitive comparison of parameter name and name of inferred parameters
-        if(getName().equalsIgnoreCase(i.name()))
-        // add inferred parameter in url
-        paths.add(pathRef+"?"+getName()+"="+i.value());
-        }
-        }
-        return paths;
-        }
+        if (getName().equalsIgnoreCase(i.name()))
+          // add inferred parameter in url
+          paths.add(pathRef + "?" + getName() + "=" + i.value());
+      }
+    }
+    return paths;
+  }
 
-public void OperationObject.writeDictionary(SchemaOb schema,String resp)throws Exception{
-        ObjectMapper mapper=new ObjectMapper();
-        JsonNode respNode=mapper.readTree(resp);
-        String value;
+  public void OperationObject.writeDictionary(SchemaOb schema,String resp)throws Exception{
+    ObjectMapper mapper = new ObjectMapper();
+    JsonNode respNode = mapper.readTree(resp);
+    String value;
 
-        if(schema instanceof SchemaReference){
-        for(PropertyItem p:schema.schemaObject().getPropertyItems()){
-        String infName=p.writePropertyName(schema,p);
-        value=p.writePropertyValue(respNode,p);
+    if (schema instanceof SchemaReference) {
+      for (PropertyItem p : schema.schemaObject().getPropertyItems()) {
+        String infName = p.writePropertyName(schema, p);
+        value = p.writePropertyValue(respNode, p);
 
-        root().addInferredParameter(new InferredParameter(infName+"?"+value));
-        root().addInferredParameter(new InferredParameter(p.getName()+"?"+value));
-        }
-        }else{
-        for(PropertyItem p:schema.schemaObject().getPropertyItems()){
-        value=p.writePropertyValue(respNode,p);
+        root().addInferredParameter(new InferredParameter(infName + "?" + value));
+        root().addInferredParameter(new InferredParameter(p.getName() + "?" + value));
+      }
+    } else {
+      for (PropertyItem p : schema.schemaObject().getPropertyItems()) {
+        value = p.writePropertyValue(respNode, p);
 
-        root().addInferredParameter(new InferredParameter(p.getName()+"?"+respNode.get(p.getName()).textValue()));
-        }
-        }
+        root().addInferredParameter(new InferredParameter(p.getName() + "?" + respNode.get(p.getName()).textValue()));
+      }
+    }
 
-        }
+  }
 
-public void OperationObject.writeDictionaryWithArray(SchemaOb schema,String resp)throws Exception{
-        ObjectMapper mapper=new ObjectMapper();
-        ArrayNode respNode=((ArrayNode)mapper.readTree(resp));
-        Iterator<JsonNode> props=respNode.elements();
+  public void OperationObject.writeDictionaryWithArray(SchemaOb schema,String resp)throws Exception{
+    ObjectMapper mapper = new ObjectMapper();
+    ArrayNode respNode = ((ArrayNode) mapper.readTree(resp));
+    Iterator<JsonNode> props = respNode.elements();
 
-        while(props.hasNext())
-        writeDictionary(schema.schemaObject().getItemsSchema().getSchemaOb(),props.next().toString());
+    while (props.hasNext())
+      writeDictionary(schema.schemaObject().getItemsSchema().getSchemaOb(), props.next().toString());
 
-        }
+  }
 
-public void Get.connectGET(String path){
+  public void Get.connectGET(String path){
 
-        try{URL url=new URL(path);
-        HttpsURLConnection con=(HttpsURLConnection)url.openConnection();
-        con.setRequestProperty("User-Agent","Mozilla/5.0"); // add request header
+    try {
+      URL url = new URL(path);
+      HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
+      con.setRequestProperty("User-Agent", "Mozilla/5.0"); // add request header
 
-        con.setRequestMethod("GET"); // optional default is GET
+      con.setRequestMethod("GET"); // optional default is GET
 
-        int responseCode=con.getResponseCode();
-        BufferedReader in=new BufferedReader(new InputStreamReader(con.getInputStream()));
-        String inputLine;
-        StringBuffer response=new StringBuffer();
+      int responseCode = con.getResponseCode();
+      BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+      String inputLine;
+      StringBuffer response = new StringBuffer();
 
-        while((inputLine=in.readLine())!=null){
+      while ((inputLine = in.readLine()) != null) {
         response.append(inputLine);
-        }
-        in.close();
+      }
+      in.close();
 
-        // print result
-        System.out.println("Inferred path : "+path);
-        System.out.println("HTTP status code (GET) : "+responseCode);}catch(Exception e){
-        System.out.println(e.toString());
-        }
-        }
+      // print result
+      System.out.println("Inferred path : " + path);
+      System.out.println("HTTP status code (GET) : " + responseCode);
+    } catch (Exception e) {
+      System.out.println(e.toString());
+    }
+  }
 
-public void Post.connectPOST(String path){
-        try{URL url=new URL(path);
-        HttpsURLConnection con=(HttpsURLConnection)url.openConnection();
+  public void Post.connectPOST(String path){
+    try {
+      URL url = new URL(path);
+      HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
 
-        con.setRequestMethod("POST"); // HTTP POST
-        con.setRequestProperty("User-Agent","Mozilla/5.0"); // add request header
-        con.setDoOutput(true); // POST
+      con.setRequestMethod("POST"); // HTTP POST
+      con.setRequestProperty("User-Agent", "Mozilla/5.0"); // add request header
+      con.setDoOutput(true); // POST
 
-        int responseCode=con.getResponseCode();
-        BufferedReader in=new BufferedReader(new InputStreamReader(con.getInputStream()));
-        String inputLine;
-        StringBuffer response=new StringBuffer();
+      int responseCode = con.getResponseCode();
+      BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+      String inputLine;
+      StringBuffer response = new StringBuffer();
 
-        while((inputLine=in.readLine())!=null){
+      while ((inputLine = in.readLine()) != null) {
         response.append(inputLine);
-        }
-        in.close();
+      }
+      in.close();
 
-        // print result
-        System.out.println("Inferred path : "+path);
-        System.out.println("HTTP status code (POST) : "+responseCode);}catch(Exception e){
-        System.out.println(e.toString());
-        }
-        }
-        }
+      // print result
+      System.out.println("Inferred path : " + path);
+      System.out.println("HTTP status code (POST) : " + responseCode);
+    } catch (Exception e) {
+      System.out.println(e.toString());
+    }
+  }
+}
