@@ -65,8 +65,8 @@ public class OpenAPIMain {
     OpenApi3 api = new OpenApi3Parser().parse(expUrl, new ArrayList<>(), true);
     System.out.println("Loading expression DSL file '" + fileName + "'.");
 
-    openApi = OpenAPIObject.parseOpenAPI(api);
-    openApi.generateRequestsWithInferredParameters();
+    //openApi = OpenAPIObject.parseOpenAPI(api);
+    //openApi.generateRequestsWithInferredParameters();
 
     //writer.write(api3.toNode().toPrettyString());
     //writer.close();

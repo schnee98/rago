@@ -55,6 +55,38 @@ test {
     maxHeapSize = '1G'
 }
 
+// Input and output files for relast
+def relastInputFiles = [
+        "src/main/jastadd/OpenAPISpecification.relast"
+]
+def relastOutputFiles = [
+        "src/gen/jastadd/OpenAPISpecification.ast",
+        "src/gen/jastadd/OpenAPISpecification.jadd"
+]
+
+task relast(type: JavaExec) {
+    classpath = files("libs/relast.jar")
+    group = 'Build'
+
+    doFirst {
+        delete relastOutputFiles
+        mkdir "src/gen/jastadd/"
+    }
+
+    args = [
+            "--listClass=java.util.ArrayList",
+            "--jastAddList=JastAddList",
+            "--useJastAddNames",
+            "--file",
+            "--resolverHelper",
+            "--grammarName=./src/gen/jastadd/RelAst"
+    ] + relastInputFiles
+
+    inputs.files relastInputFiles
+    outputs.files relastOutputFiles
+}
+
+
 File genSrc = file("src/gen/java")
 sourceSets.main.java.srcDir genSrc
 idea.module.generatedSourceDirs += genSrc

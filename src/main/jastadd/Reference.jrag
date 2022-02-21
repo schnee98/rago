@@ -1,4 +1,41 @@
+import java.util.*;
+
 aspect Reference {
+
+        inh OpenAPIObject ASTNode.root();
+        eq OpenAPIObject.getChild().root() = this;
+
+        coll List<SchemaTuple> OpenAPIObject.schemaTuples() [new ArrayList<>()] root OpenAPIObject;
+        SchemaTuple contributes this
+        to OpenAPIObject.schemaTuples();
+
+        coll List<ResponseTuple> OpenAPIObject.responseTuples() [new ArrayList<>()] root OpenAPIObject;
+        ResponseTuple contributes this
+        to OpenAPIObject.responseTuples();
+
+        coll List<ParameterTuple> OpenAPIObject.parameterTuples() [new ArrayList<>()] root OpenAPIObject;
+        ParameterTuple contributes this
+        to OpenAPIObject.parameterTuples();
+
+        coll List<RequestBodyTuple> OpenAPIObject.requestBodyTuples() [new ArrayList<>()] root OpenAPIObject;
+        RequestBodyTuple contributes this
+        to OpenAPIObject.requestBodyTuples();
+
+        coll List<HeaderTuple> OpenAPIObject.headerTuples() [new ArrayList<>()] root OpenAPIObject;
+        HeaderTuple contributes this
+        to OpenAPIObject.headerTuples();
+
+        coll List<SecuritySchemeTuple> OpenAPIObject.securitySchemeTuples() [new ArrayList<>()] root OpenAPIObject;
+        SecuritySchemeTuple contributes this
+        to OpenAPIObject.securitySchemeTuples();
+
+        coll List<LinkTuple> OpenAPIObject.linkTuples() [new ArrayList<>()] root OpenAPIObject;
+        LinkTuple contributes this
+        to OpenAPIObject.linkTuples();
+
+        coll List<CallbackTuple> OpenAPIObject.callbackTuples() [new ArrayList<>()] root OpenAPIObject;
+        CallbackTuple contributes this
+        to OpenAPIObject.callbackTuples();
 
   syn ParameterObject ParameterOb.parameterObject();
   eq ParameterObject.parameterObject() = this;

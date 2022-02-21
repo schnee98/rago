@@ -1,3 +1,4 @@
+/*
 import org.openapi4j.core.exception.ResolutionException;
 import org.openapi4j.core.validation.ValidationException;
 import org.openapi4j.parser.model.v3.*;
@@ -5,7 +6,6 @@ import org.openapi4j.core.model.reference.Reference;
 import org.openapi4j.core.model.OAIContext;
 
 import java.io.IOException;
-import java.util.*;
 import java.net.URL;
 
 aspect Composer {
@@ -765,13 +765,13 @@ aspect Composer {
       for (EnumObj e : s.getEnumObjs())
         schema.addEnum(e.getEnumOb());
     }
-    /*
+
     if (s.getExample() != null)
       schema.setExample(s.getExample());
     if (s.getExclusiveMaximum() != null)
       schema.setExclusiveMaximum(s.getExclusiveMaximum());
     if (s.getExclusiveMinimum() != null)
-      schema.setExclusiveMinimum(s.getExclusiveMinimum());*/
+      schema.setExclusiveMinimum(s.getExclusiveMinimum());
     if (s.hasExternalDocObject())
       schema.setExternalDocs(ExternalDocObject.composeExternalDocs(s.getExternalDocObject(), map));
     if (!s.getFormat().isEmpty())
@@ -808,7 +808,7 @@ aspect Composer {
     }
     /*
     if (s.getNullable() != null)
-      schema.setNullable(s.getNullable());*/
+      schema.setNullable(s.getNullable());
     if (!s.getPattern().isEmpty())
       schema.setPattern(s.getPattern());
     if (s.getNumPropertyItem() != 0) {
@@ -998,3 +998,5 @@ aspect Composer {
     return securityRequirement;
   }
 }
+
+ */

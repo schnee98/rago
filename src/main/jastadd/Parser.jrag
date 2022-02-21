@@ -1,41 +1,7 @@
+/*
 import org.openapi4j.core.exception.DecodeException;
 
 aspect Parser {
-
-  inh OpenAPIObject ASTNode.root();
-  eq OpenAPIObject.getChild().root() = this;
-
-  coll List<SchemaTuple> OpenAPIObject.schemaTuples() [new ArrayList<>()] root OpenAPIObject;
-  SchemaTuple contributes this
-    to OpenAPIObject.schemaTuples();
-
-  coll List<ResponseTuple> OpenAPIObject.responseTuples() [new ArrayList<>()] root OpenAPIObject;
-  ResponseTuple contributes this
-    to OpenAPIObject.responseTuples();
-
-  coll List<ParameterTuple> OpenAPIObject.parameterTuples() [new ArrayList<>()] root OpenAPIObject;
-  ParameterTuple contributes this
-    to OpenAPIObject.parameterTuples();
-
-  coll List<RequestBodyTuple> OpenAPIObject.requestBodyTuples() [new ArrayList<>()] root OpenAPIObject;
-  RequestBodyTuple contributes this
-    to OpenAPIObject.requestBodyTuples();
-
-  coll List<HeaderTuple> OpenAPIObject.headerTuples() [new ArrayList<>()] root OpenAPIObject;
-  HeaderTuple contributes this
-    to OpenAPIObject.headerTuples();
-
-  coll List<SecuritySchemeTuple> OpenAPIObject.securitySchemeTuples() [new ArrayList<>()] root OpenAPIObject;
-  SecuritySchemeTuple contributes this
-    to OpenAPIObject.securitySchemeTuples();
-
-  coll List<LinkTuple> OpenAPIObject.linkTuples() [new ArrayList<>()] root OpenAPIObject;
-  LinkTuple contributes this
-    to OpenAPIObject.linkTuples();
-
-  coll List<CallbackTuple> OpenAPIObject.callbackTuples() [new ArrayList<>()] root OpenAPIObject;
-  CallbackTuple contributes this
-    to OpenAPIObject.callbackTuples();
 
   public static OpenAPIObject OpenAPIObject.parseOpenAPI(OpenApi3 api) throws IOException, ResolutionException, ValidationException, DecodeException {
     OpenAPIObject openapi = new OpenAPIObject();
@@ -678,7 +644,7 @@ aspect Parser {
       if (schema.getExclusiveMaximum() != null)
         schemaObject.setExclusiveMaximum(schema.getExclusiveMaximum());
       if (schema.getExclusiveMinimum() != null)
-        schemaObject.setExclusiveMinimum(schema.getExclusiveMinimum());*/
+        schemaObject.setExclusiveMinimum(schema.getExclusiveMinimum());
       if (schema.getExternalDocs() != null)
         schemaObject.setExternalDocObject(ExternalDocObject.parseExternalDocs(schema.getExternalDocs(), map));
       if (schema.getFormat() != null)
@@ -713,7 +679,7 @@ aspect Parser {
       }
       /*
       if (schema.getNullable() != null)
-        schemaObject.setNullable(schema.getNullable());*/
+        schemaObject.setNullable(schema.getNullable());
       if (schema.getPattern() != null)
         schemaObject.setPattern(schema.getPattern());
       if (schema.getProperties() != null) {
@@ -908,3 +874,5 @@ aspect Parser {
     return securityRequirementObject;
   }
 }
+
+ */
