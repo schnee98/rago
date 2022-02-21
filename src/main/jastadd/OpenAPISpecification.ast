@@ -1,15 +1,16 @@
 //OpenAPI Object
-OpenAPIObject ::= <OpenAPI> [InfoObject] ServerObject* PathsObject* [ComponentsObject] SecurityRequirementObject* TagObject* [ExternalDocObject] <Context:OAIContext> Extension* InferredParameter*;
+OpenAPIObject ::= <OpenAPI> [InfoObject] <JsonSchemaDialect> ServerObject* PathsObject* Webhook* [ComponentsObject] SecurityRequirementObject* TagObject* [ExternalDocObject] <Context:OAIContext> Extension* InferredParameter*;
 InferredParameter ::= <Parameter>;
+Webhook ::= <Key> PathItemOb;
 
 //Info Object
-InfoObject ::= <Title> <Description> <TermsOfService> [ContactObject] [LicenseObject] <Version> Extension*;
+InfoObject ::= <Title> <Summary> <Description> <TermsOfService> [ContactObject] [LicenseObject] <Version> Extension*;
 
 //Contact Object
 ContactObject ::= <Name> <Url> <Email> Extension*;
 
 //License Object
-LicenseObject ::= <Name> <Url> Extension*;
+LicenseObject ::= <Name> <Identifier> <Url> Extension*;
 
 //Server Object
 ServerObject ::= <Url> <Description> ServerVariablesTuple* Extension*;
@@ -20,7 +21,7 @@ ServerVariableObject ::= Enum* <Default> <Description> Extension*;
 Enum ::= <EnumValue>;
 
 //Components Object
-ComponentsObject ::= SchemaTuple* ResponseTuple* ParameterTuple* ExampleTuple* RequestBodyTuple* HeaderTuple* SecuritySchemeTuple* LinkTuple* CallbackTuple* Extension*;
+ComponentsObject ::= SchemaTuple* ResponseTuple* ParameterTuple* ExampleTuple* RequestBodyTuple* HeaderTuple* SecuritySchemeTuple* LinkTuple* CallbackTuple* PathItemTuple* Extension*;
 SchemaTuple ::= <Key> SchemaOb;
 ResponseTuple ::= <Key> ResponseOb;
 ParameterTuple ::= <Key> ParameterOb;
@@ -30,16 +31,18 @@ HeaderTuple ::= <Key> HeaderOb;
 SecuritySchemeTuple ::= <Key> SecuritySchemeOb;
 LinkTuple ::= <Key> LinkOb;
 CallbackTuple ::= <Key> CallbackOb;
-
+PathItemTuple ::= <Key> PathItemOb;
 
 //Paths Object
-PathsObject ::= <Ref> PathItemObject;
+PathsObject ::= <Ref> PathItemOb;
 
 //Path Item Object
-PathItemObject ::= <Summary> <Description> [Get] [Put] [Post] [Delete] [Options] [Head] [Patch] [Trace] ServerObject* ParameterOb* Extension*;
+abstract PathItemOb;
+PathItemReference : PathItemOb ::= <Ref> <Summary> <Description>;
+PathItemObject : PathItemOb ::= <Ref> <Summary> <Description> [Get] [Put] [Post] [Delete] [Options] [Head] [Patch] [Trace] ServerObject* ParameterOb* Extension*;
 
 //Operation Object
-OperationObject ::= Tag* <Summary> <Description> [ExternalDocObject] <OperationID> ParameterOb* [RequestBodyOb] ResponseTuple* CallbackTuple* <DeprecatedBoolean:Boolean> SecurityRequirementObject* ServerObject* <Required:Boolean> Extension*;
+OperationObject ::= Tag* <Summary> <Description> [ExternalDocObject] <OperationID> ParameterOb* [RequestBodyOb] ResponsesObject CallbackTuple* <DeprecatedBoolean:Boolean> SecurityRequirementObject* ServerObject* Extension*;
 Get ::= OperationObject;
 Put ::= OperationObject;
 Post ::= OperationObject;
@@ -55,14 +58,14 @@ ExternalDocObject ::= <Description> <Url> Extension*;
 
 //Parameter Object
 abstract ParameterOb;
-ParameterReference : ParameterOb ::= <Ref>;
+ParameterReference : ParameterOb ::= <Ref> <Summary> <Description>;
 ParameterObject : ParameterOb ::= <Name> <In> <Description> <Required:Boolean> <DeprecatedBoolean:Boolean> <AllowEmptyValue:Boolean> <Style> <Explode:Boolean> <AllowReserved:Boolean> [SchemaOb] <Example:Object> ExampleTuple* ContentTuple* Extension*;
 ContentTuple ::= <Key> MediaTypeObject;
 
 
 //Request Body Object
 abstract RequestBodyOb;
-RequestBodyReference : RequestBodyOb ::= <Ref>;
+RequestBodyReference : RequestBodyOb ::= <Ref> <Summary> <Description>;
 RequestBodyObject : RequestBodyOb ::= <Description> ContentTuple* <Required:Boolean> Extension*;
 
 //Media Type Object
@@ -72,16 +75,20 @@ EncodingTuple ::= <Key> EncodingObject;
 //Encoding Object
 EncodingObject ::= <ContentType> HeaderTuple* <Style> <Explode:Boolean> <AllowReserved:Boolean> Extension*;
 
+//Responses Object (ResponseTuple is used for HTTPStatusCode)
+ResponsesObject ::= Default ResponseTuple*;
+Default ::= ResponseOb;
+
 //Response Object
 abstract ResponseOb;
-ResponseReference : ResponseOb ::= <Ref>;
+ResponseReference : ResponseOb ::= <Ref> <Summary> <Description>;
 ResponseObject : ResponseOb ::= <Description> HeaderTuple* ContentTuple* LinkTuple* Extension*;
 
 //Callback Object
 abstract CallbackOb;
-CallbackReference : CallbackOb ::= <Ref>;
+CallbackReference : CallbackOb ::= <Ref> <Summary> <Description>;
 CallbackObject : CallbackOb ::= Expression* Extension*;
-Expression ::= <Name> PathItemObject;
+Expression ::= <Name> PathItemOb;
 Extension ::= <Key> <Value:Object>;
 
 //Example Object
@@ -89,13 +96,13 @@ ExampleObject ::= <Summary> <Description> <Value:Object> <ExternalValue> Extensi
 
 //Link Object
 abstract LinkOb;
-LinkReference : LinkOb ::= <Ref>;
-LinkObject : LinkOb ::= <OperationRef> <OperationID> LinkParameterTuple* HeaderTuple* <Description> [ServerObject] Extension*;
-LinkParameterTuple ::= <LinkParameterKey> <LinkParameterValue>;
+LinkReference : LinkOb ::= <Ref> <Summary> <Description>;
+LinkObject : LinkOb ::= <OperationRef> <OperationID> LinkParameterTuple* <LinkRequestBody:Object> <Description> [ServerObject] Extension*;
+LinkParameterTuple ::= <LinkParameterKey> <LinkParameterValue:Object>;
 
 //Header Object
 abstract HeaderOb;
-HeaderReference : HeaderOb ::= <Ref>;
+HeaderReference : HeaderOb ::= <Ref> <Summary> <Description>;
 HeaderObject : HeaderOb ::= <Description> <Required:Boolean> <DeprecatedBoolean:Boolean> <AllowEmptyValue:Boolean> <Style> <Explode:Boolean> <AllowReserved:Boolean> [SchemaOb] <Example:Object> ExampleTuple* ContentTuple* Extension*;
 
 //Tag Object
@@ -103,7 +110,7 @@ TagObject ::= <Name> <Description> [ExternalDocObject] Extension*;
 
 //Schema Object
 abstract SchemaOb;
-SchemaReference : SchemaOb ::= <Ref>;
+SchemaReference : SchemaOb ::= <Ref> <Summary> <Description>;
 SchemaObject : SchemaOb ::= [AdditionalProperties] <AdditionalPropertiesAllowed:Boolean> <DefaultValue:Object> <Description> <DeprecatedBoolean:Boolean> [DiscriminatorObject] EnumObj* ExampleElement* <ExclusiveMaximum:Number> <ExclusiveMinimum:Number> [ExternalDocObject] <Format> [ItemsSchema] <Maximum:Number> <Minimum:Number> <MaxItems:Integer> <MinItems:Integer> <MaxLength:Integer> <MinLength:Integer> <MaxProperties:Integer> <MinProperties:Integer> <MultipleOf:Number> [NotSchema] <Pattern> PropertyItem* RequiredField* AllOfSchema* AnyOfSchema* OneOfSchema* <ReadOnly:Boolean> <WriteOnly:Boolean> <Type> TypeArray* <Title> <UniqueItems:Boolean> <MaxContains:Integer> <MinContains:Integer> <DependentRequired:Object> <DependentSchema:SchemaOb> <Const:Object> [XmlObject] Extension*;
 AdditionalProperties ::= SchemaOb;
 EnumObj ::= <EnumOb:Object>;
@@ -119,7 +126,7 @@ TypeArray ::= <TypeElements:Object>;
 
 
 //Discriminator Object
-DiscriminatorObject ::= <PropertyName> MappingTuple*;
+DiscriminatorObject ::= <PropertyName> MappingTuple* Extension*;
 MappingTuple ::= <Key> <Value>;
 
 //XML Object
@@ -127,7 +134,7 @@ XmlObject ::= <Name> <Namespace> <Prefix> <Attribute:Boolean> <Wrapped:Boolean> 
 
 //Security Scheme Object
 abstract SecuritySchemeOb;
-SecuritySchemeReference : SecuritySchemeOb ::= <Ref>;
+SecuritySchemeReference : SecuritySchemeOb ::= <Ref> <Summary> <Description>;
 SecuritySchemeObject : SecuritySchemeOb ::= <Type> <Description> <Name> <In> <Scheme> <BearerFormat> [OAuthFlowsObject] <OpenIdConnectUrl> Extension*;
 
 //OAuth Flows Object
@@ -138,7 +145,7 @@ ClientCredentials ::= OAuthFlowObject;
 AuthorizationCode ::= OAuthFlowObject;
 
 //OAuth Flow Object
-OAuthFlowObject ::= <AuthorizationUrl> <TokenUrl> <RefreshUrl> ScopesTuple* <Configuration> Extension*;
+OAuthFlowObject ::= <AuthorizationUrl> <TokenUrl> <RefreshUrl> ScopesTuple* Extension*;
 ScopesTuple ::= <ScopesKey> <ScopesValue>;
 
 //Security Requirement Object
