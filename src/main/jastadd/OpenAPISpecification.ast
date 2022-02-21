@@ -59,6 +59,7 @@ ParameterReference : ParameterOb ::= <Ref>;
 ParameterObject : ParameterOb ::= <Name> <In> <Description> <Required:Boolean> <DeprecatedBoolean:Boolean> <AllowEmptyValue:Boolean> <Style> <Explode:Boolean> <AllowReserved:Boolean> [SchemaOb] <Example:Object> ExampleTuple* ContentTuple* Extension*;
 ContentTuple ::= <Key> MediaTypeObject;
 
+
 //Request Body Object
 abstract RequestBodyOb;
 RequestBodyReference : RequestBodyOb ::= <Ref>;
@@ -103,7 +104,7 @@ TagObject ::= <Name> <Description> [ExternalDocObject] Extension*;
 //Schema Object
 abstract SchemaOb;
 SchemaReference : SchemaOb ::= <Ref>;
-SchemaObject : SchemaOb ::= [AdditionalProperties] <AdditionalPropertiesAllowed:Boolean> <DefaultValue:Object> <Description> <DeprecatedBoolean:Boolean> [DiscriminatorObject] EnumObj* Example* <ExclusiveMaximum:Number> <ExclusiveMinimum:Number> [ExternalDocObject] <Format> [ItemsSchema] <Maximum:Number> <Minimum:Number> <MaxItems:Integer> <MinItems:Integer> <MaxLength:Integer> <MinLength:Integer> <MaxProperties:Integer> <MinProperties:Integer> <MultipleOf:Number> [NotSchema] <Pattern> PropertyItem* RequiredField* AllOfSchema* AnyOfSchema* OneOfSchema* <ReadOnly:Boolean> <WriteOnly:Boolean> <Type> TypeArray* <Title> <UniqueItems:Boolean> <MaxContains:Integer> <MinContains:Integer> <DependentRequired:Object> <DependentSchema:SchemaOb> <Const:Objxect> [XmlObject] Extension*;
+SchemaObject : SchemaOb ::= [AdditionalProperties] <AdditionalPropertiesAllowed:Boolean> <DefaultValue:Object> <Description> <DeprecatedBoolean:Boolean> [DiscriminatorObject] EnumObj* ExampleElement* <ExclusiveMaximum:Number> <ExclusiveMinimum:Number> [ExternalDocObject] <Format> [ItemsSchema] <Maximum:Number> <Minimum:Number> <MaxItems:Integer> <MinItems:Integer> <MaxLength:Integer> <MinLength:Integer> <MaxProperties:Integer> <MinProperties:Integer> <MultipleOf:Number> [NotSchema] <Pattern> PropertyItem* RequiredField* AllOfSchema* AnyOfSchema* OneOfSchema* <ReadOnly:Boolean> <WriteOnly:Boolean> <Type> TypeArray* <Title> <UniqueItems:Boolean> <MaxContains:Integer> <MinContains:Integer> <DependentRequired:Object> <DependentSchema:SchemaOb> <Const:Object> [XmlObject] Extension*;
 AdditionalProperties ::= SchemaOb;
 EnumObj ::= <EnumOb:Object>;
 ItemsSchema ::= SchemaOb;
@@ -113,7 +114,7 @@ RequiredField ::= <Value>;
 AllOfSchema ::= SchemaOb;
 AnyOfSchema ::= SchemaOb;
 OneOfSchema ::= SchemaOb;
-Example ::= <Example:Object>;
+ExampleElement ::= <Example:Object>;
 TypeArray ::= <TypeElements:Object>;
 
 

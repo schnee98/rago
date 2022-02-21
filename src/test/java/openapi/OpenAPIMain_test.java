@@ -37,7 +37,7 @@ public class OpenAPIMain_test {
     OpenApi3 api3;
     ValidationResults results;
     List<String> filenames = new ArrayList<>();
-    String genDir = "./gen-api-ex/";
+    String genDir = "./src/test/apiGen/";
     File genDirectory = new File(genDir);
     File[] contents;
 

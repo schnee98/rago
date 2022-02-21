@@ -672,12 +672,13 @@ aspect Parser {
           schemaObject.addEnumObj(enumObj);
         }
       }
+      /*
       if (schema.getExample() != null)
         schemaObject.setExample(schema.getExample());
       if (schema.getExclusiveMaximum() != null)
         schemaObject.setExclusiveMaximum(schema.getExclusiveMaximum());
       if (schema.getExclusiveMinimum() != null)
-        schemaObject.setExclusiveMinimum(schema.getExclusiveMinimum());
+        schemaObject.setExclusiveMinimum(schema.getExclusiveMinimum());*/
       if (schema.getExternalDocs() != null)
         schemaObject.setExternalDocObject(ExternalDocObject.parseExternalDocs(schema.getExternalDocs(), map));
       if (schema.getFormat() != null)
@@ -710,8 +711,9 @@ aspect Parser {
         notSchema.setSchemaOb(parseSchema(schema.getNotSchema(), context, map));
         schemaObject.setNotSchema(notSchema);
       }
+      /*
       if (schema.getNullable() != null)
-        schemaObject.setNullable(schema.getNullable());
+        schemaObject.setNullable(schema.getNullable());*/
       if (schema.getPattern() != null)
         schemaObject.setPattern(schema.getPattern());
       if (schema.getProperties() != null) {

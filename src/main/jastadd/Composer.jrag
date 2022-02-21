@@ -765,12 +765,13 @@ aspect Composer {
       for (EnumObj e : s.getEnumObjs())
         schema.addEnum(e.getEnumOb());
     }
+    /*
     if (s.getExample() != null)
       schema.setExample(s.getExample());
     if (s.getExclusiveMaximum() != null)
       schema.setExclusiveMaximum(s.getExclusiveMaximum());
     if (s.getExclusiveMinimum() != null)
-      schema.setExclusiveMinimum(s.getExclusiveMinimum());
+      schema.setExclusiveMinimum(s.getExclusiveMinimum());*/
     if (s.hasExternalDocObject())
       schema.setExternalDocs(ExternalDocObject.composeExternalDocs(s.getExternalDocObject(), map));
     if (!s.getFormat().isEmpty())
@@ -805,8 +806,9 @@ aspect Composer {
       else
         schema.setNotSchema(((SchemaReference) s.getNotSchema().getSchemaOb()).composeSchema(s.getNotSchema().getSchemaOb(), map));
     }
+    /*
     if (s.getNullable() != null)
-      schema.setNullable(s.getNullable());
+      schema.setNullable(s.getNullable());*/
     if (!s.getPattern().isEmpty())
       schema.setPattern(s.getPattern());
     if (s.getNumPropertyItem() != 0) {
