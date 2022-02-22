@@ -6,8 +6,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import static de.tudresden.inf.st.openapi.ast.ASTNode.assertNotNull;
-
 public class OpenAPIMain {
 
   /**
