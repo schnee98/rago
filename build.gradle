@@ -24,8 +24,7 @@ dependencies {
     implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.9.8'
     implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.4'
     implementation group: 'com.flipkart.zjsonpatch', name: 'zjsonpatch', version: '0.4.11'
-    implementation group: 'org.openapi4j', name: 'openapi-parser', version: '1.0.7'
-    implementation group: 'org.openapitools', name: 'openapi-generator-gradle-plugin', version: '5.4.0'
+    implementation group: 'io.swagger.parser.v3', name: 'swagger-parser', version: '2.0.30'
 
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.7.0'
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.7.0'
@@ -105,7 +104,7 @@ jastadd {
             }
 
             jastadd {
-                basedir "src/main/jastadd/"
+                basedir "src/gen/jastadd/"
                 include "**/*.ast"
                 include "**/*.jadd"
                 include "**/*.jrag"
