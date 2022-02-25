@@ -181,7 +181,7 @@ rel MediaTypeObject.en* -> EncodingTuple;
 rel MediaTypeObject.ex* -> Extension;
 
 //Encoding Object
-EncodingObject ::= <ContentType> <Style> <Explode:Boolean> <AllowReserved:Boolean> Extension*;
+EncodingObject ::= <ContentType> <Style> <Explode:Boolean> <AllowReserved:Boolean>;
 
 rel EncodingObject.h* -> HeaderTuple;
 rel EncodingObject.ex* -> Extension;
@@ -324,16 +324,16 @@ rel SecuritySchemeObject.ex* -> Extension;
 //OAuth Flows Object
 OAuthFlowsObject;
 
-Implicit ::= OAuthFlowObject;
+Implicit;
 rel Implicit.o -> OAuthFlowObject;
 
-Password ::= OAuthFlowObject;
+Password;
 rel Password.o -> OAuthFlowObject;
 
-ClientCredentials ::= OAuthFlowObject;
+ClientCredentials;
 rel ClientCredentials.o -> OAuthFlowObject;
 
-AuthorizationCode ::= OAuthFlowObject;
+AuthorizationCode;
 rel AuthorizationCode.o -> OAuthFlowObject;
 
 rel OAuthFlowsObject.i? -> Implicit;
@@ -343,7 +343,7 @@ rel OAuthFlowsObject.a? -> AuthorizationCode;
 rel OAuthFlowsObject.ex* -> Extension;
 
 //OAuth Flow Object
-OAuthFlowObject ::= <AuthorizationUrl> <TokenUrl> <RefreshUrl> ScopesTuple* Extension*;
+OAuthFlowObject ::= <AuthorizationUrl> <TokenUrl> <RefreshUrl>;
 ScopesTuple ::= <ScopesKey> <ScopesValue>;
 
 rel OAuthFlowObject.s* -> ScopesTuple;
