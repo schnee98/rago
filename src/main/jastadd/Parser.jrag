@@ -1,45 +1,44 @@
-/*
-import org.openapi4j.core.exception.DecodeException;
+import io.swagger.v3.oas.models.OpenAPI;
 
 aspect Parser {
 
-  public static OpenAPIObject OpenAPIObject.parseOpenAPI(OpenApi3 api) throws IOException, ResolutionException, ValidationException, DecodeException {
-    OpenAPIObject openapi = new OpenAPIObject();
-    Map<Object, ASTNode> map = new HashMap<>();
+  public static OpenAPIObject OpenAPIObject.parseOpenAPI(OpenAPI api) {
+        OpenAPIObject openapi = new OpenAPIObject();
 
-    if (api.getContext() != null)
-      openapi.setContext(api.getContext());
-    if (api.getOpenapi() != null)
-      openapi.setOpenAPI(api.getOpenapi());
-    if (api.getInfo() != null)
-      openapi.setInfoObject(InfoObject.parseInfo(api.getInfo(), map));
-    if (api.getPaths() != null) {
-      for (String key : api.getPaths().keySet())
-        openapi.addPathsObject(new PathsObject(key, PathItemObject.parsePath(api.getPath(key), api.getContext(), map)));
-    }
-    if (api.getServers() != null) {
-      for (Server s : api.getServers())
-        openapi.addServerObject(ServerObject.parseServer(s, map));
-    }
-    if (api.getComponents() != null)
-      openapi.setComponentsObject(ComponentsObject.parseComponents(api.getComponents(), api.getContext(), map));
-    if (api.getSecurityRequirements() != null) {
-      for (SecurityRequirement s : api.getSecurityRequirements())
-        openapi.addSecurityRequirementObject(SecurityRequirementObject.parseSecurityRequirement(s, map));
-    }
-    if (api.getTags() != null) {
-      for (org.openapi4j.parser.model.v3.Tag t : api.getTags())
-        openapi.addTagObject(TagObject.parseTag(t, map));
-    }
-    if (api.getExternalDocs() != null)
-      openapi.setExternalDocObject(ExternalDocObject.parseExternalDocs(api.getExternalDocs(), map));
-    if (api.getExtensions() != null) {
-      for (String key : api.getExtensions().keySet())
-        openapi.addExtension(new Extension(key, api.getExtensions().get(key)));
-    }
+        if (api.getOpenapi() != null)
+        openapi.setOpenAPI(api.getOpenapi());
+        if (api.getInfo() != null)
+        openapi.set_impl_i(InfoObject.parseInfo(api.getInfo()));
+        if (api.getPaths() != null) {
+        for (String key : api.getPaths().keySet())
+        openapi.addP(new PathsObject(key, PathItemObject.parsePath(api.getPaths().get(key))));
+        }
+        if (api.getServers() != null) {
+        for (io.swagger.v3.oas.models.servers.Server s : api.getServers())
+        openapi.addS(ServerObject.parseServer(s));
+        }
+        if (api.getComponents() != null)
+        openapi.set_impl_c(ComponentsObject.parseComponents(api.getComponents()));
+        if (api.getSecurity() != null) {
+        for (io.swagger.v3.oas.models.security.SecurityRequirement s : api.getSecurity())
+        openapi.addSr(SecurityRequirementObject.parseSecurityRequirement(s));
+        }
+        if (api.getTags() != null) {
+        for (io.swagger.v3.oas.models.tags.Tag t : api.getTags())
+        openapi.addT(TagObject.parseTag(t));
+        }
+        if (api.getExternalDocs() != null)
+        openapi.set_impl_e(ExternalDocObject.parseExternalDocs(api.getExternalDocs()));
+        if (api.getExtensions() != null) {
+        for (String key : api.getExtensions().keySet())
+        openapi.addEx(new Extension(key, api.getExtensions().get(key)));
+        }
+    /* 3.1.0 features
+    if (api.getWebhook != null) ...
+    if (api.getJsonSchemaDialect != null) ...
+     */
 
-    map.put(api, openapi);
-    return openapi;
+        return openapi;
   }
 
   public static InfoObject InfoObject.parseInfo(Info info, Map<Object, ASTNode> map) {
@@ -638,7 +637,7 @@ aspect Parser {
           schemaObject.addEnumObj(enumObj);
         }
       }
-      /*
+
       if (schema.getExample() != null)
         schemaObject.setExample(schema.getExample());
       if (schema.getExclusiveMaximum() != null)
@@ -677,7 +676,7 @@ aspect Parser {
         notSchema.setSchemaOb(parseSchema(schema.getNotSchema(), context, map));
         schemaObject.setNotSchema(notSchema);
       }
-      /*
+
       if (schema.getNullable() != null)
         schemaObject.setNullable(schema.getNullable());
       if (schema.getPattern() != null)
@@ -874,5 +873,3 @@ aspect Parser {
     return securityRequirementObject;
   }
 }
-
- */

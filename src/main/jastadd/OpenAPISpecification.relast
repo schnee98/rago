@@ -1,6 +1,5 @@
 //OpenAPI Object
 OpenAPIObject ::= <OpenAPI> <JsonSchemaDialect>;
-InferredParameter ::= <Parameter>;
 Webhook ::= <Key>;
 rel Webhook.p -> PathItemOb;
 
@@ -13,7 +12,6 @@ rel OpenAPIObject.sr* -> SecurityRequirementObject;
 rel OpenAPIObject.t* -> TagObject;
 rel OpenAPIObject.e? -> ExternalDocObject;
 rel OpenAPIObject.ex* -> Extension;
-rel OpenAPIObject.ip* -> InferredParameter;
 
 //Info Object
 InfoObject ::= <Title> <Summary> <Description> <TermsOfService> <Version>;
