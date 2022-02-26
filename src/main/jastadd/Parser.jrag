@@ -1,4 +1,7 @@
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.*;
+import io.swagger.v3.oas.models.servers.*;
+import io.swagger.v3.oas.models.Components;
 
 aspect Parser {
 
@@ -41,150 +44,152 @@ aspect Parser {
         return openapi;
   }
 
-  public static InfoObject InfoObject.parseInfo(Info info, Map<Object, ASTNode> map) {
-    InfoObject infoObject = new InfoObject();
+  public static InfoObject InfoObject.parseInfo(Info info) {
+        InfoObject infoObject = new InfoObject();
 
-    if (info.getTitle() != null)
-      infoObject.setTitle(info.getTitle());
-    if (info.getVersion() != null)
-      infoObject.setVersion(info.getVersion());
-    if (info.getDescription() != null)
-      infoObject.setDescription(info.getDescription());
-    if (info.getTermsOfService() != null)
-      infoObject.setTermsOfService(info.getTermsOfService());
-    if (info.getContact() != null)
-      infoObject.setContactObject(ContactObject.parseContact(info.getContact(), map));
-    if (info.getLicense() != null)
-      infoObject.setLicenseObject(LicenseObject.parseLicense(info.getLicense(), map));
-    if (info.getExtensions() != null) {
-      for (String key : info.getExtensions().keySet())
-        infoObject.addExtension(new Extension(key, info.getExtensions().get(key)));
-    }
+        if (info.getTitle() != null)
+        infoObject.setTitle(info.getTitle());
+        if (info.getVersion() != null)
+        infoObject.setVersion(info.getVersion());
+        if (info.getDescription() != null)
+        infoObject.setDescription(info.getDescription());
+        if (info.getTermsOfService() != null)
+        infoObject.setTermsOfService(info.getTermsOfService());
+        if (info.getContact() != null)
+        infoObject.set_impl_c(ContactObject.parseContact(info.getContact()));
+        if (info.getLicense() != null)
+        infoObject.set_impl_l(LicenseObject.parseLicense(info.getLicense()));
+        if (info.getExtensions() != null) {
+        for (String key : info.getExtensions().keySet())
+        infoObject.addEx(new Extension(key, info.getExtensions().get(key)));
+        }
 
-    map.put(info, infoObject);
-    return infoObject;
+        /* 3.1.0 features
+        if (info.getSummary != null) ...
+        */
+
+        return infoObject;
   }
 
-  public static ContactObject ContactObject.parseContact(Contact contact, Map<Object, ASTNode> map){
-    ContactObject contactObject = new ContactObject();
+  public static ContactObject ContactObject.parseContact(Contact contact){
+        ContactObject contactObject = new ContactObject();
 
-    if (contact.getName() != null)
-      contactObject.setName(contact.getName());
-    if (contact.getUrl() != null)
-      contactObject.setUrl(contact.getUrl());
-    if (contact.getEmail() != null)
-      contactObject.setEmail(contact.getEmail());
-    if (contact.getExtensions() != null) {
-      for (String key : contact.getExtensions().keySet())
-        contactObject.addExtension(new Extension(key, contact.getExtensions().get(key)));
-    }
+        if (contact.getName() != null)
+        contactObject.setName(contact.getName());
+        if (contact.getUrl() != null)
+        contactObject.setUrl(contact.getUrl());
+        if (contact.getEmail() != null)
+        contactObject.setEmail(contact.getEmail());
+        if (contact.getExtensions() != null) {
+        for (String key : contact.getExtensions().keySet())
+        contactObject.addEx(new Extension(key, contact.getExtensions().get(key)));
+        }
 
-    map.put(contact, contactObject);
-    return contactObject;
+        return contactObject;
   }
 
-  public static LicenseObject LicenseObject.parseLicense(License license, Map<Object, ASTNode> map){
-    LicenseObject licenseObject = new LicenseObject();
+  public static LicenseObject LicenseObject.parseLicense(License license){
+        LicenseObject licenseObject = new LicenseObject();
 
-    if (license.getName() != null)
-      licenseObject.setName(license.getName());
-    if (license.getUrl() != null)
-      licenseObject.setUrl(license.getUrl());
-    if (license.getExtensions() != null) {
-      for (String key : license.getExtensions().keySet())
-        licenseObject.addExtension(new Extension(key, license.getExtensions().get(key)));
-    }
+        if (license.getName() != null)
+        licenseObject.setName(license.getName());
+        if (license.getUrl() != null)
+        licenseObject.setUrl(license.getUrl());
+        if (license.getExtensions() != null) {
+        for (String key : license.getExtensions().keySet())
+        licenseObject.addEx(new Extension(key, license.getExtensions().get(key)));
+        }
 
-    map.put(license, licenseObject);
-    return licenseObject;
+        /* 3.1.0 features
+        if (license.getIdentifier() != null) ...
+         */
+
+        return licenseObject;
   }
 
-  public static ServerObject ServerObject.parseServer(Server server, Map<Object, ASTNode> map){
-    ServerObject serverObject = new ServerObject();
+  public static ServerObject ServerObject.parseServer(Server server){
+        ServerObject serverObject = new ServerObject();
 
-    if (server.getUrl() != null)
-      serverObject.setUrl(server.getUrl());
-    if (server.getDescription() != null)
-      serverObject.setDescription(server.getDescription());
-    if (server.getVariables() != null) {
-      for (String key : server.getVariables().keySet())
-        serverObject.addServerVariablesTuple(new ServerVariablesTuple(key, ServerVariableObject.parseServerVariable(server.getVariable(key), map)));
-    }
-    if (server.getExtensions() != null) {
-      for (String key : server.getExtensions().keySet())
-        serverObject.addExtension(new Extension(key, server.getExtensions().get(key)));
-    }
+        if (server.getUrl() != null)
+        serverObject.setUrl(server.getUrl());
+        if (server.getDescription() != null)
+        serverObject.setDescription(server.getDescription());
+        if (server.getVariables() != null) {
+        for (String key : server.getVariables().keySet())
+        serverObject.addSt(new ServerVariablesTuple(key, ServerVariableObject.parseServerVariable(server.getVariables().get(key))));
+        }
+        if (server.getExtensions() != null) {
+        for (String key : server.getExtensions().keySet())
+        serverObject.addEx(new Extension(key, server.getExtensions().get(key)));
+        }
 
-    map.put(server, serverObject);
-    return serverObject;
+        return serverObject;
   }
 
-  public static ServerVariableObject ServerVariableObject.parseServerVariable(ServerVariable serverVariable, Map<Object, ASTNode> map){
-    ServerVariableObject serverVariableObject = new ServerVariableObject();
+  public static ServerVariableObject ServerVariableObject.parseServerVariable(ServerVariable serverVariable){
+        ServerVariableObject serverVariableObject = new ServerVariableObject();
 
-    if (serverVariable.getDefault() != null)
-      serverVariableObject.setDefault(serverVariable.getDefault());
-    if (serverVariable.getDescription() != null)
-      serverVariableObject.setDescription(serverVariable.getDescription());
-    if (serverVariable.getEnums() != null) {
-      for (String e : serverVariable.getEnums())
-        serverVariableObject.addEnum(new Enum(e));
-    }
-    if (serverVariable.getExtensions() != null) {
-      for (String key : serverVariable.getExtensions().keySet())
-        serverVariableObject.addExtension(new Extension(key, serverVariable.getExtensions().get(key)));
-    }
+        if (serverVariable.getDefault() != null)
+        serverVariableObject.setDefault(serverVariable.getDefault());
+        if (serverVariable.getDescription() != null)
+        serverVariableObject.setDescription(serverVariable.getDescription());
+        if (serverVariable.getEnum().size() != 0) {
+        for (String e : serverVariable.getEnum())
+        serverVariableObject.addE(new Enum(e));
+        }
+        if (serverVariable.getExtensions() != null) {
+        for (String key : serverVariable.getExtensions().keySet())
+        serverVariableObject.addEx(new Extension(key, serverVariable.getExtensions().get(key)));
+        }
 
-    map.put(serverVariable, serverVariableObject);
-    return serverVariableObject;
+        return serverVariableObject;
   }
 
-  public static ComponentsObject ComponentsObject.parseComponents(Components components, OAIContext context, Map<Object, ASTNode> map) throws DecodeException {
-    ComponentsObject componentsObject = new ComponentsObject();
+  public static ComponentsObject ComponentsObject.parseComponents(Components components) {
+        ComponentsObject componentsObject = new ComponentsObject();
 
-    if (components.getSchemas() != null) {
-      for (String key : components.getSchemas().keySet())
-        componentsObject.addSchemaTuple(new SchemaTuple(key, SchemaOb.parseSchema(components.getSchema(key), context, map)));
-    }
-    if (components.getResponses() != null) {
-      for (String key : components.getResponses().keySet())
-        componentsObject.addResponseTuple(new ResponseTuple(key, ResponseOb.parseResponse(components.getResponse(key), context, map)));
-    }
-    if (components.getParameters() != null) {
-      for (String key : components.getParameters().keySet())
-        componentsObject.addParameterTuple(new ParameterTuple(key, ParameterOb.parseParameter(components.getParameter(key), context, map)));
-    }
-    if (components.getExamples() != null) {
-      for (String key : components.getExamples().keySet())
-        componentsObject.addExampleTuple(new ExampleTuple(key, ExampleObject.parseExample(components.getExample(key), context, map)));
-    }
-    if (components.getRequestBodies() != null) {
-      for (String key : components.getRequestBodies().keySet())
-        componentsObject.addRequestBodyTuple(new RequestBodyTuple(key, RequestBodyOb.parseRequestBody(components.getRequestBody(key), context, map)));
-    }
-    if (components.getHeaders() != null) {
-      for (String key : components.getHeaders().keySet())
-        componentsObject.addHeaderTuple(new HeaderTuple(key, HeaderOb.parseHeader(components.getHeader(key), context, map)));
-    }
-    if (components.getSecuritySchemes() != null) {
-      for (String key : components.getSecuritySchemes().keySet())
-        componentsObject.addSecuritySchemeTuple(new SecuritySchemeTuple(key, SecuritySchemeOb.parseSecurityScheme(components.getSecurityScheme(key), context, map)));
-    }
-    if (components.getLinks() != null) {
-      for (String key : components.getLinks().keySet())
-        componentsObject.addLinkTuple(new LinkTuple(key, LinkOb.parseLink(components.getLink(key), context, map)));
-    }
-    if (components.getCallbacks() != null) {
-      for (String key : components.getCallbacks().keySet())
-        componentsObject.addCallbackTuple(new CallbackTuple(key, CallbackOb.parseCallback(components.getCallback(key), context, map)));
-    }
-    if (components.getExtensions() != null) {
-      for (String key : components.getExtensions().keySet())
-        componentsObject.addExtension(new Extension(key, components.getExtensions().get(key)));
-    }
+        if (components.getSchemas() != null) {
+        for (String key : components.getSchemas().keySet())
+        componentsObject.addS(new SchemaTuple(key, SchemaOb.parseSchema(components.getSchemas().get(key))));
+        }
+        if (components.getResponses() != null) {
+        for (String key : components.getResponses().keySet())
+        componentsObject.addR(new ResponseTuple(key, ResponseOb.parseResponse(components.getResponses().get(key))));
+        }
+        if (components.getParameters() != null) {
+        for (String key : components.getParameters().keySet())
+        componentsObject.addP(new ParameterTuple(key, ParameterOb.parseParameter(components.getParameters().get(key))));
+        }
+        if (components.getExamples() != null) {
+        for (String key : components.getExamples().keySet())
+        componentsObject.addE(new ExampleTuple(key, ExampleObject.parseExample(components.getExamples().get(key))));
+        }
+        if (components.getRequestBodies() != null) {
+        for (String key : components.getRequestBodies().keySet())
+        componentsObject.addRb(new RequestBodyTuple(key, RequestBodyOb.parseRequestBody(components.getRequestBodies().get(key))));
+        }
+        if (components.getHeaders() != null) {
+        for (String key : components.getHeaders().keySet())
+        componentsObject.addH(new HeaderTuple(key, HeaderOb.parseHeader(components.getHeaders().get(key))));
+        }
+        if (components.getSecuritySchemes() != null) {
+        for (String key : components.getSecuritySchemes().keySet())
+        componentsObject.addSc(new SecuritySchemeTuple(key, SecuritySchemeOb.parseSecurityScheme(components.getSecuritySchemes().get(key))));
+        }
+        if (components.getLinks() != null) {
+        for (String key : components.getLinks().keySet())
+        componentsObject.addL(new LinkTuple(key, LinkOb.parseLink(components.getLinks().get(key))));
+        }
+        if (components.getCallbacks() != null) {
+        for (String key : components.getCallbacks().keySet())
+        componentsObject.addC(new CallbackTuple(key, CallbackOb.parseCallback(components.getCallbacks().get(key))));
+        }
+        if (components.getExtensions() != null) {
+        for (String key : components.getExtensions().keySet())
+        componentsObject.addEx(new Extension(key, components.getExtensions().get(key)));
+        }
 
-    map.put(components, componentsObject);
-    return componentsObject;
+        return componentsObject;
   }
 
   public static PathItemObject PathItemObject.parsePath(Path path, OAIContext context, Map<Object, ASTNode> map) throws DecodeException {
