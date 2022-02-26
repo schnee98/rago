@@ -1,7 +1,17 @@
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.*;
+import io.swagger.v3.oas.models.callbacks.*;
+import io.swagger.v3.oas.models.examples.*;
+import io.swagger.v3.oas.models.headers.*;
 import io.swagger.v3.oas.models.info.*;
+import io.swagger.v3.oas.models.links.*;
+import io.swagger.v3.oas.models.media.*;
+import io.swagger.v3.oas.models.parameters.*;
+import io.swagger.v3.oas.models.responses.*;
+import io.swagger.v3.oas.models.security.*;
 import io.swagger.v3.oas.models.servers.*;
-import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.tags.*;
+
 
 aspect Parser {
 
@@ -189,139 +199,154 @@ aspect Parser {
         componentsObject.addEx(new Extension(key, components.getExtensions().get(key)));
         }
 
+        /* 3.1.0 features
+        if (components.getPathItems() != null) ...
+         */
+
         return componentsObject;
   }
 
-  public static PathItemObject PathItemObject.parsePath(Path path, OAIContext context, Map<Object, ASTNode> map) throws DecodeException {
-    PathItemObject pathItem = new PathItemObject();
+  public static PathItemOb PathItemOb.parsePath(PathItem path) {
+        PathItemObject pathItem = new PathItemObject();
 
-    if (path.getSummary() != null)
-      pathItem.setSummary(path.getSummary());
-    if (path.getDescription() != null)
-      pathItem.setDescription(path.getDescription());
-    if (path.getGet() != null) {
-      Get get = new Get();
-      get.setOperationObject(OperationObject.parseOperation(path.getGet(), context, map));
-      pathItem.setGet(get);
-    }
-    if (path.getPut() != null) {
-      Put put = new Put();
-      put.setOperationObject(OperationObject.parseOperation(path.getPut(), context, map));
-      pathItem.setPut(put);
-    }
-    if (path.getPost() != null) {
-      Post post = new Post();
-      post.setOperationObject(OperationObject.parseOperation(path.getPost(), context, map));
-      pathItem.setPost(post);
-    }
-    if (path.getDelete() != null) {
-      Delete delete = new Delete();
-      delete.setOperationObject(OperationObject.parseOperation(path.getDelete(), context, map));
-      pathItem.setDelete(delete);
-    }
-    if (path.getOptions() != null) {
-      Options options = new Options();
-      options.setOperationObject(OperationObject.parseOperation(path.getOptions(), context, map));
-      pathItem.setOptions(options);
-    }
-    if (path.getHead() != null) {
-      Head head = new Head();
-      head.setOperationObject(OperationObject.parseOperation(path.getHead(), context, map));
-      pathItem.setHead(head);
-    }
-    if (path.getPatch() != null) {
-      Patch patch = new Patch();
-      patch.setOperationObject(OperationObject.parseOperation(path.getPatch(), context, map));
-      pathItem.setPatch(patch);
-    }
-    if (path.getTrace() != null) {
-      Trace trace = new Trace();
-      trace.setOperationObject(OperationObject.parseOperation(path.getTrace(), context, map));
-      pathItem.setTrace(trace);
-    }
-    if (path.getServers() != null) {
-      for (Server s : path.getServers())
-        pathItem.addServerObject(ServerObject.parseServer(s, map));
-    }
-    if (path.getParameters() != null) {
-      for (Parameter p : path.getParameters())
-        pathItem.addParameterOb(ParameterOb.parseParameter(p, context, map));
-    }
-    if (path.getExtensions() != null) {
-      for (String key : path.getExtensions().keySet())
-        pathItem.addExtension(new Extension(key, path.getExtensions().get(key)));
-    }
+        if(path.get$ref() != null){
+        PathItemReference r = new PathItemReference();
+        r.setRef(path.get$ref());
 
-    map.put(path, pathItem);
-    return pathItem;
+      /* 3.1.0 features
+      if (path.getSummary() != null) ...
+      if (path.getDescription() != null) ...
+      if (path.getPathItem() != null) ...
+       */
+
+        return r;
+        } else
+
+        if (path.getSummary() != null)
+        pathItem.setSummary(path.getSummary());
+        if (path.getDescription() != null)
+        pathItem.setDescription(path.getDescription());
+        if (path.getGet() != null) {
+        Get get = new Get();
+        get.set_impl_o(OperationObject.parseOperation(path.getGet()));
+        pathItem.setG(get);
+        }
+        if (path.getPut() != null) {
+        Put put = new Put();
+        put.set_impl_o(OperationObject.parseOperation(path.getPut()));
+        pathItem.setPut(put);
+        }
+        if (path.getPost() != null) {
+        Post post = new Post();
+        post.set_impl_o(OperationObject.parseOperation(path.getPost()));
+        pathItem.setPost(post);
+        }
+        if (path.getDelete() != null) {
+        Delete delete = new Delete();
+        delete.set_impl_o(OperationObject.parseOperation(path.getDelete()));
+        pathItem.set_impl_d(delete);
+        }
+        if (path.getOptions() != null) {
+        Options options = new Options();
+        options.set_impl_o(OperationObject.parseOperation(path.getOptions()));
+        pathItem.set_impl_o(options);
+        }
+        if (path.getHead() != null) {
+        Head head = new Head();
+        head.set_impl_o(OperationObject.parseOperation(path.getHead()));
+        pathItem.setH(head);
+        }
+        if (path.getPatch() != null) {
+        Patch patch = new Patch();
+        patch.set_impl_o(OperationObject.parseOperation(path.getPatch()));
+        pathItem.setP(patch);
+        }
+        if (path.getTrace() != null) {
+        Trace trace = new Trace();
+        trace.set_impl_o(OperationObject.parseOperation(path.getTrace()));
+        pathItem.setT(trace);
+        }
+        if (path.getServers() != null) {
+        for (Server s : path.getServers())
+        pathItem.addS(ServerObject.parseServer(s));
+        }
+        if (path.getParameters() != null) {
+        for (Parameter p : path.getParameters())
+        pathItem.addPo(ParameterOb.parseParameter(p));
+        }
+        if (path.getExtensions() != null) {
+        for (String key : path.getExtensions().keySet())
+        pathItem.addEx(new Extension(key, path.getExtensions().get(key)));
+        }
+
+        return pathItem;
   }
 
-  public static OperationObject OperationObject.parseOperation(Operation operation, OAIContext context, Map<Object, ASTNode> map) throws DecodeException{
-    OperationObject operationObject = new OperationObject();
+  public static OperationObject OperationObject.parseOperation(Operation operation) {
+        OperationObject operationObject = new OperationObject();
 
-    if (operation.getDeprecated() != null)
-      operationObject.setDeprecatedBoolean(operation.getDeprecated());
-    if (operation.getTags() != null) {
-      for (String t : operation.getTags()) {
+        if (operation.getDeprecated() != null)
+        operationObject.setDeprecatedBoolean(operation.getDeprecated());
+        if (operation.getTags() != null) {
+        for (String t : operation.getTags()) {
         de.tudresden.inf.st.openapi.ast.Tag tag = new de.tudresden.inf.st.openapi.ast.Tag();
         tag.setTag(t);
-        operationObject.addTag(tag);
-      }
-    }
-    if (operation.getSummary() != null)
-      operationObject.setSummary(operation.getSummary());
-    if (operation.getDescription() != null)
-      operationObject.setDescription(operation.getDescription());
-    if (operation.getExternalDocs() != null)
-      operationObject.setExternalDocObject(ExternalDocObject.parseExternalDocs(operation.getExternalDocs(), map));
-    if (operation.getOperationId() != null)
-      operationObject.setOperationID(operation.getOperationId());
-    if (operation.getParameters() != null) {
-      for (Parameter p : operation.getParameters())
-        operationObject.addParameterOb(ParameterOb.parseParameter(p, context, map));
-    }
-    if (operation.getRequestBody() != null)
-      operationObject.setRequestBodyOb(RequestBodyOb.parseRequestBody(operation.getRequestBody(), context, map));
-    if (operation.getResponses() != null) {
-      for (String key : operation.getResponses().keySet())
-        operationObject.addResponseTuple(new ResponseTuple(key, ResponseObject.parseResponse(operation.getResponse(key), context, map)));
-    }
-    if (operation.getCallbacks() != null) {
-      for (String key : operation.getCallbacks().keySet())
-        operationObject.addCallbackTuple(new CallbackTuple(key, CallbackObject.parseCallback(operation.getCallback(key), context, map)));
-    }
-    if (operation.getSecurityRequirements() != null) {
-      for (SecurityRequirement s : operation.getSecurityRequirements())
-        operationObject.addSecurityRequirementObject(SecurityRequirementObject.parseSecurityRequirement(s, map));
-    }
-    if (operation.getServers() != null) {
-      for (Server s : operation.getServers())
-        operationObject.addServerObject(ServerObject.parseServer(s, map));
-    }
-    if (operation.getExtensions() != null) {
-      for (String key : operation.getExtensions().keySet())
-        operationObject.addExtension(new Extension(key, operation.getExtensions().get(key)));
-    }
+        operationObject.addT(tag);
+        }
+        }
+        if (operation.getSummary() != null)
+        operationObject.setSummary(operation.getSummary());
+        if (operation.getDescription() != null)
+        operationObject.setDescription(operation.getDescription());
+        if (operation.getExternalDocs() != null)
+        operationObject.set_impl_ed(ExternalDocObject.parseExternalDocs(operation.getExternalDocs()));
+        if (operation.getOperationId() != null)
+        operationObject.setOperationID(operation.getOperationId());
+        if (operation.getParameters() != null) {
+        for (Parameter p : operation.getParameters())
+        operationObject.addP(ParameterOb.parseParameter(p));
+        }
+        if (operation.getRequestBody() != null)
+        operationObject.set_impl_rb(RequestBodyOb.parseRequestBody(operation.getRequestBody()));
+        if (operation.getResponses().size() != 0) {
+        ResponsesObject r = new ResponsesObject();
+        for (String key : operation.getResponses().keySet())
+        r.addR(new ResponseTuple(key, ResponseObject.parseResponse(operation.getResponses().get(key))));
+        operationObject.set_impl_r(r);
+        }
+        if (operation.getCallbacks().size() != 0) {
+        for (String key : operation.getCallbacks().keySet())
+        operationObject.addC(new CallbackTuple(key, CallbackObject.parseCallback(operation.getCallbacks().get(key))));
+        }
+        if (operation.getSecurity().size() != 0) {
+        for (SecurityRequirement s : operation.getSecurity())
+        operationObject.addSr(SecurityRequirementObject.parseSecurityRequirement(s));
+        }
+        if (operation.getServers() != null) {
+        for (Server s : operation.getServers())
+        operationObject.addS(ServerObject.parseServer(s));
+        }
+        if (operation.getExtensions() != null) {
+        for (String key : operation.getExtensions().keySet())
+        operationObject.addEx(new Extension(key, operation.getExtensions().get(key)));
+        }
 
-    map.put(operation, operationObject);
-    return operationObject;
+        return operationObject;
   }
 
-  public static ExternalDocObject ExternalDocObject.parseExternalDocs(ExternalDocs externalDocs, Map<Object, ASTNode> map){
-    ExternalDocObject externalDocObject = new ExternalDocObject();
+  public static ExternalDocObject ExternalDocObject.parseExternalDocs(ExternalDocs externalDocs){
+        ExternalDocObject externalDocObject = new ExternalDocObject();
 
+        if (externalDocs.getDescription() != null)
+        externalDocObject.setDescription(externalDocs.getDescription());
+        if (externalDocs.getUrl() != null)
+        externalDocObject.setUrl(externalDocs.getUrl());
+        if (externalDocs.getVendorExtensions() != null) {
+        for (String key : externalDocs.getVendorExtensions().keySet())
+        externalDocObject.addEx(new Extension(key, externalDocs.getVendorExtensions().get(key)));
+        }
 
-    if (externalDocs.getDescription() != null)
-      externalDocObject.setDescription(externalDocs.getDescription());
-    if (externalDocs.getUrl() != null)
-      externalDocObject.setUrl(externalDocs.getUrl());
-    if (externalDocs.getExtensions() != null) {
-      for (String key : externalDocs.getExtensions().keySet())
-        externalDocObject.addExtension(new Extension(key, externalDocs.getExtensions().get(key)));
-    }
-
-    map.put(externalDocs, externalDocObject);
-    return externalDocObject;
+        return externalDocObject;
   }
 
   public static ParameterOb ParameterOb.parseParameter(Parameter parameter, OAIContext context, Map<Object, ASTNode> map) throws DecodeException {

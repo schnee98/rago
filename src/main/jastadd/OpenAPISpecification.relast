@@ -99,7 +99,7 @@ abstract PathItemOb;
 PathItemReference : PathItemOb ::= <Ref> <Summary> <Description>;
 PathItemObject : PathItemOb ::= <Ref> <Summary> <Description>;
 
-rel PathItemReference.r -> PathItemTuple;
+rel PathItemReference.r -> PathItemObject;
 rel PathItemObject.g? -> Get;
 rel PathItemObject.put? -> Put;
 rel PathItemObject.post? -> Post;
@@ -154,7 +154,7 @@ ParameterObject : ParameterOb ::= <Name> <In> <Description> <Required:Boolean> <
 ContentTuple ::= <Key>;
 rel ContentTuple.m -> MediaTypeObject;
 
-rel ParameterReference.p -> PathItemTuple;
+rel ParameterReference.p -> ParameterObject;
 rel ParameterObject.s? -> SchemaOb;
 rel ParameterObject.e* -> ExampleTuple;
 rel ParameterObject.c* -> ContentTuple;
@@ -166,7 +166,7 @@ abstract RequestBodyOb;
 RequestBodyReference : RequestBodyOb ::= <Ref> <Summary> <Description>;
 RequestBodyObject : RequestBodyOb ::= <Description> <Required:Boolean>;
 
-rel RequestBodyReference.r -> RequestBodyTuple;
+rel RequestBodyReference.r -> RequestBodyObject;
 rel RequestBodyObject.c* -> ContentTuple;
 rel RequestBodyObject.ex* -> Extension;
 
@@ -188,9 +188,6 @@ rel EncodingObject.ex* -> Extension;
 
 //Responses Object (ResponseTuple is used for HTTPStatusCode)
 ResponsesObject;
-
-//Default
-rel ResponsesObject.d? -> ResponseOb;
 //HTTPStatusCode
 rel ResponsesObject.r* -> ResponseTuple;
 
@@ -199,7 +196,7 @@ abstract ResponseOb;
 ResponseReference : ResponseOb ::= <Ref> <Summary> <Description>;
 ResponseObject : ResponseOb ::= <Description>;
 
-rel ResponseReference.r -> ResponseTuple;
+rel ResponseReference.r -> ResponseObject;
 rel ResponseObject.h* -> HeaderTuple;
 rel ResponseObject.c* -> ContentTuple;
 rel ResponseObject.l* -> LinkTuple;
@@ -214,7 +211,7 @@ Extension ::= <Key> <Value:Object>;
 Expression ::= <Name>;
 rel Expression.p -> PathItemOb;
 
-rel CallbackReference.r -> CallbackTuple;
+rel CallbackReference.r -> CallbackObject;
 rel CallbackObject.e* -> Expression;
 rel CallbackObject.ex* -> Extension;
 
@@ -229,7 +226,7 @@ LinkReference : LinkOb ::= <Ref> <Summary> <Description>;
 LinkObject : LinkOb ::= <OperationRef> <OperationID> <LinkRequestBody:Object> <Description>;
 LinkParameterTuple ::= <Key> <Value:Object>;
 
-rel LinkReference.r -> LinkTuple;
+rel LinkReference.r -> LinkObject;
 rel LinkObject.l* -> LinkParameterTuple;
 rel LinkObject.s? -> ServerObject;
 rel LinkObject.ex* -> Extension;
@@ -239,7 +236,7 @@ abstract HeaderOb;
 HeaderReference : HeaderOb ::= <Ref> <Summary> <Description>;
 HeaderObject : HeaderOb ::= <Description> <Required:Boolean> <DeprecatedBoolean:Boolean> <AllowEmptyValue:Boolean> <Style> <Explode:Boolean> <AllowReserved:Boolean> <Example:Object>;
 
-rel HeaderReference.r -> HeaderTuple;
+rel HeaderReference.r -> HeaderObject;
 rel HeaderObject.s? -> SchemaOb;
 rel HeaderObject.e* -> ExampleTuple;
 rel HeaderObject.c* -> ContentTuple;
@@ -282,7 +279,7 @@ TypeArray ::= <TypeElements:Object>;
 EnumObj ::= <EnumOb:Object>;
 RequiredField ::= <Value>;
 
-rel SchemaReference.r -> SchemaTuple;
+rel SchemaReference.r -> SchemaObject;
 rel SchemaObject.a? -> AdditionalProperties;
 rel SchemaObject.d? -> DiscriminatorObject;
 rel SchemaObject.e* -> EnumObj;
@@ -317,7 +314,7 @@ abstract SecuritySchemeOb;
 SecuritySchemeReference : SecuritySchemeOb ::= <Ref> <Summary> <Description>;
 SecuritySchemeObject : SecuritySchemeOb ::= <Type> <Description> <Name> <In> <Scheme> <BearerFormat> <OpenIdConnectUrl>;
 
-rel SecuritySchemeReference.r -> SecuritySchemeTuple;
+rel SecuritySchemeReference.r -> SecuritySchemeObject;
 rel SecuritySchemeObject.o? -> OAuthFlowsObject;
 rel SecuritySchemeObject.ex* -> Extension;
 
