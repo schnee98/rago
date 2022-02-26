@@ -251,10 +251,7 @@ rel TagObject.ex* -> Extension;
 //Schema Object
 abstract SchemaOb;
 SchemaReference : SchemaOb ::= <Ref> <Summary> <Description>;
-SchemaObject : SchemaOb ::= <AdditionalPropertiesAllowed:Boolean> <DefaultValue:Object> <Description> <DeprecatedBoolean:Boolean> <ExclusiveMaximum:Number> <ExclusiveMinimum:Number> <Format> <Maximum:Number> <Minimum:Number> <MaxItems:Integer> <MinItems:Integer> <MaxLength:Integer> <MinLength:Integer> <MaxProperties:Integer> <MinProperties:Integer> <MultipleOf:Number> <Pattern> <ReadOnly:Boolean> <WriteOnly:Boolean> <Type> <Title> <UniqueItems:Boolean> <MaxContains:Integer> <MinContains:Integer> <DependentRequired:Object> <DependentSchema:SchemaOb> <Const:Object>;
-
-AdditionalProperties;
-rel AdditionalProperties.s -> SchemaOb;
+SchemaObject : SchemaOb ::= <AdditionalProperties:Object> <DefaultValue:Object> <Description> <DeprecatedBoolean:Boolean> <ExclusiveMaximum:Number> <ExclusiveMinimum:Number> <Format> <Maximum:Number> <Minimum:Number> <MaxItems:Integer> <MinItems:Integer> <MaxLength:Integer> <MinLength:Integer> <MaxProperties:Integer> <MinProperties:Integer> <MultipleOf:Number> <Pattern> <ReadOnly:Boolean> <WriteOnly:Boolean> <Type> <Title> <UniqueItems:Boolean> <MaxContains:Integer> <MinContains:Integer> <DependentRequired:Object> <DependentSchema:SchemaOb> <Const:Object>;
 
 ItemsSchema;
 rel ItemsSchema.s -> SchemaOb;
