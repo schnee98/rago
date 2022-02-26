@@ -277,7 +277,6 @@ EnumObj ::= <EnumOb:Object>;
 RequiredField ::= <Value>;
 
 rel SchemaReference.r -> SchemaObject;
-rel SchemaObject.a? -> AdditionalProperties;
 rel SchemaObject.d? -> DiscriminatorObject;
 rel SchemaObject.e* -> EnumObj;
 rel SchemaObject.el* -> ExampleElement;

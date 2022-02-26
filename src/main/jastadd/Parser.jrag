@@ -55,7 +55,7 @@ aspect Parser {
         return openapi;
   }
 
-  public static InfoObject InfoObject.parseInfo(Info info) {
+  public static InfoObject InfoObject.parseInfo(io.swagger.v3.oas.models.info.Info info) {
         InfoObject infoObject = new InfoObject();
 
         if (info.getTitle() != null)
@@ -82,7 +82,7 @@ aspect Parser {
         return infoObject;
   }
 
-  public static ContactObject ContactObject.parseContact(Contact contact){
+  public static ContactObject ContactObject.parseContact(io.swagger.v3.oas.models.info.Contact contact){
         ContactObject contactObject = new ContactObject();
 
         if (contact.getName() != null)
@@ -99,7 +99,7 @@ aspect Parser {
         return contactObject;
   }
 
-  public static LicenseObject LicenseObject.parseLicense(License license){
+  public static LicenseObject LicenseObject.parseLicense(io.swagger.v3.oas.models.info.License license){
         LicenseObject licenseObject = new LicenseObject();
 
         if (license.getName() != null)
@@ -283,7 +283,7 @@ aspect Parser {
         return pathItem;
   }
 
-  public static OperationObject OperationObject.parseOperation(Operation operation) {
+  public static OperationObject OperationObject.parseOperation(io.swagger.v3.oas.models.Operation operation) {
         OperationObject operationObject = new OperationObject();
 
         if (operation.getDeprecated() != null)
@@ -320,7 +320,7 @@ aspect Parser {
         operationObject.addC(new CallbackTuple(key, CallbackObject.parseCallback(operation.getCallbacks().get(key))));
         }
         if (operation.getSecurity().size() != 0) {
-        for (SecurityRequirement s : operation.getSecurity())
+        for (io.swagger.v3.oas.models.security.SecurityRequirement s : operation.getSecurity())
         operationObject.addSr(SecurityRequirementObject.parseSecurityRequirement(s));
         }
         if (operation.getServers() != null) {
@@ -335,16 +335,16 @@ aspect Parser {
         return operationObject;
   }
 
-  public static ExternalDocObject ExternalDocObject.parseExternalDocs(ExternalDocs externalDocs){
+  public static ExternalDocObject ExternalDocObject.parseExternalDocs(ExternalDocumentation externalDocs){
         ExternalDocObject externalDocObject = new ExternalDocObject();
 
         if (externalDocs.getDescription() != null)
         externalDocObject.setDescription(externalDocs.getDescription());
         if (externalDocs.getUrl() != null)
         externalDocObject.setUrl(externalDocs.getUrl());
-        if (externalDocs.getVendorExtensions() != null) {
-        for (String key : externalDocs.getVendorExtensions().keySet())
-        externalDocObject.addEx(new Extension(key, externalDocs.getVendorExtensions().get(key)));
+        if (externalDocs.getExtensions() != null) {
+        for (String key : externalDocs.getExtensions().keySet())
+        externalDocObject.addEx(new Extension(key, externalDocs.getExtensions().get(key)));
         }
 
         return externalDocObject;
@@ -456,7 +456,7 @@ aspect Parser {
         return mediaTypeObject;
   }
 
-  public static EncodingObject EncodingObject.parseEncoding(EncodingProperty encodingProperty) {
+  public static EncodingObject EncodingObject.parseEncoding(Encoding encodingProperty) {
         EncodingObject encodingObject = new EncodingObject();
 
         if (encodingProperty.getContentType() != null)
@@ -501,7 +501,7 @@ aspect Parser {
         }
         if (response.getContent().size() != 0) {
         for (String key : response.getContent().keySet())
-        responseObject.addC(new ContentTuple(key, MediaTypeObject.parseMediaType(response.getContent().get(key)))));
+        responseObject.addC(new ContentTuple(key, MediaTypeObject.parseMediaType(response.getContent().get(key))));
         }
         if (response.getLinks().size() != 0) {
         for (String key : response.getLinks().keySet())
@@ -629,7 +629,7 @@ aspect Parser {
         }
         if (header.getContent().size() != 0) {
         for (String key : header.getContent().keySet())
-        headerObject.addC(new ContentTuple(key, MediaTypeObject.parseMediaType(header.getContent().get(key)))));
+        headerObject.addC(new ContentTuple(key, MediaTypeObject.parseMediaType(header.getContent().get(key))));
         }
         if (header.getSchema() != null)
         headerObject.set_impl_s(SchemaOb.parseSchema(header.getSchema()));
@@ -642,7 +642,7 @@ aspect Parser {
         return headerObject;
   }
 
-  public static TagObject TagObject.parseTag(Tag tag){
+  public static TagObject TagObject.parseTag(io.swagger.v3.oas.models.tags.Tag tag){
         TagObject tagObject = new TagObject();
 
         tagObject.setName(tag.getName());
@@ -807,7 +807,7 @@ aspect Parser {
         return discriminatorObject;
   }
 
-  public static XmlObject XmlObject.parseXml (Xml xml) {
+  public static XmlObject XmlObject.parseXml (XML xml) {
         XmlObject xmlObject = new XmlObject();
 
         if (xml.getName() != null)
@@ -875,19 +875,19 @@ aspect Parser {
         AuthorizationCode authorizationCode = new AuthorizationCode();
 
         if (oAuthFlows.getImplicit() != null) {
-        implicit.set_impl_o(OAuthFlowObject.parseOAuthFlow(oAuthFlows.getImplicit(), map));
+        implicit.set_impl_o(OAuthFlowObject.parseOAuthFlow(oAuthFlows.getImplicit()));
         oAuthFlowsObject.set_impl_i(implicit);
         }
         if (oAuthFlows.getPassword() != null) {
-        password.set_impl_o(OAuthFlowObject.parseOAuthFlow(oAuthFlows.getPassword(), map));
+        password.set_impl_o(OAuthFlowObject.parseOAuthFlow(oAuthFlows.getPassword()));
         oAuthFlowsObject.set_impl_p(password);
         }
         if (oAuthFlows.getClientCredentials() != null) {
-        clientCredentials.set_impl_o(OAuthFlowObject.parseOAuthFlow(oAuthFlows.getClientCredentials(), map));
+        clientCredentials.set_impl_o(OAuthFlowObject.parseOAuthFlow(oAuthFlows.getClientCredentials()));
         oAuthFlowsObject.set_impl_c(clientCredentials);
         }
         if (oAuthFlows.getAuthorizationCode() != null) {
-        authorizationCode.set_impl_o(OAuthFlowObject.parseOAuthFlow(oAuthFlows.getAuthorizationCode(), map));
+        authorizationCode.set_impl_o(OAuthFlowObject.parseOAuthFlow(oAuthFlows.getAuthorizationCode()));
         oAuthFlowsObject.set_impl_a(authorizationCode);
         }
         if (oAuthFlows.getExtensions() != null) {
@@ -917,7 +917,7 @@ aspect Parser {
         return oAuthFlowObject;
   }
 
-  public static SecurityRequirementObject SecurityRequirementObject.parseSecurityRequirement(SecurityRequirement securityRequirement){
+  public static SecurityRequirementObject SecurityRequirementObject.parseSecurityRequirement(io.swagger.v3.oas.models.security.SecurityRequirement securityRequirement){
         SecurityRequirementObject securityRequirementObject = new SecurityRequirementObject();
 
         if (securityRequirement != null) {
