@@ -1,128 +1,120 @@
-/*
-import org.openapi4j.core.exception.ResolutionException;
-import org.openapi4j.core.validation.ValidationException;
-import org.openapi4j.parser.model.v3.*;
-import org.openapi4j.core.model.reference.Reference;
-import org.openapi4j.core.model.OAIContext;
+import java.util.*;
+aspect ReverseParser {
 
-import java.io.IOException;
-import java.net.URL;
+  public static OpenAPI OpenAPIObject.reverseOpenAPI (OpenAPIObject openapi){
+        OpenAPI api = new OpenAPI();
 
-aspect Composer {
-
-  public static OpenApi3 OpenAPIObject.composeOpenAPI (OpenAPIObject openapi){
-    OpenApi3 api3 = new OpenApi3();
-    Map<Object, ASTNode> map = new HashMap<>();
-
-    if (!openapi.getOpenAPI().isEmpty())
-      api3.setOpenapi(openapi.getOpenAPI());
-    if (openapi.hasInfoObject())
-      api3.setInfo(InfoObject.composeInfo(openapi.getInfoObject(), map));
-    if (openapi.getNumServerObject() != 0) {
-      List<org.openapi4j.parser.model.v3.Server> servers = new ArrayList<>();
-      for (ServerObject s : openapi.getServerObjects())
-        servers.add(ServerObject.composeServer(s, map));
-      api3.setServers(servers);
-    }
-    if (openapi.getNumPathsObject() != 0) {
-      Map<String, Path> paths = new HashMap<>();
-      for (PathsObject p : openapi.getPathsObjects())
-        paths.put(p.getRef(), PathItemObject.composePath(p.getPathItemObject(), map));
-      api3.setPaths(paths);
-    }
-    if (openapi.hasComponentsObject())
-      api3.setComponents(ComponentsObject.composeComponents(openapi.getComponentsObject(), map));
-    if (openapi.getNumSecurityRequirementObject() != 0) {
-      List<SecurityRequirement> securityRequirements = new ArrayList<>();
-      for (SecurityRequirementObject s : openapi.getSecurityRequirementObjects())
-        securityRequirements.add(SecurityRequirementObject.composeSecurityRequirement(s, map));
-      api3.setSecurityRequirements(securityRequirements);
-    }
-    if (openapi.getNumTagObject() != 0) {
-      List<org.openapi4j.parser.model.v3.Tag> tags = new ArrayList<>();
-      for (TagObject t : openapi.getTagObjects())
-        tags.add(TagObject.composeTag(t, map));
-      api3.setTags(tags);
-    }
-    if (openapi.hasExternalDocObject())
-      api3.setExternalDocs(ExternalDocObject.composeExternalDocs(openapi.getExternalDocObject(), map));
-    if (openapi.getContext() != null)
-      api3.setContext(openapi.getContext());
-    if (openapi.getNumExtension() != 0) {
-      Map<String, Object> extensionMap = new HashMap<>();
-      for (Extension e : openapi.getExtensions())
+        if (!openapi.getOpenAPI().isEmpty())
+        api.setOpenapi(openapi.getOpenAPI());
+        if (openapi.hasI())
+        api.setInfo(InfoObject.reverseInfo(openapi.get_impl_i()));
+        if (openapi.get_impl_s().size() != 0) {
+        List<Server> servers = new ArrayList<>();
+        for (ServerObject s : openapi.get_impl_s())
+        servers.add(ServerObject.reverseServer(s));
+        api.setServers(servers);
+        }
+        if (openapi.get_impl_p().size() != 0) {
+        Paths paths = new Paths();
+        for (PathsObject p : openapi.getPList()){
+        //if (p.get_impl_p() instanceof PathItemObject)
+        //paths.addPathItem(p.getRef(), PathIte)
+        }
+        api.setPaths(paths);
+        }
+        if (openapi.hasC())
+        api.setComponents(ComponentsObject.reverseComponents(openapi.get_impl_c()));
+        if (openapi.getSrList().size() != 0) {
+        List<io.swagger.v3.oas.models.security.SecurityRequirement> securityRequirements = new ArrayList<>();
+        for (SecurityRequirementObject s : openapi.getSrList())
+        securityRequirements.add(SecurityRequirementObject.reverseSecurityRequirement(s));
+        api.setSecurity(securityRequirements);
+        }
+        if (openapi.getTList().size() != 0) {
+        List<io.swagger.v3.oas.models.tags.Tag> tags = new ArrayList<>();
+        for (TagObject t : openapi.getTList())
+        tags.add(TagObject.reverseTag(t));
+        api.setTags(tags);
+        }
+        if (openapi.hasE())
+        api.setExternalDocs(ExternalDocObject.reverseExternalDocs(openapi.getE()));
+        if (openapi.getExList().size() != 0) {
+        Map<String, Object> extensionMap = new HashMap<>();
+        for (Extension e : openapi.getExList())
         extensionMap.put(e.getKey(), e.getValue());
-      api3.setExtensions(extensionMap);
-    }
+        api.setExtensions(extensionMap);
+        }
 
-    return api3;
+        /* 3.1.0 features
+    if (openapi.getWebhook != null) ...
+    if (openapi.getJsonSchemaDialect != null) ...
+     */
+
+        return api;
   }
 
-  public static Info InfoObject.composeInfo (InfoObject infoObject, Map<Object, ASTNode> map){
-    Info info = new Info();
+  public static io.swagger.v3.oas.models.info.Info InfoObject.reverseInfo (InfoObject infoObject){
+        io.swagger.v3.oas.models.info.Info info = new Info();
 
-    if (!infoObject.getTitle().isEmpty())
-      info.setTitle(infoObject.getTitle());
-    if (!infoObject.getVersion().isEmpty())
-      info.setVersion(infoObject.getVersion());
-    if (!infoObject.getDescription().isEmpty())
-      info.setDescription(infoObject.getDescription());
-    if (!infoObject.getTermsOfService().isEmpty())
-      info.setTermsOfService(infoObject.getTermsOfService());
-    if (infoObject.hasContactObject())
-      info.setContact(ContactObject.composeContact(infoObject.getContactObject(), map));
-    if (infoObject.hasLicenseObject())
-      info.setLicense(LicenseObject.composeLicense(infoObject.getLicenseObject(), map));
-    if (infoObject.getNumExtension() != 0) {
-      Map<String, Object> extension = new HashMap<>();
-      for (Extension e : infoObject.getExtensions())
+        if (!infoObject.getTitle().isEmpty())
+        info.setTitle(infoObject.getTitle());
+        if (!infoObject.getVersion().isEmpty())
+        info.setVersion(infoObject.getVersion());
+        if (!infoObject.getDescription().isEmpty())
+        info.setDescription(infoObject.getDescription());
+        if (!infoObject.getTermsOfService().isEmpty())
+        info.setTermsOfService(infoObject.getTermsOfService());
+        if (infoObject.hasC())
+        info.setContact(ContactObject.reverseContact(infoObject.get_impl_c()));
+        if (infoObject.hasL())
+        info.setLicense(LicenseObject.reverseLicense(infoObject.get_impl_l()));
+        if (infoObject.getExList().size() != 0) {
+        Map<String, Object> extension = new HashMap<>();
+        for (Extension e : infoObject.getExList())
         extension.put(e.getKey(), e.getValue());
-      info.setExtensions(extension);
-    }
+        info.setExtensions(extension);
+        }
 
-    map.put(info, infoObject);
-    return info;
+        return info;
   }
 
-  public static Contact ContactObject.composeContact (ContactObject contactObject, Map<Object, ASTNode> map){
-    Contact contact = new Contact();
+  public static io.swagger.v3.oas.models.info.Contact ContactObject.reverseContact (ContactObject contactObject){
+        io.swagger.v3.oas.models.info.Contact contact = new Contact();
 
-    if (!contactObject.getName().isEmpty())
-      contact.setName(contactObject.getName());
-    if (!contactObject.getUrl().isEmpty())
-      contact.setUrl(contactObject.getUrl());
-    if (!contactObject.getEmail().isEmpty())
-      contact.setEmail(contactObject.getEmail());
-    if (contactObject.getNumExtension() != 0) {
-      Map<String, Object> extensions = new HashMap<>();
-      for (Extension e : contactObject.getExtensions())
+        if (!contactObject.getName().isEmpty())
+        contact.setName(contactObject.getName());
+        if (!contactObject.getUrl().isEmpty())
+        contact.setUrl(contactObject.getUrl());
+        if (!contactObject.getEmail().isEmpty())
+        contact.setEmail(contactObject.getEmail());
+        if (contactObject.getExList().size() != 0) {
+        Map<String, Object> extensions = new HashMap<>();
+        for (Extension e : contactObject.getExList())
         extensions.put(e.getKey(), e.getValue());
-      contact.setExtensions(extensions);
-    }
+        contact.setExtensions(extensions);
+        }
 
-    map.put(contact, contactObject);
-    return contact;
+        return contact;
   }
 
-  public static License LicenseObject.composeLicense (LicenseObject licenseObject, Map<Object, ASTNode> map){
-    License license = new License();
+  public static io.swagger.v3.oas.models.info.License LicenseObject.reverseLicense (LicenseObject licenseObject){
+        io.swagger.v3.oas.models.info.License license = new License();
 
-    if (!licenseObject.getName().isEmpty())
-      license.setName(licenseObject.getName());
-    if (!licenseObject.getUrl().isEmpty())
-      license.setUrl(licenseObject.getUrl());
-    if (licenseObject.getNumExtension() != 0) {
-      Map<String, Object> extensions = new HashMap<>();
-      for (Extension e : licenseObject.getExtensions())
+        if (!licenseObject.getName().isEmpty())
+        license.setName(licenseObject.getName());
+        if (!licenseObject.getUrl().isEmpty())
+        license.setUrl(licenseObject.getUrl());
+        if (licenseObject.getExList().size() != 0) {
+        Map<String, Object> extensions = new HashMap<>();
+        for (Extension e : licenseObject.getExList())
         extensions.put(e.getKey(), e.getValue());
-      license.setExtensions(extensions);
-    }
+        license.setExtensions(extensions);
+        }
 
-    map.put(license, licenseObject);
-    return license;
+        return license;
   }
 
-  public static Server ServerObject.composeServer (ServerObject serverObject, Map<Object, ASTNode> map){
+  public static Server ServerObject.reverseServer (ServerObject serverObject){
     Server server = new Server();
 
     if (!serverObject.getUrl().isEmpty())
@@ -132,7 +124,7 @@ aspect Composer {
     if (serverObject.hasServerVariablesTuple()) {
       Map<String, ServerVariable> serverVariables = new HashMap<>();
       for (ServerVariablesTuple s : serverObject.getServerVariablesTuples())
-        serverVariables.put(s.getName(), ServerVariableObject.composeServerVariable(s.getServerVariableObject(), map));
+        serverVariables.put(s.getName(), ServerVariableObject.reverseServerVariable(s.getServerVariableObject(), map));
       server.setVariables(serverVariables);
     }
     if (serverObject.getNumExtension() != 0) {
@@ -146,7 +138,7 @@ aspect Composer {
     return server;
   }
 
-  public static ServerVariable ServerVariableObject.composeServerVariable (ServerVariableObject serverVariableObject, Map<Object, ASTNode> map){
+  public static ServerVariable ServerVariableObject.reverseServerVariable (ServerVariableObject serverVariableObject){
     ServerVariable serverVariable = new ServerVariable();
 
     if (!serverVariableObject.getDefault().isEmpty())
@@ -170,7 +162,7 @@ aspect Composer {
     return serverVariable;
   }
 
-  public static Components ComponentsObject.composeComponents (ComponentsObject componentsObject, Map<Object, ASTNode> map){
+  public static Components ComponentsObject.reverseComponents (ComponentsObject componentsObject){
     Components components = new Components();
 
     if (componentsObject.getNumSchemaTuple() != 0) {
@@ -179,9 +171,9 @@ aspect Composer {
       for (SchemaTuple t : componentsObject.getSchemaTuples()) {
         s = t.getSchemaOb();
         if (s instanceof SchemaObject)
-          schemaMap.put(t.getKey(), ((SchemaObject) s).composeSchema(s, map));
+          schemaMap.put(t.getKey(), ((SchemaObject) s).reverseSchema(s, map));
         else
-          schemaMap.put(t.getKey(), ((SchemaReference) s).composeSchema(s, map));
+          schemaMap.put(t.getKey(), ((SchemaReference) s).reverseSchema(s, map));
       }
       components.setSchemas(schemaMap);
     }
@@ -190,7 +182,7 @@ aspect Composer {
       ResponseOb r;
       for (ResponseTuple t : componentsObject.getResponseTuples()) {
         r = t.getResponseOb();
-        responseMap.put(t.getKey(), r.composeResponse(r, map));
+        responseMap.put(t.getKey(), r.reverseResponse(r, map));
       }
       components.setResponses(responseMap);
     }
@@ -199,14 +191,14 @@ aspect Composer {
       ParameterOb p;
       for (ParameterTuple t : componentsObject.getParameterTuples()) {
         p = t.getParameterOb();
-        parameterMap.put(t.getKey(), p.composeParameter(p, map));
+        parameterMap.put(t.getKey(), p.reverseParameter(p, map));
       }
       components.setParameters(parameterMap);
     }
     if (componentsObject.getNumExampleTuple() != 0) {
       Map<String, Example> exampleMap = new HashMap<>();
       for (ExampleTuple t : componentsObject.getExampleTuples())
-        exampleMap.put(t.getKey(), ExampleObject.composeExample(t.getExampleObject(), map));
+        exampleMap.put(t.getKey(), ExampleObject.reverseExample(t.getExampleObject(), map));
       components.setExamples(exampleMap);
     }
     if (componentsObject.getNumRequestBodyTuple() != 0) {
@@ -214,7 +206,7 @@ aspect Composer {
       RequestBodyOb r;
       for (RequestBodyTuple t : componentsObject.getRequestBodyTuples()) {
         r = t.getRequestBodyOb();
-        requestBodyMap.put(t.getKey(), r.composeRequestBody(r, map));
+        requestBodyMap.put(t.getKey(), r.reverseRequestBody(r, map));
       }
       components.setRequestBodies(requestBodyMap);
     }
@@ -223,7 +215,7 @@ aspect Composer {
       HeaderOb h;
       for (HeaderTuple t : componentsObject.getHeaderTuples()) {
         h = t.getHeaderOb();
-        headerMap.put(t.getKey(), h.composeHeader(h, map));
+        headerMap.put(t.getKey(), h.reverseHeader(h, map));
       }
       components.setHeaders(headerMap);
     }
@@ -232,7 +224,7 @@ aspect Composer {
       SecuritySchemeOb s;
       for (SecuritySchemeTuple t : componentsObject.getSecuritySchemeTuples()) {
         s = t.getSecuritySchemeOb();
-        securitySchemeMap.put(t.getKey(), s.composeSecurityScheme(s, map));
+        securitySchemeMap.put(t.getKey(), s.reverseSecurityScheme(s, map));
       }
       components.setSecuritySchemes(securitySchemeMap);
     }
@@ -241,7 +233,7 @@ aspect Composer {
       LinkOb l;
       for (LinkTuple t : componentsObject.getLinkTuples()) {
         l = t.getLinkOb();
-        linkMap.put(t.getKey(), l.composeLink(l, map));
+        linkMap.put(t.getKey(), l.reverseLink(l, map));
       }
       components.setLinks(linkMap);
     }
@@ -250,7 +242,7 @@ aspect Composer {
       CallbackOb c;
       for (CallbackTuple t : componentsObject.getCallbackTuples()) {
         c = t.getCallbackOb();
-        callbackMap.put(t.getKey(), c.composeCallback(c, map));
+        callbackMap.put(t.getKey(), c.reverseCallback(c, map));
       }
       components.setCallbacks(callbackMap);
     }
@@ -264,47 +256,64 @@ aspect Composer {
     return components;
   }
 
-  public static Path PathItemObject.composePath (PathItemObject pathItem, Map<Object, ASTNode> map){
-    Path path = new Path();
-    PathItemObject p = (PathItemObject) pathItem;
+        syn PathItem PathItemOb.reversePath (PathItemOb pathItemOb);
+        eq PathItemReference.reversePath (PathItemOb pathItemOb) {
+        PathItem pathItem = new PathItem();
+        PathItemReference p = (PathItemReference) pathItemOb;
 
-    if (!p.getSummary().isEmpty())
-      path.setSummary(p.getSummary());
-    if (!p.getDescription().isEmpty())
-      path.setDescription(p.getDescription());
-    if (p.hasGet())
-      path.setGet(OperationObject.composeOperation(p.getGet().getOperationObject(), map));
-    if (p.hasPut())
-      path.setPut(OperationObject.composeOperation(p.getPut().getOperationObject(), map));
-    if (p.hasPost())
-      path.setPost(OperationObject.composeOperation(p.getPost().getOperationObject(), map));
-    if (p.hasDelete())
-      path.setDelete(OperationObject.composeOperation(p.getDelete().getOperationObject(), map));
-    if (p.hasOptions())
-      path.setOptions(OperationObject.composeOperation(p.getOptions().getOperationObject(), map));
-    if (p.hasHead())
-      path.setHead(OperationObject.composeOperation(p.getHead().getOperationObject(), map));
-    if (p.hasPatch())
-      path.setPatch(OperationObject.composeOperation(p.getPatch().getOperationObject(), map));
-    if (p.getNumServerObject() != 0) {
-      for (ServerObject s : p.getServerObjects())
-        path.addServer(ServerObject.composeServer(s, map));
-    }
-    if (p.getNumParameterOb() != 0) {
-      for (ParameterOb e : p.getParameterObs())
-        path.addParameter(e.composeParameter(e, map));
-    }
-    if (p.getNumExtension() != 0) {
-      Map<String, Object> extensionMap = new HashMap<>();
-      for (Extension e : p.getExtensions())
+        /* implement after reference implementation
+        if (!p.getRef().isEmpty()) {
+        try {
+        parameter.setReference(new org.openapi4j.core.model.v3.OAI3Context(new URL("")), new URL(""), p.getRef());
+        } catch (Exception e) {
+        e.printStackTrace();
+        }
+        }
+         */
+
+        return pathItem;
+        }
+        eq PathItemObject.reversePath (PathItemOb pathItemOb) {
+        Path path = new Path();
+        PathItemObject p = (PathItemObject) pathItem;
+
+        if (!p.getSummary().isEmpty())
+        path.setSummary(p.getSummary());
+        if (!p.getDescription().isEmpty())
+        path.setDescription(p.getDescription());
+        if (p.hasGet())
+        path.setGet(OperationObject.reverseOperation(p.getGet().getOperationObject(), map));
+        if (p.hasPut())
+        path.setPut(OperationObject.reverseOperation(p.getPut().getOperationObject(), map));
+        if (p.hasPost())
+        path.setPost(OperationObject.reverseOperation(p.getPost().getOperationObject(), map));
+        if (p.hasDelete())
+        path.setDelete(OperationObject.reverseOperation(p.getDelete().getOperationObject(), map));
+        if (p.hasOptions())
+        path.setOptions(OperationObject.reverseOperation(p.getOptions().getOperationObject(), map));
+        if (p.hasHead())
+        path.setHead(OperationObject.reverseOperation(p.getHead().getOperationObject(), map));
+        if (p.hasPatch())
+        path.setPatch(OperationObject.reverseOperation(p.getPatch().getOperationObject(), map));
+        if (p.getNumServerObject() != 0) {
+        for (ServerObject s : p.getServerObjects())
+        path.addServer(ServerObject.reverseServer(s, map));
+        }
+        if (p.getNumParameterOb() != 0) {
+        for (ParameterOb e : p.getParameterObs())
+        path.addParameter(e.reverseParameter(e, map));
+        }
+        if (p.getNumExtension() != 0) {
+        Map<String, Object> extensionMap = new HashMap<>();
+        for (Extension e : p.getExtensions())
         extensionMap.put(e.getKey(), e.getValue());
-      path.setExtensions(extensionMap);
-    }
+        path.setExtensions(extensionMap);
+        }
 
-    return path;
-  }
+        return path;
+        }
 
-  public static Operation OperationObject.composeOperation (OperationObject operationObject, Map<Object, ASTNode> map){
+  public static Operation OperationObject.reverseOperation (OperationObject operationObject){
     Operation operation = new Operation();
 
     if (operationObject.getNumTag() != 0) {
@@ -316,36 +325,36 @@ aspect Composer {
     if (!operationObject.getDescription().isEmpty())
       operation.setDescription(operationObject.getDescription());
     if (operationObject.hasExternalDocObject())
-      operation.setExternalDocs(ExternalDocObject.composeExternalDocs(operationObject.getExternalDocObject(), map));
+      operation.setExternalDocs(ExternalDocObject.reverseExternalDocs(operationObject.getExternalDocObject(), map));
     if (!operationObject.getOperationID().isEmpty())
       operation.setOperationId(operationObject.getOperationID());
     if (operationObject.getNumParameterOb() != 0) {
       for (ParameterOb p : operationObject.getParameterObs())
-        operation.addParameter(p.composeParameter(p, map));
+        operation.addParameter(p.reverseParameter(p, map));
     }
     if (operationObject.hasRequestBodyOb())
-      operation.setRequestBody(operationObject.getRequestBodyOb().composeRequestBody(operationObject.getRequestBodyOb(), map));
+      operation.setRequestBody(operationObject.getRequestBodyOb().reverseRequestBody(operationObject.getRequestBodyOb(), map));
     if (operationObject.getNumResponseTuple() != 0) {
       Map<String, Response> responseMap = new HashMap<>();
       for (ResponseTuple t : operationObject.getResponseTuples())
-        responseMap.put(t.getKey(), t.getResponseOb().composeResponse(t.getResponseOb(), map));
+        responseMap.put(t.getKey(), t.getResponseOb().reverseResponse(t.getResponseOb(), map));
       operation.setResponses(responseMap);
     }
     if (operationObject.getNumCallbackTuple() != 0) {
       Map<String, Callback> callbacks = new HashMap<>();
       for (CallbackTuple t : operationObject.getCallbackTuples())
-        callbacks.put(t.getKey(), t.getCallbackOb().composeCallback(t.getCallbackOb(), map));
+        callbacks.put(t.getKey(), t.getCallbackOb().reverseCallback(t.getCallbackOb(), map));
       operation.setCallbacks(callbacks);
     }
     if (operationObject.getDeprecatedBoolean() != null)
       operation.setDeprecated(operationObject.getDeprecatedBoolean());
     if (operationObject.getSecurityRequirementObjects() != null) {
       for (SecurityRequirementObject s : operationObject.getSecurityRequirementObjects())
-        operation.addSecurityRequirement(SecurityRequirementObject.composeSecurityRequirement(s, map));
+        operation.addSecurityRequirement(SecurityRequirementObject.reverseSecurityRequirement(s, map));
     }
     if (operationObject.getNumServerObject() != 0) {
       for (ServerObject s : operationObject.getServerObjects())
-        operation.addServer(ServerObject.composeServer(s, map));
+        operation.addServer(ServerObject.reverseServer(s, map));
     }
     if (operationObject.getNumExtension() != 0) {
       Map<String, Object> extensionMap = new HashMap<>();
@@ -357,7 +366,7 @@ aspect Composer {
     return operation;
   }
 
-  public static ExternalDocs ExternalDocObject.composeExternalDocs (ExternalDocObject externalDocObject, Map<Object, ASTNode> map){
+  public static ExternalDocs ExternalDocObject.reverseExternalDocs (ExternalDocObject externalDocObject){
     ExternalDocs externalDocs = new ExternalDocs();
 
     if (!externalDocObject.getDescription().isEmpty())
@@ -374,8 +383,8 @@ aspect Composer {
     return externalDocs;
   }
 
-  syn Parameter ParameterOb.composeParameter (ParameterOb parameterOb, Map<Object, ASTNode> map);
-  eq ParameterReference.composeParameter (ParameterOb parameterOb, Map<Object, ASTNode> map) {
+  syn Parameter ParameterOb.reverseParameter (ParameterOb parameterOb);
+  eq ParameterReference.reverseParameter (ParameterOb parameterOb) {
     Parameter parameter = new Parameter();
     ParameterReference p = (ParameterReference) parameterOb;
 
@@ -389,7 +398,7 @@ aspect Composer {
 
     return parameter;
   }
-  eq ParameterObject.composeParameter (ParameterOb parameterOb, Map<Object, ASTNode> map) {
+  eq ParameterObject.reverseParameter (ParameterOb parameterOb) {
     Parameter parameter = new Parameter();
     ParameterObject p = (ParameterObject) parameterOb;
 
@@ -410,19 +419,19 @@ aspect Composer {
     if (p.getExplode() != null)
       parameter.setExplode(p.getExplode());
     if (p.getSchemaOb() != null)
-      parameter.setSchema(p.getSchemaOb().composeSchema(p.getSchemaOb(), map));
+      parameter.setSchema(p.getSchemaOb().reverseSchema(p.getSchemaOb(), map));
     if (p.getExample() != null)
       parameter.setExample(p.getExample());
     if (p.getNumExampleTuple() != 0) {
       Map<String, Example> exampleMap = new HashMap<>();
       for (ExampleTuple t : p.getExampleTuples())
-        exampleMap.put(t.getKey(), ExampleObject.composeExample(t.getExampleObject(), map));
+        exampleMap.put(t.getKey(), ExampleObject.reverseExample(t.getExampleObject(), map));
       parameter.setExamples(exampleMap);
     }
     if (p.getNumContentTuple() != 0) {
       Map<String, MediaType> contentMap = new HashMap<>();
       for (ContentTuple t : p.getContentTuples())
-        contentMap.put(t.getKey(), MediaTypeObject.composeMediaType(t.getMediaTypeObject(), map));
+        contentMap.put(t.getKey(), MediaTypeObject.reverseMediaType(t.getMediaTypeObject(), map));
       parameter.setContentMediaTypes(contentMap);
     }
     if (p.getRequired() != null)
@@ -437,8 +446,8 @@ aspect Composer {
     return parameter;
   }
 
-  syn RequestBody RequestBodyOb.composeRequestBody (RequestBodyOb requestBodyOb, Map<Object, ASTNode> map);
-  eq RequestBodyReference.composeRequestBody (RequestBodyOb requestBodyOb, Map<Object, ASTNode> map) {
+  syn RequestBody RequestBodyOb.reverseRequestBody (RequestBodyOb requestBodyOb);
+  eq RequestBodyReference.reverseRequestBody (RequestBodyOb requestBodyOb) {
     RequestBody requestBody = new RequestBody();
     RequestBodyReference r = (RequestBodyReference) requestBodyOb;
 
@@ -452,14 +461,14 @@ aspect Composer {
 
     return requestBody;
   }
-  eq RequestBodyObject.composeRequestBody (RequestBodyOb requestBodyOb, Map<Object, ASTNode> map) {
+  eq RequestBodyObject.reverseRequestBody (RequestBodyOb requestBodyOb) {
     RequestBody requestBody = new RequestBody();
     RequestBodyObject r = (RequestBodyObject) requestBodyOb;
 
     if (r.getNumContentTuple() != 0) {
       Map<String, MediaType> contents = new HashMap<>();
       for (ContentTuple t : r.getContentTuples())
-        contents.put(t.getKey(), MediaTypeObject.composeMediaType(t.getMediaTypeObject(), map));
+        contents.put(t.getKey(), MediaTypeObject.reverseMediaType(t.getMediaTypeObject(), map));
       requestBody.setContentMediaTypes(contents);
     }
     if (!r.getDescription().isEmpty())
@@ -470,33 +479,33 @@ aspect Composer {
     return requestBody;
   }
 
-  public static MediaType MediaTypeObject.composeMediaType (MediaTypeObject mediaTypeObject, Map<Object, ASTNode> map){
+  public static MediaType MediaTypeObject.reverseMediaType (MediaTypeObject mediaTypeObject){
     MediaType mediaType = new MediaType();
     SchemaOb s;
 
     if (mediaTypeObject.getSchemaOb() != null) {
       s = mediaTypeObject.getSchemaOb();
-      mediaType.setSchema(s.composeSchema(s, map));
+      mediaType.setSchema(s.reverseSchema(s, map));
     }
     if (mediaTypeObject.getExample() != null)
       mediaType.setExample(mediaTypeObject.getExample());
     if (mediaTypeObject.getNumExampleTuple() != 0) {
       Map<String, Example> exampleMap = new HashMap<>();
       for (ExampleTuple t : mediaTypeObject.getExampleTuples())
-        exampleMap.put(t.getKey(), ExampleObject.composeExample(t.getExampleObject(), map));
+        exampleMap.put(t.getKey(), ExampleObject.reverseExample(t.getExampleObject(), map));
       mediaType.setExamples(exampleMap);
     }
     if (mediaTypeObject.getNumEncodingTuple() != 0) {
       Map<String, EncodingProperty> encodingMap = new HashMap<>();
       for (EncodingTuple t : mediaTypeObject.getEncodingTuples())
-        encodingMap.put(t.getKey(), EncodingObject.composeEncodingProperty(t.getEncodingObject(), map));
+        encodingMap.put(t.getKey(), EncodingObject.reverseEncodingProperty(t.getEncodingObject(), map));
       mediaType.setEncodings(encodingMap);
     }
 
     return mediaType;
   }
 
-  public static EncodingProperty EncodingObject.composeEncodingProperty (EncodingObject encodingObject, Map<Object, ASTNode> map){
+  public static EncodingProperty EncodingObject.reverseEncodingProperty (EncodingObject encodingObject){
     EncodingProperty encodingProperty = new EncodingProperty();
     HeaderOb h;
 
@@ -506,7 +515,7 @@ aspect Composer {
       Map<String, Header> headers = new HashMap<>();
       for (HeaderTuple t : encodingObject.getHeaderTuples()) {
         h = t.getHeaderOb();
-        headers.put(t.getKey(), h.composeHeader(h, map));
+        headers.put(t.getKey(), h.reverseHeader(h, map));
       }
       encodingProperty.setHeaders(headers);
     }
@@ -524,8 +533,8 @@ aspect Composer {
     return encodingProperty;
   }
 
-  syn Response ResponseOb.composeResponse (ResponseOb responseOb, Map<Object, ASTNode> map);
-  eq ResponseReference.composeResponse (ResponseOb responseOb, Map<Object, ASTNode> map){
+  syn Response ResponseOb.reverseResponse (ResponseOb responseOb);
+  eq ResponseReference.reverseResponse (ResponseOb responseOb){
     Response response = new Response();
     ResponseReference r = (ResponseReference) responseOb;
 
@@ -539,7 +548,7 @@ aspect Composer {
 
     return response;
   }
-  eq ResponseObject.composeResponse (ResponseOb responseOb, Map<Object, ASTNode> map){
+  eq ResponseObject.reverseResponse (ResponseOb responseOb){
     Response response = new Response();
     ResponseObject r = (ResponseObject) responseOb;
 
@@ -548,27 +557,27 @@ aspect Composer {
     if (r.getNumHeaderTuple() != 0) {
       Map<String, Header> headers = new HashMap<>();
       for (HeaderTuple t : r.getHeaderTuples())
-        headers.put(t.getKey(), t.getHeaderOb().composeHeader(t.getHeaderOb(), map));
+        headers.put(t.getKey(), t.getHeaderOb().reverseHeader(t.getHeaderOb(), map));
       response.setHeaders(headers);
     }
     if (r.getNumContentTuple() != 0) {
       Map<String, MediaType> contents = new HashMap<>();
       for (ContentTuple t : r.getContentTuples())
-        contents.put(t.getKey(), MediaTypeObject.composeMediaType(t.getMediaTypeObject(), map));
+        contents.put(t.getKey(), MediaTypeObject.reverseMediaType(t.getMediaTypeObject(), map));
       response.setContentMediaTypes(contents);
     }
     if (r.getNumLinkTuple() != 0) {
       Map<String, Link> links = new HashMap<>();
       for (LinkTuple t : r.getLinkTuples())
-        links.put(t.getKey(), t.getLinkOb().composeLink(t.getLinkOb(), map));
+        links.put(t.getKey(), t.getLinkOb().reverseLink(t.getLinkOb(), map));
       response.setLinks(links);
     }
 
     return response;
   }
 
-  syn Callback CallbackOb.composeCallback (CallbackOb callbackOb, Map<Object, ASTNode> map);
-  eq CallbackReference.composeCallback (CallbackOb callbackOb, Map<Object, ASTNode> map) {
+  syn Callback CallbackOb.reverseCallback (CallbackOb callbackOb);
+  eq CallbackReference.reverseCallback (CallbackOb callbackOb) {
     Callback callback = new Callback();
     CallbackReference c = (CallbackReference) callbackOb;
 
@@ -582,7 +591,7 @@ aspect Composer {
 
     return callback;
   }
-  eq CallbackObject.composeCallback (CallbackOb callbackOb, Map<Object, ASTNode> map) {
+  eq CallbackObject.reverseCallback (CallbackOb callbackOb) {
     Callback callback = new Callback();
     CallbackObject c = (CallbackObject) callbackOb;
 
@@ -591,7 +600,7 @@ aspect Composer {
       PathItemObject p;
       for (Expression e : c.getExpressions()) {
         p = e.getPathItemObject();
-        paths.put(e.getName(), p.composePath(p, map));
+        paths.put(e.getName(), p.reversePath(p, map));
       }
       callback.setCallbackPaths(paths);
     }
@@ -599,7 +608,7 @@ aspect Composer {
     return callback;
   }
 
-  public static Example ExampleObject.composeExample (ExampleObject exampleObject, Map<Object, ASTNode> map){
+  public static Example ExampleObject.reverseExample (ExampleObject exampleObject){
     Example example = new Example();
 
     if (!exampleObject.getSummary().isEmpty())
@@ -620,8 +629,8 @@ aspect Composer {
     return example;
   }
 
-  syn Link LinkOb.composeLink (LinkOb linkOb, Map<Object, ASTNode> map);
-  eq LinkReference.composeLink (LinkOb linkOb, Map<Object, ASTNode> map){
+  syn Link LinkOb.reverseLink (LinkOb linkOb);
+  eq LinkReference.reverseLink (LinkOb linkOb){
     Link link = new Link();
     LinkReference l = (LinkReference) linkOb;
 
@@ -635,7 +644,7 @@ aspect Composer {
 
     return link;
   }
-  eq LinkObject.composeLink (LinkOb linkOb, Map<Object, ASTNode> map){
+  eq LinkObject.reverseLink (LinkOb linkOb){
     Link link = new Link();
     LinkObject l = (LinkObject) linkOb;
 
@@ -652,13 +661,13 @@ aspect Composer {
     if (!l.getDescription().isEmpty())
       link.setDescription(l.getDescription());
     if (l.hasServerObject())
-      link.setServer(ServerObject.composeServer(l.getServerObject(), map));
+      link.setServer(ServerObject.reverseServer(l.getServerObject(), map));
 
     return link;
   }
 
-  syn Header HeaderOb.composeHeader (HeaderOb headerOb, Map<Object, ASTNode> map);
-  eq HeaderReference.composeHeader (HeaderOb headerOb, Map<Object, ASTNode> map) {
+  syn Header HeaderOb.reverseHeader (HeaderOb headerOb);
+  eq HeaderReference.reverseHeader (HeaderOb headerOb) {
     Header header = new Header();
     HeaderReference h = new HeaderReference();
 
@@ -672,7 +681,7 @@ aspect Composer {
 
     return header;
   }
-  eq HeaderObject.composeHeader (HeaderOb headerOb, Map<Object, ASTNode> map) {
+  eq HeaderObject.reverseHeader (HeaderOb headerOb) {
     Header header = new Header();
     HeaderObject h = (HeaderObject) headerOb;
 
@@ -691,22 +700,22 @@ aspect Composer {
     if (h.getNumExampleTuple() != 0) {
       Map<String, Example> examples = new HashMap<>();
       for (ExampleTuple t : h.getExampleTuples())
-        examples.put(t.getKey(), ExampleObject.composeExample(t.getExampleObject(), map));
+        examples.put(t.getKey(), ExampleObject.reverseExample(t.getExampleObject(), map));
       header.setExample(examples);
     }
     if (h.getNumContentTuple() != 0) {
       Map<String, MediaType> contents = new HashMap<>();
       for (ContentTuple t : h.getContentTuples())
-        contents.put(t.getKey(), MediaTypeObject.composeMediaType(t.getMediaTypeObject(), map));
+        contents.put(t.getKey(), MediaTypeObject.reverseMediaType(t.getMediaTypeObject(), map));
       header.setContentMediaTypes(contents);
     }
     if (h.hasSchemaOb())
-      header.setSchema(h.getSchemaOb().composeSchema(h.getSchemaOb(), map));
+      header.setSchema(h.getSchemaOb().reverseSchema(h.getSchemaOb(), map));
 
     return header;
   }
 
-  public static org.openapi4j.parser.model.v3.Tag TagObject.composeTag (TagObject tagObject, Map<Object, ASTNode> map){
+  public static org.openapi4j.parser.model.v3.Tag TagObject.reverseTag (TagObject tagObject){
     org.openapi4j.parser.model.v3.Tag tag = new org.openapi4j.parser.model.v3.Tag();
 
     tag.setName(tagObject.getName());
@@ -714,7 +723,7 @@ aspect Composer {
     if (!tagObject.getDescription().isEmpty())
       tag.setDescription(tagObject.getDescription());
     if (tagObject.hasExternalDocObject())
-      tag.setExternalDocs(ExternalDocObject.composeExternalDocs(tagObject.getExternalDocObject(), map));
+      tag.setExternalDocs(ExternalDocObject.reverseExternalDocs(tagObject.getExternalDocObject(), map));
     if (tagObject.getNumExtension() != 0) {
       Map<String, Object> extensionMap = new HashMap<>();
       for (Extension e : tagObject.getExtensions())
@@ -725,8 +734,8 @@ aspect Composer {
     return tag;
   }
 
-  syn org.openapi4j.parser.model.v3.Schema SchemaOb.composeSchema (SchemaOb schemaOb, Map<Object, ASTNode> map);
-  eq SchemaReference.composeSchema (SchemaOb schemaOb, Map<Object, ASTNode> map){
+  syn org.openapi4j.parser.model.v3.Schema SchemaOb.reverseSchema (SchemaOb schemaOb);
+  eq SchemaReference.reverseSchema (SchemaOb schemaOb){
     org.openapi4j.parser.model.v3.Schema schema = new org.openapi4j.parser.model.v3.Schema();
     SchemaReference s = (SchemaReference) schemaOb;
 
@@ -740,16 +749,16 @@ aspect Composer {
 
     return schema;
   }
-  eq SchemaObject.composeSchema (SchemaOb schemaOb, Map<Object, ASTNode> map){
+  eq SchemaObject.reverseSchema (SchemaOb schemaOb){
     org.openapi4j.parser.model.v3.Schema schema = new org.openapi4j.parser.model.v3.Schema();
     SchemaObject s = (SchemaObject) schemaOb;
 
     if (s.hasAdditionalProperties()) {
       SchemaOb o = s.getAdditionalProperties().getSchemaOb();
       if (o instanceof SchemaObject)
-        schema.setAdditionalProperties(((SchemaObject) o).composeSchema(o, map));
+        schema.setAdditionalProperties(((SchemaObject) o).reverseSchema(o, map));
       else
-        schema.setAdditionalProperties(((SchemaReference) o).composeSchema(o, map));
+        schema.setAdditionalProperties(((SchemaReference) o).reverseSchema(o, map));
     }
     if (s.getAdditionalPropertiesAllowed() != null)
       schema.setAdditionalPropertiesAllowed(s.getAdditionalPropertiesAllowed());
@@ -760,7 +769,7 @@ aspect Composer {
     if (s.getDeprecatedBoolean() != null)
       schema.setDeprecated(s.getDeprecatedBoolean());
     if (s.hasDiscriminatorObject())
-      schema.setDiscriminator(DiscriminatorObject.composeDiscriminator(s.getDiscriminatorObject(), map));
+      schema.setDiscriminator(DiscriminatorObject.reverseDiscriminator(s.getDiscriminatorObject(), map));
     if (s.getNumEnumObj() != 0) {
       for (EnumObj e : s.getEnumObjs())
         schema.addEnum(e.getEnumOb());
@@ -773,14 +782,14 @@ aspect Composer {
     if (s.getExclusiveMinimum() != null)
       schema.setExclusiveMinimum(s.getExclusiveMinimum());
     if (s.hasExternalDocObject())
-      schema.setExternalDocs(ExternalDocObject.composeExternalDocs(s.getExternalDocObject(), map));
+      schema.setExternalDocs(ExternalDocObject.reverseExternalDocs(s.getExternalDocObject(), map));
     if (!s.getFormat().isEmpty())
       schema.setFormat(s.getFormat());
     if (s.hasItemsSchema()) {
       if (s.getItemsSchema().getSchemaOb() instanceof SchemaObject)
-        schema.setItemsSchema(((SchemaObject) s.getItemsSchema().getSchemaOb()).composeSchema(s.getItemsSchema().getSchemaOb(), map));
+        schema.setItemsSchema(((SchemaObject) s.getItemsSchema().getSchemaOb()).reverseSchema(s.getItemsSchema().getSchemaOb(), map));
       else
-        schema.setItemsSchema(((SchemaReference) s.getItemsSchema().getSchemaOb()).composeSchema(s.getItemsSchema().getSchemaOb(), map));
+        schema.setItemsSchema(((SchemaReference) s.getItemsSchema().getSchemaOb()).reverseSchema(s.getItemsSchema().getSchemaOb(), map));
     }
     if (s.getMaximum() != null)
       schema.setMaximum(s.getMaximum());
@@ -802,11 +811,10 @@ aspect Composer {
       schema.setMultipleOf(s.getMultipleOf());
     if (s.hasNotSchema()) {
       if (s.getNotSchema().getSchemaOb() instanceof SchemaObject)
-        schema.setNotSchema(((SchemaObject) s.getNotSchema().getSchemaOb()).composeSchema(s.getNotSchema().getSchemaOb(), map));
+        schema.setNotSchema(((SchemaObject) s.getNotSchema().getSchemaOb()).reverseSchema(s.getNotSchema().getSchemaOb(), map));
       else
-        schema.setNotSchema(((SchemaReference) s.getNotSchema().getSchemaOb()).composeSchema(s.getNotSchema().getSchemaOb(), map));
+        schema.setNotSchema(((SchemaReference) s.getNotSchema().getSchemaOb()).reverseSchema(s.getNotSchema().getSchemaOb(), map));
     }
-    /*
     if (s.getNullable() != null)
       schema.setNullable(s.getNullable());
     if (!s.getPattern().isEmpty())
@@ -815,9 +823,9 @@ aspect Composer {
       Map<String, org.openapi4j.parser.model.v3.Schema> properties = new HashMap<>();
       for (PropertyItem p : s.getPropertyItemList()) {
         if (p.getSchemaOb() instanceof SchemaObject)
-          properties.put(p.getName(), ((SchemaObject) p.getSchemaOb()).composeSchema(p.getSchemaOb(), map));
+          properties.put(p.getName(), ((SchemaObject) p.getSchemaOb()).reverseSchema(p.getSchemaOb(), map));
         else
-          properties.put(p.getName(), ((SchemaReference) p.getSchemaOb()).composeSchema(p.getSchemaOb(), map));
+          properties.put(p.getName(), ((SchemaReference) p.getSchemaOb()).reverseSchema(p.getSchemaOb(), map));
       }
       schema.setProperties(properties);
     }
@@ -828,25 +836,25 @@ aspect Composer {
     if (s.getNumAllOfSchema() != 0) {
       for (AllOfSchema a : s.getAllOfSchemas()) {
         if (a.getSchemaOb() instanceof SchemaObject)
-          schema.addAllOfSchema(((SchemaObject) a.getSchemaOb()).composeSchema(a.getSchemaOb(), map));
+          schema.addAllOfSchema(((SchemaObject) a.getSchemaOb()).reverseSchema(a.getSchemaOb(), map));
         else
-          schema.addAllOfSchema(((SchemaReference) a.getSchemaOb()).composeSchema(a.getSchemaOb(), map));
+          schema.addAllOfSchema(((SchemaReference) a.getSchemaOb()).reverseSchema(a.getSchemaOb(), map));
       }
     }
     if (s.getNumAnyOfSchema() != 0) {
       for (AnyOfSchema a : s.getAnyOfSchemas()) {
         if (a.getSchemaOb() instanceof SchemaObject)
-          schema.addAnyOfSchema(((SchemaObject) a.getSchemaOb()).composeSchema(a.getSchemaOb(), map));
+          schema.addAnyOfSchema(((SchemaObject) a.getSchemaOb()).reverseSchema(a.getSchemaOb(), map));
         else
-          schema.addAnyOfSchema(((SchemaReference) a.getSchemaOb()).composeSchema(a.getSchemaOb(), map));
+          schema.addAnyOfSchema(((SchemaReference) a.getSchemaOb()).reverseSchema(a.getSchemaOb(), map));
       }
     }
     if (s.getNumOneOfSchema() != 0) {
       for (OneOfSchema o : s.getOneOfSchemas()) {
         if (o.getSchemaOb() instanceof SchemaObject)
-          schema.addOneOfSchema(((SchemaObject) o.getSchemaOb()).composeSchema(o.getSchemaOb(), map));
+          schema.addOneOfSchema(((SchemaObject) o.getSchemaOb()).reverseSchema(o.getSchemaOb(), map));
         else
-          schema.addOneOfSchema(((SchemaReference) o.getSchemaOb()).composeSchema(o.getSchemaOb(), map));
+          schema.addOneOfSchema(((SchemaReference) o.getSchemaOb()).reverseSchema(o.getSchemaOb(), map));
       }
     }
     if (s.getReadOnly() != null)
@@ -860,7 +868,7 @@ aspect Composer {
     if (s.getUniqueItems() != null)
       schema.setUniqueItems(s.getUniqueItems());
     if (s.hasXmlObject())
-      schema.setXml(XmlObject.composeXml(s.getXmlObject(), map));
+      schema.setXml(XmlObject.reverseXml(s.getXmlObject(), map));
     if (s.getNumExtension() != 0) {
       Map<String, Object> extensionMap = new HashMap<>();
       for (Extension e : s.getExtensions())
@@ -871,7 +879,7 @@ aspect Composer {
     return schema;
   }
 
-  public static Discriminator DiscriminatorObject.composeDiscriminator (DiscriminatorObject discriminatorObject, Map<Object, ASTNode> map) {
+  public static Discriminator DiscriminatorObject.reverseDiscriminator (DiscriminatorObject discriminatorObject) {
     Discriminator discriminator = new Discriminator();
 
     if (!discriminatorObject.getPropertyName().isEmpty())
@@ -886,7 +894,7 @@ aspect Composer {
     return discriminator;
   }
 
-  public static Xml XmlObject.composeXml (XmlObject xmlObject, Map<Object, ASTNode> map) {
+  public static Xml XmlObject.reverseXml (XmlObject xmlObject) {
     Xml xml = new Xml();
 
     if (!xmlObject.getName().isEmpty())
@@ -903,8 +911,8 @@ aspect Composer {
     return xml;
   }
 
-  syn SecurityScheme SecuritySchemeOb.composeSecurityScheme (SecuritySchemeOb securitySchemeOb, Map<Object, ASTNode> map);
-  eq SecuritySchemeReference.composeSecurityScheme (SecuritySchemeOb securitySchemeOb, Map<Object, ASTNode> map){
+  syn SecurityScheme SecuritySchemeOb.reverseSecurityScheme (SecuritySchemeOb securitySchemeOb);
+  eq SecuritySchemeReference.reverseSecurityScheme (SecuritySchemeOb securitySchemeOb){
     SecurityScheme securityScheme = new SecurityScheme();
     SecuritySchemeReference s = (SecuritySchemeReference) securitySchemeOb;
 
@@ -918,7 +926,7 @@ aspect Composer {
 
     return securityScheme;
   }
-  eq SecuritySchemeObject.composeSecurityScheme (SecuritySchemeOb securitySchemeOb, Map<Object, ASTNode> map){
+  eq SecuritySchemeObject.reverseSecurityScheme (SecuritySchemeOb securitySchemeOb){
     SecurityScheme securityScheme = new SecurityScheme();
     SecuritySchemeObject s = (SecuritySchemeObject) securitySchemeOb;
 
@@ -933,7 +941,7 @@ aspect Composer {
     if (!s.getOpenIdConnectUrl().isEmpty())
       securityScheme.setOpenIdConnectUrl(s.getOpenIdConnectUrl());
     if (s.getOAuthFlowsObject() != null)
-      securityScheme.setFlows(OAuthFlowsObject.composeOAuthFlows(s.getOAuthFlowsObject(), map));
+      securityScheme.setFlows(OAuthFlowsObject.reverseOAuthFlows(s.getOAuthFlowsObject(), map));
     if (!s.getDescription().isEmpty())
       securityScheme.setDescription(s.getDescription());
     if (!s.getBearerFormat().isEmpty())
@@ -948,22 +956,22 @@ aspect Composer {
     return securityScheme;
   }
 
-  public static OAuthFlows OAuthFlowsObject.composeOAuthFlows (OAuthFlowsObject oAuthFlowsObject, Map<Object, ASTNode> map){
+  public static OAuthFlows OAuthFlowsObject.reverseOAuthFlows (OAuthFlowsObject oAuthFlowsObject){
     OAuthFlows oAuthFlows = new OAuthFlows();
 
     if (oAuthFlowsObject.hasImplicit())
-      oAuthFlows.setImplicit(OAuthFlowObject.composeOAuthFlow(oAuthFlowsObject.getImplicit().getOAuthFlowObject(), map));
+      oAuthFlows.setImplicit(OAuthFlowObject.reverseOAuthFlow(oAuthFlowsObject.getImplicit().getOAuthFlowObject(), map));
     if (oAuthFlowsObject.hasPassword())
-      oAuthFlows.setPassword(OAuthFlowObject.composeOAuthFlow(oAuthFlowsObject.getPassword().getOAuthFlowObject(), map));
+      oAuthFlows.setPassword(OAuthFlowObject.reverseOAuthFlow(oAuthFlowsObject.getPassword().getOAuthFlowObject(), map));
     if (oAuthFlowsObject.hasClientCredentials())
-      oAuthFlows.setClientCredentials(OAuthFlowObject.composeOAuthFlow(oAuthFlowsObject.getClientCredentials().getOAuthFlowObject(), map));
+      oAuthFlows.setClientCredentials(OAuthFlowObject.reverseOAuthFlow(oAuthFlowsObject.getClientCredentials().getOAuthFlowObject(), map));
     if (oAuthFlowsObject.hasAuthorizationCode())
-      oAuthFlows.setAuthorizationCode(OAuthFlowObject.composeOAuthFlow(oAuthFlowsObject.getAuthorizationCode().getOAuthFlowObject(), map));
+      oAuthFlows.setAuthorizationCode(OAuthFlowObject.reverseOAuthFlow(oAuthFlowsObject.getAuthorizationCode().getOAuthFlowObject(), map));
 
     return oAuthFlows;
   }
 
-  public static OAuthFlow OAuthFlowObject.composeOAuthFlow (OAuthFlowObject oAuthFlowObject, Map<Object, ASTNode> map){
+  public static OAuthFlow OAuthFlowObject.reverseOAuthFlow (OAuthFlowObject oAuthFlowObject){
     OAuthFlow oAuthFlow = new OAuthFlow();
     Map<String, String> scopes = new HashMap<>();
 
@@ -981,7 +989,7 @@ aspect Composer {
     return oAuthFlow;
   }
 
-  public static SecurityRequirement SecurityRequirementObject.composeSecurityRequirement (SecurityRequirementObject securityRequirementObject, Map<Object, ASTNode> map){
+  public static SecurityRequirement SecurityRequirementObject.reverseSecurityRequirement (SecurityRequirementObject securityRequirementObject){
     SecurityRequirement securityRequirement = new SecurityRequirement();
 
     if (securityRequirementObject.getNumSecurityRequirementTuple() != 0) {
@@ -998,5 +1006,3 @@ aspect Composer {
     return securityRequirement;
   }
 }
-
- */
