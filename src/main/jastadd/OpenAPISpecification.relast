@@ -224,7 +224,7 @@ rel ExampleObject.ex* -> Extension;
 abstract LinkOb;
 LinkReference : LinkOb ::= <Ref> <Summary> <Description>;
 LinkObject : LinkOb ::= <OperationRef> <OperationID> <LinkRequestBody:Object> <Description>;
-LinkParameterTuple ::= <Key> <Value:Object>;
+LinkParameterTuple ::= <Key> <Value>;
 
 rel LinkReference.r -> LinkObject;
 rel LinkObject.l* -> LinkParameterTuple;
