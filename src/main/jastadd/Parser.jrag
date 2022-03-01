@@ -22,17 +22,17 @@ public static OpenAPIObject OpenAPIObject.parseOpenAPI(OpenAPI api) {
         if (api.getOpenapi() != null)
         openapi.setOpenAPI(api.getOpenapi());
         if (api.getInfo() != null)
-        openapi.set_impl_i(InfoObject.parseInfo(api.getInfo()));
+        openapi.setI(InfoObject.parseInfo(api.getInfo()));
         if (api.getPaths() != null) {
         for (String key : api.getPaths().keySet())
         openapi.addP(new PathsObject(key, PathItemObject.parsePath(api.getPaths().get(key))));
         }
         if (api.getServers() != null) {
         for (io.swagger.v3.oas.models.servers.Server s : api.getServers())
-        openapi.addS(ServerObject.parseServer(s));
+        openapi.addServ(ServerObject.parseServer(s));
         }
         if (api.getComponents() != null)
-        openapi.set_impl_c(ComponentsObject.parseComponents(api.getComponents()));
+        openapi.setC(ComponentsObject.parseComponents(api.getComponents()));
         if (api.getSecurity() != null) {
         for (io.swagger.v3.oas.models.security.SecurityRequirement s : api.getSecurity())
         openapi.addSr(SecurityRequirementObject.parseSecurityRequirement(s));
@@ -42,7 +42,7 @@ public static OpenAPIObject OpenAPIObject.parseOpenAPI(OpenAPI api) {
         openapi.addT(TagObject.parseTag(t));
         }
         if (api.getExternalDocs() != null)
-        openapi.set_impl_e(ExternalDocObject.parseExternalDocs(api.getExternalDocs()));
+        openapi.setE(ExternalDocObject.parseExternalDocs(api.getExternalDocs()));
         if (api.getExtensions().size() != 0) {
         for (String key : api.getExtensions().keySet())
         openapi.addEx(new Extension(key, api.getExtensions().get(key)));
@@ -67,9 +67,9 @@ public static InfoObject InfoObject.parseInfo(io.swagger.v3.oas.models.info.Info
         if (info.getTermsOfService() != null)
         infoObject.setTermsOfService(info.getTermsOfService());
         if (info.getContact() != null)
-        infoObject.set_impl_c(ContactObject.parseContact(info.getContact()));
+        infoObject.setC(ContactObject.parseContact(info.getContact()));
         if (info.getLicense() != null)
-        infoObject.set_impl_l(LicenseObject.parseLicense(info.getLicense()));
+        infoObject.setL(LicenseObject.parseLicense(info.getLicense()));
         if (info.getExtensions().size() != 0) {
         for (String key : info.getExtensions().keySet())
         infoObject.addEx(new Extension(key, info.getExtensions().get(key)));
@@ -229,42 +229,42 @@ public static PathItemOb PathItemOb.parsePath(PathItem path) {
         pathItem.setDescription(path.getDescription());
         if (path.getGet() != null) {
         Get get = new Get();
-        get.set_impl_o(OperationObject.parseOperation(path.getGet()));
+        get.setO(OperationObject.parseOperation(path.getGet()));
         pathItem.setG(get);
         }
         if (path.getPut() != null) {
         Put put = new Put();
-        put.set_impl_o(OperationObject.parseOperation(path.getPut()));
-        pathItem.setPut(put);
+        put.setO(OperationObject.parseOperation(path.getPut()));
+        pathItem.setPutOb(put);
         }
         if (path.getPost() != null) {
         Post post = new Post();
-        post.set_impl_o(OperationObject.parseOperation(path.getPost()));
-        pathItem.setPost(post);
+        post.setO(OperationObject.parseOperation(path.getPost()));
+        pathItem.setPostOb(post);
         }
         if (path.getDelete() != null) {
         Delete delete = new Delete();
-        delete.set_impl_o(OperationObject.parseOperation(path.getDelete()));
-        pathItem.set_impl_d(delete);
+        delete.setO(OperationObject.parseOperation(path.getDelete()));
+        pathItem.setD(delete);
         }
         if (path.getOptions() != null) {
         Options options = new Options();
-        options.set_impl_o(OperationObject.parseOperation(path.getOptions()));
-        pathItem.set_impl_o(options);
+        options.setO(OperationObject.parseOperation(path.getOptions()));
+        pathItem.setO(options);
         }
         if (path.getHead() != null) {
         Head head = new Head();
-        head.set_impl_o(OperationObject.parseOperation(path.getHead()));
+        head.setO(OperationObject.parseOperation(path.getHead()));
         pathItem.setH(head);
         }
         if (path.getPatch() != null) {
         Patch patch = new Patch();
-        patch.set_impl_o(OperationObject.parseOperation(path.getPatch()));
-        pathItem.setP(patch);
+        patch.setO(OperationObject.parseOperation(path.getPatch()));
+        pathItem.setPatchOb(patch);
         }
         if (path.getTrace() != null) {
         Trace trace = new Trace();
-        trace.set_impl_o(OperationObject.parseOperation(path.getTrace()));
+        trace.setO(OperationObject.parseOperation(path.getTrace()));
         pathItem.setT(trace);
         }
         if (path.getServers() != null) {
@@ -300,7 +300,7 @@ public static OperationObject OperationObject.parseOperation(io.swagger.v3.oas.m
         if (operation.getDescription() != null)
         operationObject.setDescription(operation.getDescription());
         if (operation.getExternalDocs() != null)
-        operationObject.set_impl_ed(ExternalDocObject.parseExternalDocs(operation.getExternalDocs()));
+        operationObject.setEd(ExternalDocObject.parseExternalDocs(operation.getExternalDocs()));
         if (operation.getOperationId() != null)
         operationObject.setOperationID(operation.getOperationId());
         if (operation.getParameters() != null) {
@@ -308,12 +308,12 @@ public static OperationObject OperationObject.parseOperation(io.swagger.v3.oas.m
         operationObject.addP(ParameterOb.parseParameter(p));
         }
         if (operation.getRequestBody() != null)
-        operationObject.set_impl_rb(RequestBodyOb.parseRequestBody(operation.getRequestBody()));
+        operationObject.setRb(RequestBodyOb.parseRequestBody(operation.getRequestBody()));
         if (operation.getResponses().size() != 0) {
         ResponsesObject r = new ResponsesObject();
         for (String key : operation.getResponses().keySet())
         r.addR(new ResponseTuple(key, ResponseObject.parseResponse(operation.getResponses().get(key))));
-        operationObject.set_impl_r(r);
+        operationObject.setR(r);
         }
         if (operation.getCallbacks().size() != 0) {
         for (String key : operation.getCallbacks().keySet())
@@ -380,7 +380,7 @@ public static ParameterOb ParameterOb.parseParameter(Parameter parameter) {
         if (parameter.getAllowReserved() != null)
         parameterObject.setAllowReserved(parameter.getAllowReserved());
         if (parameter.getSchema() != null)
-        parameterObject.set_impl_s(SchemaOb.parseSchema(parameter.getSchema()));
+        parameterObject.setSchema(SchemaOb.parseSchema(parameter.getSchema()));
         if (parameter.getExample() != null)
         parameterObject.setExample(parameter.getExample());
         if (parameter.getExamples() != null) {
@@ -437,7 +437,7 @@ public static MediaTypeObject MediaTypeObject.parseMediaType(MediaType mediaType
         MediaTypeObject mediaTypeObject = new MediaTypeObject();
 
         if (mediaType.getSchema() != null)
-        mediaTypeObject.set_impl_s(SchemaObject.parseSchema(mediaType.getSchema()));
+        mediaTypeObject.setS(SchemaObject.parseSchema(mediaType.getSchema()));
         if (mediaType.getExample() != null)
         mediaTypeObject.setExample(mediaType.getExample());
         if (mediaType.getExamples().size() != 0) {
@@ -587,7 +587,7 @@ public static LinkOb LinkOb.parseLink(Link link) {
         if (link.getDescription() != null)
         linkObject.setDescription(link.getDescription());
         if (link.getServer() != null)
-        linkObject.set_impl_s(ServerObject.parseServer(link.getServer()));
+        linkObject.setS(ServerObject.parseServer(link.getServer()));
         if (link.getExtensions().size() != 0) {
         for (String key : link.getExtensions().keySet())
         linkObject.addEx(new Extension(key, link.getExtensions().get(key)));
@@ -632,7 +632,7 @@ public static HeaderOb HeaderOb.parseHeader(Header header) {
         headerObject.addC(new ContentTuple(key, MediaTypeObject.parseMediaType(header.getContent().get(key))));
         }
         if (header.getSchema() != null)
-        headerObject.set_impl_s(SchemaOb.parseSchema(header.getSchema()));
+        headerObject.setS(SchemaOb.parseSchema(header.getSchema()));
         if (header.getExtensions() != null) {
         for (String key : header.getExtensions().keySet())
         headerObject.addEx(new Extension(key, header.getExtensions().get(key)));
@@ -650,7 +650,7 @@ public static TagObject TagObject.parseTag(io.swagger.v3.oas.models.tags.Tag tag
         if (tag.getDescription() != null)
         tagObject.setDescription(tag.getDescription());
         if (tag.getExternalDocs() != null)
-        tagObject.set_impl_e(ExternalDocObject.parseExternalDocs(tag.getExternalDocs()));
+        tagObject.setE(ExternalDocObject.parseExternalDocs(tag.getExternalDocs()));
         if (tag.getExtensions().size() != 0) {
         for (String key : tag.getExtensions().keySet())
         tagObject.addEx(new Extension(key, tag.getExtensions().get(key)));
@@ -723,8 +723,8 @@ public static SchemaOb SchemaOb.parseSchema (Schema<?> schema) {
         schemaObject.setMultipleOf(schema.getMultipleOf());
         if (schema.getNot() != null) {
         NotSchema notSchema = new NotSchema();
-        notSchema.set_impl_s(parseSchema(schema.getNot()));
-        schemaObject.set_impl_n(notSchema);
+        notSchema.setSchema(parseSchema(schema.getNot()));
+        schemaObject.setN(notSchema);
         }
         if (schema.getPattern() != null)
         schemaObject.setPattern(schema.getPattern());
@@ -875,20 +875,20 @@ public static OAuthFlowsObject OAuthFlowsObject.parseOAuthFlows(OAuthFlows oAuth
         AuthorizationCode authorizationCode = new AuthorizationCode();
 
         if (oAuthFlows.getImplicit() != null) {
-        implicit.set_impl_o(OAuthFlowObject.parseOAuthFlow(oAuthFlows.getImplicit()));
-        oAuthFlowsObject.set_impl_i(implicit);
+        implicit.setO(OAuthFlowObject.parseOAuthFlow(oAuthFlows.getImplicit()));
+        oAuthFlowsObject.setI(implicit);
         }
         if (oAuthFlows.getPassword() != null) {
-        password.set_impl_o(OAuthFlowObject.parseOAuthFlow(oAuthFlows.getPassword()));
-        oAuthFlowsObject.set_impl_p(password);
+        password.setO(OAuthFlowObject.parseOAuthFlow(oAuthFlows.getPassword()));
+        oAuthFlowsObject.setP(password);
         }
         if (oAuthFlows.getClientCredentials() != null) {
-        clientCredentials.set_impl_o(OAuthFlowObject.parseOAuthFlow(oAuthFlows.getClientCredentials()));
-        oAuthFlowsObject.set_impl_c(clientCredentials);
+        clientCredentials.setO(OAuthFlowObject.parseOAuthFlow(oAuthFlows.getClientCredentials()));
+        oAuthFlowsObject.setC(clientCredentials);
         }
         if (oAuthFlows.getAuthorizationCode() != null) {
-        authorizationCode.set_impl_o(OAuthFlowObject.parseOAuthFlow(oAuthFlows.getAuthorizationCode()));
-        oAuthFlowsObject.set_impl_a(authorizationCode);
+        authorizationCode.setO(OAuthFlowObject.parseOAuthFlow(oAuthFlows.getAuthorizationCode()));
+        oAuthFlowsObject.setA(authorizationCode);
         }
         if (oAuthFlows.getExtensions() != null) {
         for (String key : oAuthFlows.getExtensions().keySet())
@@ -922,10 +922,10 @@ public static SecurityRequirementObject SecurityRequirementObject.parseSecurityR
 
         if (securityRequirement != null) {
         for (String key : securityRequirement.keySet()) {
-        List<SecurityRequirementValue> values = new ArrayList<>();
+        JastAddList<SecurityRequirementValue> values = new JastAddList<>();
         for (String v : securityRequirement.get(key))
         values.add(new SecurityRequirementValue(v));
-        securityRequirementObject.addT(new SecurityRequirementTuple(key, values));
+        securityRequirementObject.addTuple(new SecurityRequirementTuple(key, values));
         }
         }
 
