@@ -26,13 +26,15 @@ public class OpenAPIMain {
     File resource = new File("./src/main/resources");
 
     // init parser
-    String fileName = "./src/main/resources/3.1/basicOAS31.yaml";
+    String fileName = "./src/main/resources/3.0/petstore.yaml";
     ParseOptions options = new ParseOptions();
     options.setResolve(true);
     options.setResolveFully(true);
     options.setAllowEmptyString(false);
-    SwaggerParseResult result = new OpenAPIParser().readLocation(fileName, null, options);
+    SwaggerParseResult result = new OpenAPIParser().readLocation(fileName, null, null);
     OpenAPI openAPI = result.getOpenAPI();
+
+    //System.out.println(openAPI.getPaths().get("/pet").getPost().getRequestBody().get$ref());
 
     // Yaml String
     System.out.println(Yaml.mapper().writerWithDefaultPrettyPrinter().writeValueAsString(openAPI));
