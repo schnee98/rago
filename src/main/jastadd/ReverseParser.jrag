@@ -1,3 +1,4 @@
+import java.math.BigDecimal;
 import java.util.*;
 aspect ReverseParser{
 
@@ -15,10 +16,10 @@ public static OpenAPI OpenAPIObject.reverseOpenAPI(OpenAPIObject openapi){
         api.setServers(servers);
         }
         if(openapi.getNumP()!=0){
-            Paths paths=new Paths();
+        Paths paths=new Paths();
         for(PathsObject p:openapi.getPList()){
-        //if (p.getP() instanceof PathItemObject)
-        //paths.addPathItem(p.getRef(), PathIte)
+        if (p.getP() instanceof PathItemObject)
+        paths.addPathItem(p.getRef(), p.getP().reversePath(p.getP()));
         }
         api.setPaths(paths);
         }
@@ -406,8 +407,15 @@ public static io.swagger.v3.oas.models.ExternalDocumentation ExternalDocObject.r
         parameter.setDescription(p.getDescription());
         if(p.getDeprecatedBoolean()!=null)
         parameter.setDeprecated(p.getDeprecatedBoolean());
-        if(!p.getStyle().isEmpty())
-        parameter.setStyle(Parameter.StyleEnum.valueOf(p.getStyle()));
+        switch (p.getStyle()){
+        case "matrix": parameter.setStyle(Parameter.StyleEnum.MATRIX); break;
+        case "label": parameter.setStyle(Parameter.StyleEnum.LABEL); break;
+        case "form": parameter.setStyle(Parameter.StyleEnum.FORM); break;
+        case "simple": parameter.setStyle(Parameter.StyleEnum.SIMPLE); break;
+        case "spaceDelimited": parameter.setStyle(Parameter.StyleEnum.SPACEDELIMITED); break;
+        case "pipeDelimited": parameter.setStyle(Parameter.StyleEnum.PIPEDELIMITED); break;
+        case "deepObject": parameter.setStyle(Parameter.StyleEnum.DEEPOBJECT); break;
+        }
         if(p.getAllowReserved()!=null)
         parameter.setAllowReserved(p.getAllowReserved());
         if(p.getExplode()!=null)
@@ -663,8 +671,9 @@ public static Example ExampleObject.reverseExample(ExampleObject exampleObject){
         header.setRequired(h.getRequired());
         if(!h.getDescription().isEmpty())
         header.setDescription(h.getDescription());
-        if(!h.getStyle().isEmpty())
-        header.setStyle(Header.StyleEnum.valueOf(h.getStyle()));
+        switch (h.getStyle()){
+        case "simple": header.setStyle(Header.StyleEnum.SIMPLE); break;
+        }
         if(h.getExplode()!=null)
         header.setExplode(h.getExplode());
         //if (h.getAllowReserved() != null)
@@ -721,133 +730,102 @@ public static io.swagger.v3.oas.models.tags.Tag TagObject.reverseTag(TagObject t
         return schema;
   }
   eq SchemaObject.reverseSchema (SchemaOb schemaOb){
-        io.swagger.v3.oas.models.media.Schema schema=new io.swagger.v3.oas.models.media.Schema();
+        io.swagger.v3.oas.models.media.Schema<Object> schema=new io.swagger.v3.oas.models.media.Schema<Object>();
         SchemaObject s=(SchemaObject)schemaOb;
 
-            /*
-            if(s.hasAdditionalProperties()){
-            SchemaOb o=s.getAdditionalProperties().getSchemaOb();
-            if(o instanceof SchemaObject)
-            schema.setAdditionalProperties(((SchemaObject)o).reverseSchema(o,map));
-            else
-            schema.setAdditionalProperties(((SchemaReference)o).reverseSchema(o,map));
-            }
-            if(s.getAdditionalPropertiesAllowed()!=null)
-            schema.setAdditionalPropertiesAllowed(s.getAdditionalPropertiesAllowed());
-            if(s.getDefaultValue()!=null)
-            schema.setDefault(s.getDefaultValue());
-            if(!s.getDescription().isEmpty())
-            schema.setDescription(s.getDescription());
-            if(s.getDeprecatedBoolean()!=null)
-            schema.setDeprecated(s.getDeprecatedBoolean());
-            if(s.hasDiscriminatorObject())
-            schema.setDiscriminator(DiscriminatorObject.reverseDiscriminator(s.getDiscriminatorObject(),map));
-            if(s.getNumEnumObj()!=0){
-            for(EnumObj e:s.getEnumObjs())
-            schema.addEnum(e.getEnumOb());
-            }
 
-            if(s.getExample()!=null)
-            schema.setExample(s.getExample());
-            if(s.getExclusiveMaximum()!=null)
-            schema.setExclusiveMaximum(s.getExclusiveMaximum());
-            if(s.getExclusiveMinimum()!=null)
-            schema.setExclusiveMinimum(s.getExclusiveMinimum());
-            if(s.hasExternalDocObject())
-            schema.setExternalDocs(ExternalDocObject.reverseExternalDocs(s.getExternalDocObject(),map));
-            if(!s.getFormat().isEmpty())
-            schema.setFormat(s.getFormat());
-            if(s.hasItemsSchema()){
-            if(s.getItemsSchema().getSchemaOb()instanceof SchemaObject)
-            schema.setItemsSchema(((SchemaObject)s.getItemsSchema().getSchemaOb()).reverseSchema(s.getItemsSchema().getSchemaOb(),map));
-            else
-            schema.setItemsSchema(((SchemaReference)s.getItemsSchema().getSchemaOb()).reverseSchema(s.getItemsSchema().getSchemaOb(),map));
-            }
-            if(s.getMaximum()!=null)
-            schema.setMaximum(s.getMaximum());
-            if(s.getMinimum()!=null)
-            schema.setMinimum(s.getMinimum());
-            if(s.getMaxItems()!=null)
-            schema.setMaxItems(s.getMaxItems());
-            if(s.getMinItems()!=null)
-            schema.setMinItems(s.getMinItems());
-            if(s.getMaxLength()!=null)
-            schema.setMaxLength(s.getMaxLength());
-            if(s.getMinLength()!=null)
-            schema.setMinLength(s.getMinLength());
-            if(s.getMaxProperties()!=null)
-            schema.setMaxProperties(s.getMaxProperties());
-            if(s.getMinProperties()!=null)
-            schema.setMinProperties(s.getMinProperties());
-            if(s.getMultipleOf()!=null)
-            schema.setMultipleOf(s.getMultipleOf());
-            if(s.hasNotSchema()){
-            if(s.getNotSchema().getSchemaOb()instanceof SchemaObject)
-            schema.setNotSchema(((SchemaObject)s.getNotSchema().getSchemaOb()).reverseSchema(s.getNotSchema().getSchemaOb(),map));
-            else
-            schema.setNotSchema(((SchemaReference)s.getNotSchema().getSchemaOb()).reverseSchema(s.getNotSchema().getSchemaOb(),map));
-            }
-            if(s.getNullable()!=null)
-            schema.setNullable(s.getNullable());
-            if(!s.getPattern().isEmpty())
-            schema.setPattern(s.getPattern());
-            if(s.getNumPropertyItem()!=0){
-            Map<String, org.openapi4j.parser.model.v3.Schema>properties=new HashMap<>();
-            for(PropertyItem p:s.getPropertyItemList()){
-            if(p.getSchemaOb()instanceof SchemaObject)
-            properties.put(p.getName(),((SchemaObject)p.getSchemaOb()).reverseSchema(p.getSchemaOb(),map));
-            else
-            properties.put(p.getName(),((SchemaReference)p.getSchemaOb()).reverseSchema(p.getSchemaOb(),map));
-            }
-            schema.setProperties(properties);
-            }
-            if(s.getNumRequiredField()!=0){
-            for(RequiredField r:s.getRequiredFields())
-            schema.addRequiredField(r.getValue());
-            }
-            if(s.getNumAllOfSchema()!=0){
-            for(AllOfSchema a:s.getAllOfSchemas()){
-            if(a.getSchemaOb()instanceof SchemaObject)
-            schema.addAllOfSchema(((SchemaObject)a.getSchemaOb()).reverseSchema(a.getSchemaOb(),map));
-            else
-            schema.addAllOfSchema(((SchemaReference)a.getSchemaOb()).reverseSchema(a.getSchemaOb(),map));
-            }
-            }
-            if(s.getNumAnyOfSchema()!=0){
-            for(AnyOfSchema a:s.getAnyOfSchemas()){
-            if(a.getSchemaOb()instanceof SchemaObject)
-            schema.addAnyOfSchema(((SchemaObject)a.getSchemaOb()).reverseSchema(a.getSchemaOb(),map));
-            else
-            schema.addAnyOfSchema(((SchemaReference)a.getSchemaOb()).reverseSchema(a.getSchemaOb(),map));
-            }
-            }
-            if(s.getNumOneOfSchema()!=0){
-            for(OneOfSchema o:s.getOneOfSchemas()){
-            if(o.getSchemaOb()instanceof SchemaObject)
-            schema.addOneOfSchema(((SchemaObject)o.getSchemaOb()).reverseSchema(o.getSchemaOb(),map));
-            else
-            schema.addOneOfSchema(((SchemaReference)o.getSchemaOb()).reverseSchema(o.getSchemaOb(),map));
-            }
-            }
-            if(s.getReadOnly()!=null)
-            schema.setReadOnly(s.getReadOnly());
-            if(s.getWriteOnly()!=null)
-            schema.setWriteOnly(s.getWriteOnly());
-            if(!s.getType().isEmpty())
-            schema.setType(s.getType());
-            if(!s.getTitle().isEmpty())
-            schema.setTitle(s.getTitle());
-            if(s.getUniqueItems()!=null)
-            schema.setUniqueItems(s.getUniqueItems());
-            if(s.hasXmlObject())
-            schema.setXml(XmlObject.reverseXml(s.getXmlObject(),map));
-            if(s.getNumExtension()!=0){
-            Map<String, Object> extensionMap=new HashMap<>();
-            for(Extension e:s.getExtensions())
-            extensionMap.put(e.getKey(),e.getValue());
-            schema.setExtensions(extensionMap);
-            }
-             */
+        if(s.getAdditionalProperties() != null)
+        schema.setAdditionalProperties(s.getAdditionalProperties());
+        if(s.getDefaultValue()!=null)
+        schema.setDefault(s.getDefaultValue());
+        if(!s.getDescription().isEmpty())
+        schema.setDescription(s.getDescription());
+        if(s.getDeprecatedBoolean()!=null)
+        schema.setDeprecated(s.getDeprecatedBoolean());
+        if(s.hasD())
+        schema.setDiscriminator(DiscriminatorObject.reverseDiscriminator(s.getD()));
+        if(s.getNumEl()!=0){
+        for(EnumObj e:s.getEList())
+        schema.addEnumItemObject(e.getEnumOb());
+        }
+        if(s.getElList()!=null)
+        schema.setExample(s.getEl(0));
+        if(s.getExclusiveMaximum()!=null)
+        schema.setExclusiveMaximum(s.getExclusiveMaximum());
+        if(s.getExclusiveMinimum()!=null)
+        schema.setExclusiveMinimum(s.getExclusiveMinimum());
+        if(s.hasExt())
+        schema.setExternalDocs(ExternalDocObject.reverseExternalDocs(s.getExt()));
+        if(!s.getFormat().isEmpty())
+        schema.setFormat(s.getFormat());
+        System.out.println(s.getI().getSchema().toString());
+        if(s.hasI())
+        ((ArraySchema) schema).setItems(reverseSchema(s.getI().getSchema()));
+        if(s.getMaximum()!=null)
+        schema.setMaximum(s.getMaximum());
+        if(s.getMinimum()!=null)
+        schema.setMinimum(s.getMinimum());
+        if(s.getMaxItems()!=null)
+        schema.setMaxItems(s.getMaxItems());
+        if(s.getMinItems()!=null)
+        schema.setMinItems(s.getMinItems());
+        if(s.getMaxLength()!=null)
+        schema.setMaxLength(s.getMaxLength());
+        if(s.getMinLength()!=null)
+        schema.setMinLength(s.getMinLength());
+        if(s.getMaxProperties()!=null)
+        schema.setMaxProperties(s.getMaxProperties());
+        if(s.getMinProperties()!=null)
+        schema.setMinProperties(s.getMinProperties());
+        if(s.getMultipleOf()!=null)
+        schema.setMultipleOf(s.getMultipleOf());
+        if(s.hasN())
+        schema.setNot(reverseSchema(s.getN().getSchema()));
+        // Nullable will be excluded in version 3.1.0
+        if(s.getNullable()!=null)
+        schema.setNullable(s.getNullable());
+        if(!s.getPattern().isEmpty())
+        schema.setPattern(s.getPattern());
+        if(s.getNumP()!=0){
+        Map<String, io.swagger.v3.oas.models.media.Schema>properties=new HashMap<>();
+        for(PropertyItem p:s.getPList())
+        properties.put(p.getName(), reverseSchema(p.getSchema()));
+        schema.setProperties(properties);
+        }
+        if(s.getNumR()!=0){
+        for(RequiredField r:s.getRList())
+        schema.addRequiredItem(r.getValue());
+        }
+        if(s.getNumAll()!=0){
+        for(AllOfSchema a:s.getAllList())
+        ((ComposedSchema) schema).addAllOfItem(reverseSchema(a.getSchema()));
+        }
+        if(s.getNumAny()!=0){
+        for(AnyOfSchema a:s.getAnyList())
+        ((ComposedSchema) schema).addAnyOfItem(reverseSchema(a.getSchema()));
+        }
+        if(s.getNumOne()!=0){
+        for(OneOfSchema o:s.getOneList())
+        ((ComposedSchema) schema).addOneOfItem(reverseSchema(o.getSchema()));
+        }
+        if(s.getReadOnly()!=null)
+        schema.setReadOnly(s.getReadOnly());
+        if(s.getWriteOnly()!=null)
+        schema.setWriteOnly(s.getWriteOnly());
+        if(!s.getType().isEmpty())
+        schema.setType(s.getType());
+        if(!s.getTitle().isEmpty())
+        schema.setTitle(s.getTitle());
+        if(s.getUniqueItems()!=null)
+        schema.setUniqueItems(s.getUniqueItems());
+        if(s.hasX())
+        schema.setXml(XmlObject.reverseXml(s.getX()));
+        if(s.getNumEx()!=0){
+        Map<String, Object> extensionMap=new HashMap<>();
+        for(Extension e:s.getExList())
+        extensionMap.put(e.getKey(),e.getValue());
+        schema.setExtensions(extensionMap);
+        }
 
         return schema;
         }
@@ -898,12 +876,19 @@ public static io.swagger.v3.oas.models.media.XML XmlObject.reverseXml(XmlObject 
         io.swagger.v3.oas.models.security.SecurityScheme securityScheme=new io.swagger.v3.oas.models.security.SecurityScheme();
         SecuritySchemeObject s=(SecuritySchemeObject)securitySchemeOb;
 
-        if(!s.getType().isEmpty())
-        securityScheme.setType(SecurityScheme.Type.valueOf(s.getType()));
+        switch (s.getType()){
+        case "apiKey": securityScheme.setType(SecurityScheme.Type.APIKEY); break;
+        case "http": securityScheme.setType(SecurityScheme.Type.HTTP); break;
+        case "oauth2": securityScheme.setType(SecurityScheme.Type.OAUTH2); break;
+        case "openIdConnect": securityScheme.setType(SecurityScheme.Type.OPENIDCONNECT); break;
+        }
         if(!s.getName().isEmpty())
         securityScheme.setName(s.getName());
-        if(!s.getIn().isEmpty())
-        securityScheme.setIn(SecurityScheme.In.valueOf(s.getIn()));
+        switch (s.getIn()){
+        case "cookie": securityScheme.setIn(SecurityScheme.In.COOKIE); break;
+        case "header": securityScheme.setIn(SecurityScheme.In.HEADER); break;
+        case "query": securityScheme.setIn(SecurityScheme.In.QUERY); break;
+        }
         if(!s.getScheme().isEmpty())
         securityScheme.setScheme(s.getScheme());
         if(!s.getOpenIdConnectUrl().isEmpty())

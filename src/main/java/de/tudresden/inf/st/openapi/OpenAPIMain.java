@@ -39,21 +39,17 @@ public class OpenAPIMain {
 
         // init parser
         String fileName = "./src/main/resources/3.0/petstore.yaml";
+        /*
         ParseOptions options = new ParseOptions();
         options.setResolve(true);
         options.setResolveFully(true);
         options.setAllowEmptyString(false);
+         */
         SwaggerParseResult result = new OpenAPIParser().readLocation(fileName, null, null);
 
         String resultString;
-        //SwaggerSchemaValidator
         OpenAPI openAPI = result.getOpenAPI();
 
-        /*
-        ApiDeclarationJsonValidator validator = new ApiDeclarationJsonValidator();
-        validator.validate(new MessageBuilder(), Json.mapper().writerWithDefaultPrettyPrinter().writeValueAsString(openAPI));
-        Json.mapper().writerWithDefaultPrettyPrinter().write
-         */
         OpenAPIDeserializer deserializer = new OpenAPIDeserializer();
         String res = Json.mapper().writeValueAsString(openAPI);
         ObjectMapper mapper = new ObjectMapper();

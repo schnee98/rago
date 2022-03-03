@@ -1,16 +1,20 @@
 package openapi;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.flipkart.zjsonpatch.JsonDiff;
 import com.jayway.jsonpath.JsonPath;
 import de.tudresden.inf.st.openapi.ast.OpenAPIObject;
+import io.swagger.parser.OpenAPIParser;
+import io.swagger.v3.core.util.Json;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.parser.OpenAPIV3Parser;
+import io.swagger.v3.parser.core.models.SwaggerParseResult;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.openapi4j.core.validation.ValidationResults;
-import org.openapi4j.parser.OpenApi3Parser;
-import org.openapi4j.parser.model.v3.OpenApi3;
 
+import java.awt.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -33,15 +37,15 @@ public class OpenAPIMain_test {
 
   @Test
   public void test() throws Exception {
-    OpenAPIObject openApi = new OpenAPIObject();
-    OpenApi3 api3;
-    ValidationResults results;
+    OpenAPIObject jastAddObject;
+    OpenAPI POJOOpenAPI;
+    ObjectMapper mapper = new ObjectMapper();
+    List<String> validation;
     List<String> filenames = new ArrayList<>();
     String genDir = "./src/test/apiGen/";
-    File genDirectory = new File(genDir);
     File[] contents;
 
-    File resource = new File("./src/main/resources");
+    File resource = new File("./src/main/resources/3.0");
 
     for (File file : resource.listFiles())
       filenames.add(file.getName());
@@ -49,49 +53,58 @@ public class OpenAPIMain_test {
 
     for (String file : filenames) {
       String writerName = genDir + file;
+      System.out.println(writerName);
       FileWriter expectedWriter = new FileWriter((writerName.substring(0, writerName.length() - 5) + "-expected.json"));
       FileWriter actualWriter = new FileWriter((writerName.substring(0, writerName.length() - 5) + "-actual.json"));
-      URL expUrl = OpenAPIMain_test.class.getClassLoader().getResource(file);
 
-      // parsed openAPI object with openapi4j
-      OpenApi3 api = new OpenApi3Parser().parse(expUrl, new ArrayList<>(), true);
+      // parsed openAPI object with swagger-parser
+      SwaggerParseResult result = new OpenAPIParser().readLocation(resource.getPath() + "/" + file, null, null);
+      POJOOpenAPI = result.getOpenAPI();
       System.out.println("Loading expression DSL file '" + file + "'.");
+
+
+      // validation of OpenAPI in POJO
+      JsonNode expectedNode = mapper.readTree(Json.mapper().writeValueAsString(POJOOpenAPI));
+      validation = new OpenAPIV3Parser().readContents(expectedNode.toString()).getMessages();
+      if ( validation.size() != 0 )
+        System.out.println("validation failed!");
+      else
+        System.out.println("validated!");
+
       // save expected object
-      expectedWriter.write(api.toNode().toPrettyString());
+      expectedWriter.write(expectedNode.toPrettyString());
       expectedWriter.close();
 
-      //results = OpenApi3Validator.instance().validate(api);
-      //System.out.println(results.isValid());
+      // OpenAPI in POJO to OpenAPI in JastAdd
+      jastAddObject = OpenAPIObject.parseOpenAPI(POJOOpenAPI);
+      System.out.println(jastAddObject.getPList().getChild(0).getRef());
 
-      // openAPI object is integrated in JastAdd grammar
-      openApi = openApi.parseOpenAPI(api);
-      System.out.println(openApi.getPathsObject(0).getPathItemObject().getPost().getOperationObject().getResponseTuple(0).getResponseOb().responseObject().getContentTuple(0).getMediaTypeObject().getSchemaOb().getClass().getName());
+      // OpenAPI in JastAdd to OpenAPI in POJO
+      POJOOpenAPI = OpenAPIObject.reverseOpenAPI(jastAddObject);
+      System.out.println(POJOOpenAPI);
 
-      //Map<ResponseObject, String> map = openApi.generateRequests();
-
-      // composed openAPI object, it is expected to be equivalent to parsed source object
-      api3 = OpenAPIObject.composeOpenAPI(openApi);
-
-      // check, if the composed openAPI object is valid
-      //results = OpenApi3Validator.instance().validate(api3);
-      //System.out.println(results.isValid());
-
-      //System.out.println(api.toNode().equals(api3.toNode()));
+      // validation of transferred OpenAPI
+      JsonNode actualNode = mapper.readTree(Json.mapper().writeValueAsString(POJOOpenAPI));
+      validation = new OpenAPIV3Parser().readContents(actualNode.toString()).getMessages();
+      if ( validation.size() != 0 )
+        System.out.println("validation failed!");
+      else
+        System.out.println("validated");
 
       // save generated object
-      actualWriter.write(api3.toNode().toPrettyString());
+      actualWriter.write(actualNode.toPrettyString());
       actualWriter.close();
 
       // compare if api (source object) is equivalent to api3 (generated object)
-      compareJson(api3.toNode(), api.toNode(), Paths.get(file));
+      compareJson(expectedNode, actualNode, Paths.get(file));
     }
 
     // clean all generated jsons
-    contents = genDirectory.listFiles();
-    if (contents != null) {
-      for (File file : contents)
-        file.delete();
-    }
+    //contents = genDirectory.listFiles();
+    //if (contents != null) {
+    //  for (File file : contents)
+    //  file.delete();
+    //}
   }
 
   protected void compareJson(JsonNode expectedNode, JsonNode actualNode, Path path) throws IOException {

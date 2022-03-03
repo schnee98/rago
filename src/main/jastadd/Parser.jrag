@@ -43,7 +43,7 @@ public static OpenAPIObject OpenAPIObject.parseOpenAPI(OpenAPI api) {
         }
         if (api.getExternalDocs() != null)
         openapi.setE(ExternalDocObject.parseExternalDocs(api.getExternalDocs()));
-        if (api.getExtensions().size() != 0) {
+        if (api.getExtensions() != null) {
         for (String key : api.getExtensions().keySet())
         openapi.addEx(new Extension(key, api.getExtensions().get(key)));
         }
@@ -70,7 +70,7 @@ public static InfoObject InfoObject.parseInfo(io.swagger.v3.oas.models.info.Info
         infoObject.setC(ContactObject.parseContact(info.getContact()));
         if (info.getLicense() != null)
         infoObject.setL(LicenseObject.parseLicense(info.getLicense()));
-        if (info.getExtensions().size() != 0) {
+        if (info.getExtensions() != null) {
         for (String key : info.getExtensions().keySet())
         infoObject.addEx(new Extension(key, info.getExtensions().get(key)));
         }
@@ -91,7 +91,7 @@ public static ContactObject ContactObject.parseContact(io.swagger.v3.oas.models.
         contactObject.setUrl(contact.getUrl());
         if (contact.getEmail() != null)
         contactObject.setEmail(contact.getEmail());
-        if (contact.getExtensions().size() != 0) {
+        if (contact.getExtensions() != null) {
         for (String key : contact.getExtensions().keySet())
         contactObject.addEx(new Extension(key, contact.getExtensions().get(key)));
         }
@@ -106,7 +106,7 @@ public static LicenseObject LicenseObject.parseLicense(io.swagger.v3.oas.models.
         licenseObject.setName(license.getName());
         if (license.getUrl() != null)
         licenseObject.setUrl(license.getUrl());
-        if (license.getExtensions().size() != 0) {
+        if (license.getExtensions() != null) {
         for (String key : license.getExtensions().keySet())
         licenseObject.addEx(new Extension(key, license.getExtensions().get(key)));
         }
@@ -129,7 +129,7 @@ public static ServerObject ServerObject.parseServer(Server server){
         for (String key : server.getVariables().keySet())
         serverObject.addSt(new ServerVariablesTuple(key, ServerVariableObject.parseServerVariable(server.getVariables().get(key))));
         }
-        if (server.getExtensions().size() != 0) {
+        if (server.getExtensions() != null) {
         for (String key : server.getExtensions().keySet())
         serverObject.addEx(new Extension(key, server.getExtensions().get(key)));
         }
@@ -144,11 +144,11 @@ public static ServerVariableObject ServerVariableObject.parseServerVariable(Serv
         serverVariableObject.setDefault(serverVariable.getDefault());
         if (serverVariable.getDescription() != null)
         serverVariableObject.setDescription(serverVariable.getDescription());
-        if (serverVariable.getEnum().size() != 0) {
+        if (serverVariable.getEnum() != null) {
         for (String e : serverVariable.getEnum())
         serverVariableObject.addE(new Enum(e));
         }
-        if (serverVariable.getExtensions().size() != 0) {
+        if (serverVariable.getExtensions() != null) {
         for (String key : serverVariable.getExtensions().keySet())
         serverVariableObject.addEx(new Extension(key, serverVariable.getExtensions().get(key)));
         }
@@ -195,7 +195,7 @@ public static ComponentsObject ComponentsObject.parseComponents(Components compo
         for (String key : components.getCallbacks().keySet())
         componentsObject.addC(new CallbackTuple(key, CallbackOb.parseCallback(components.getCallbacks().get(key))));
         }
-        if (components.getExtensions().size() != 0) {
+        if (components.getExtensions() != null) {
         for (String key : components.getExtensions().keySet())
         componentsObject.addEx(new Extension(key, components.getExtensions().get(key)));
         }
@@ -275,7 +275,7 @@ public static PathItemOb PathItemOb.parsePath(PathItem path) {
         for (Parameter p : path.getParameters())
         pathItem.addPo(ParameterOb.parseParameter(p));
         }
-        if (path.getExtensions().size() != 0) {
+        if (path.getExtensions() != null) {
         for (String key : path.getExtensions().keySet())
         pathItem.addEx(new Extension(key, path.getExtensions().get(key)));
         }
@@ -309,17 +309,17 @@ public static OperationObject OperationObject.parseOperation(io.swagger.v3.oas.m
         }
         if (operation.getRequestBody() != null)
         operationObject.setRb(RequestBodyOb.parseRequestBody(operation.getRequestBody()));
-        if (operation.getResponses().size() != 0) {
+        if (operation.getResponses() != null) {
         ResponsesObject r = new ResponsesObject();
         for (String key : operation.getResponses().keySet())
         r.addR(new ResponseTuple(key, ResponseObject.parseResponse(operation.getResponses().get(key))));
         operationObject.setR(r);
         }
-        if (operation.getCallbacks().size() != 0) {
+        if (operation.getCallbacks() != null) {
         for (String key : operation.getCallbacks().keySet())
         operationObject.addC(new CallbackTuple(key, CallbackObject.parseCallback(operation.getCallbacks().get(key))));
         }
-        if (operation.getSecurity().size() != 0) {
+        if (operation.getSecurity() != null) {
         for (io.swagger.v3.oas.models.security.SecurityRequirement s : operation.getSecurity())
         operationObject.addSr(SecurityRequirementObject.parseSecurityRequirement(s));
         }
@@ -327,7 +327,7 @@ public static OperationObject OperationObject.parseOperation(io.swagger.v3.oas.m
         for (Server s : operation.getServers())
         operationObject.addS(ServerObject.parseServer(s));
         }
-        if (operation.getExtensions().size() != 0) {
+        if (operation.getExtensions() != null) {
         for (String key : operation.getExtensions().keySet())
         operationObject.addEx(new Extension(key, operation.getExtensions().get(key)));
         }
@@ -393,7 +393,7 @@ public static ParameterOb ParameterOb.parseParameter(Parameter parameter) {
         }
         if (parameter.getRequired() != null)
         parameterObject.setRequired(parameter.getRequired());
-        if (parameter.getExtensions().size() != 0) {
+        if (parameter.getExtensions() != null) {
         for (String key : parameter.getExtensions().keySet())
         parameterObject.addEx(new Extension(key, parameter.getExtensions().get(key)));
         }
@@ -424,7 +424,7 @@ public static RequestBodyOb RequestBodyOb.parseRequestBody(RequestBody requestBo
         requestBodyObject.setDescription(requestBody.getDescription());
         if (requestBody.getRequired() != null)
         requestBodyObject.setRequired(requestBody.getRequired());
-        if (requestBody.getExtensions().size() != 0) {
+        if (requestBody.getExtensions() != null) {
         for (String key : requestBody.getExtensions().keySet())
         requestBodyObject.addEx(new Extension(key, requestBody.getExtensions().get(key)));
         }
@@ -440,15 +440,15 @@ public static MediaTypeObject MediaTypeObject.parseMediaType(MediaType mediaType
         mediaTypeObject.setS(SchemaObject.parseSchema(mediaType.getSchema()));
         if (mediaType.getExample() != null)
         mediaTypeObject.setExample(mediaType.getExample());
-        if (mediaType.getExamples().size() != 0) {
+        if (mediaType.getExamples() != null) {
         for (String key : mediaType.getExamples().keySet())
         mediaTypeObject.addE(new ExampleTuple(key, ExampleObject.parseExample(mediaType.getExamples().get(key))));
         }
-        if (mediaType.getEncoding().size() != 0) {
+        if (mediaType.getEncoding() != null) {
         for (String key : mediaType.getEncoding().keySet())
         mediaTypeObject.addEn(new EncodingTuple(key, EncodingObject.parseEncoding(mediaType.getEncoding().get(key))));
         }
-        if (mediaType.getExtensions().size() != 0) {
+        if (mediaType.getExtensions() != null) {
         for (String key : mediaType.getExtensions().keySet())
         mediaTypeObject.addEx(new Extension(key, mediaType.getExtensions().get(key)));
         }
@@ -495,19 +495,19 @@ public static ResponseOb ResponseOb.parseResponse(ApiResponse response) {
         } else {
         if (response.getDescription() != null)
         responseObject.setDescription(response.getDescription());
-        if (response.getHeaders().size() != 0) {
+        if (response.getHeaders() != null) {
         for (String key : response.getHeaders().keySet())
         responseObject.addH(new HeaderTuple(key, HeaderObject.parseHeader(response.getHeaders().get(key))));
         }
-        if (response.getContent().size() != 0) {
+        if (response.getContent() != null) {
         for (String key : response.getContent().keySet())
         responseObject.addC(new ContentTuple(key, MediaTypeObject.parseMediaType(response.getContent().get(key))));
         }
-        if (response.getLinks().size() != 0) {
+        if (response.getLinks() != null) {
         for (String key : response.getLinks().keySet())
         responseObject.addL(new LinkTuple(key, LinkOb.parseLink(response.getLinks().get(key))));
         }
-        if (response.getExtensions().size() != 0) {
+        if (response.getExtensions() != null) {
         for (String key : response.getExtensions().keySet())
         responseObject.addEx(new Extension(key, response.getExtensions().get(key)));
         }
@@ -530,11 +530,11 @@ public static CallbackOb CallbackOb.parseCallback(Callback callback) {
 
         return c;
         } else {
-        if (callback.size() != 0) {
+        if (callback != null) {
         for (String key : callback.keySet())
         callbackObject.addE(new Expression(key, PathItemObject.parsePath(callback.get(key))));
         }
-        if (callback.getExtensions().size() != 0) {
+        if (callback.getExtensions() != null) {
         for (String key : callback.getExtensions().keySet())
         callbackObject.addEx(new Extension(key, callback.getExtensions().get(key)));
         }
@@ -554,7 +554,7 @@ public static ExampleObject ExampleObject.parseExample(Example example){
         exampleObject.setValue(example.getValue());
         if (example.getExternalValue() != null)
         exampleObject.setExternalValue(example.getExternalValue());
-        if (example.getExtensions().size() != 0) {
+        if (example.getExtensions() != null) {
         for (String key : example.getExtensions().keySet())
         exampleObject.addEx(new Extension(key, example.getExtensions().get(key)));
         }
@@ -580,7 +580,7 @@ public static LinkOb LinkOb.parseLink(Link link) {
         linkObject.setOperationRef(link.getOperationRef());
         if (link.getOperationId() != null)
         linkObject.setOperationID(link.getOperationId());
-        if (link.getParameters().size() != 0) {
+        if (link.getParameters() != null) {
         for (String key : link.getParameters().keySet())
         linkObject.addL(new LinkParameterTuple(key, link.getParameters().get(key)));
         }
@@ -588,7 +588,7 @@ public static LinkOb LinkOb.parseLink(Link link) {
         linkObject.setDescription(link.getDescription());
         if (link.getServer() != null)
         linkObject.setS(ServerObject.parseServer(link.getServer()));
-        if (link.getExtensions().size() != 0) {
+        if (link.getExtensions() != null) {
         for (String key : link.getExtensions().keySet())
         linkObject.addEx(new Extension(key, link.getExtensions().get(key)));
         }
@@ -623,11 +623,11 @@ public static HeaderOb HeaderOb.parseHeader(Header header) {
         headerObject.setExplode(header.getExplode());
         if (header.getExample() != null)
         headerObject.setExample(header.getExample());
-        if (header.getExamples().size() != 0) {
+        if (header.getExamples() != null) {
         for (String key : header.getExamples().keySet())
         headerObject.addE(new ExampleTuple(key, ExampleObject.parseExample(header.getExamples().get(key))));
         }
-        if (header.getContent().size() != 0) {
+        if (header.getContent() != null) {
         for (String key : header.getContent().keySet())
         headerObject.addC(new ContentTuple(key, MediaTypeObject.parseMediaType(header.getContent().get(key))));
         }
@@ -651,7 +651,7 @@ public static TagObject TagObject.parseTag(io.swagger.v3.oas.models.tags.Tag tag
         tagObject.setDescription(tag.getDescription());
         if (tag.getExternalDocs() != null)
         tagObject.setE(ExternalDocObject.parseExternalDocs(tag.getExternalDocs()));
-        if (tag.getExtensions().size() != 0) {
+        if (tag.getExtensions() != null) {
         for (String key : tag.getExtensions().keySet())
         tagObject.addEx(new Extension(key, tag.getExtensions().get(key)));
         }
@@ -673,6 +673,9 @@ public static SchemaOb SchemaOb.parseSchema (Schema<?> schema) {
 
         return s;
         } else {
+        if (schema.getName() != null)
+        schemaObject.setName(schema.getName());
+
         if (schema.getAdditionalProperties() != null)
         schemaObject.setAdditionalProperties(schema.getAdditionalProperties());
         if (schema.getDefault() != null)
@@ -693,12 +696,11 @@ public static SchemaOb SchemaOb.parseSchema (Schema<?> schema) {
         // in 3.1.0, there are multiple examples
         if (schema.getExample() != null)
         schemaObject.addEl(new ExampleElement(schema.getExample()));
-      /* in 3.1.0, types are Number instead of Boolean
-      if (schema.getExclusiveMaximum() != null)
+        // in 3.1.0, types are Number instead of Boolean
+        if (schema.getExclusiveMaximum() != null)
         schemaObject.setExclusiveMaximum(schema.getExclusiveMaximum());
-      if (schema.getExclusiveMinimum() != null)
+        if (schema.getExclusiveMinimum() != null)
         schemaObject.setExclusiveMinimum(schema.getExclusiveMinimum());
-       */
         if (schema.getExternalDocs() != null)
         schemaObject.setExt(ExternalDocObject.parseExternalDocs(schema.getExternalDocs()));
         if (schema.getFormat() != null)
@@ -721,6 +723,8 @@ public static SchemaOb SchemaOb.parseSchema (Schema<?> schema) {
         schemaObject.setMinProperties(schema.getMinProperties());
         if (schema.getMultipleOf() != null)
         schemaObject.setMultipleOf(schema.getMultipleOf());
+        if (schema.getNullable() != null)
+        schemaObject.setNullable(schema.getNullable());
         if (schema.getNot() != null) {
         NotSchema notSchema = new NotSchema();
         notSchema.setSchema(parseSchema(schema.getNot()));
@@ -728,47 +732,40 @@ public static SchemaOb SchemaOb.parseSchema (Schema<?> schema) {
         }
         if (schema.getPattern() != null)
         schemaObject.setPattern(schema.getPattern());
-        if (schema.getProperties().size() != 0) {
+        if (schema.getProperties() != null) {
         for (String key : schema.getProperties().keySet()) {
         PropertyItem propertyItem = new PropertyItem();
         schemaObject.addP(new PropertyItem(key, parseSchema(schema.getProperties().get(key))));
         }
         }
-        if (schema.getRequired().size() != 0) {
+        if (schema.getRequired() != null) {
         for (String s : schema.getRequired()) {
         RequiredField requiredField = new RequiredField();
         requiredField.setValue(s);
         schemaObject.addR(requiredField);
         }
         }
-      /* Schemas not supported (maybe supported in 3.1.0)
-      if (schema.getItemsSchema() != null) {
+        if (schema instanceof ArraySchema){
+        if (((ArraySchema) schema).getItems() != null){
         ItemsSchema itemsSchema = new ItemsSchema();
-        itemsSchema.setSchemaOb(parseSchema(schema.getItemsSchema(), context, map));
-        schemaObject.setItemsSchema(itemsSchema);
-      }
-      if (schema.getAllOfSchemas() != null) {
-        for (org.openapi4j.parser.model.v3.Schema schemaItem : schema.getAllOfSchemas()) {
-          AllOfSchema allOfSchema = new AllOfSchema();
-          allOfSchema.setSchemaOb(parseSchema(schemaItem, context, map));
-          schemaObject.addAllOfSchema(allOfSchema);
+        itemsSchema.setSchema(parseSchema(((ArraySchema) schema).getItems()));
+        schemaObject.setI(itemsSchema);
         }
-      }
-      if (schema.getAnyOfSchemas() != null) {
-        for (org.openapi4j.parser.model.v3.Schema schemaItem : schema.getAnyOfSchemas()) {
-          AnyOfSchema anyOfSchema = new AnyOfSchema();
-          anyOfSchema.setSchemaOb(parseSchema(schemaItem, context, map));
-          schemaObject.addAnyOfSchema(anyOfSchema);
         }
-      }
-      if (schema.getOneOfSchemas() != null) {
-        for (org.openapi4j.parser.model.v3.Schema schemaItem : schema.getOneOfSchemas()) {
-          OneOfSchema oneOfSchema = new OneOfSchema();
-          oneOfSchema.setSchemaOb(parseSchema(schemaItem, context, map));
-          schemaObject.addOneOfSchema(oneOfSchema);
+        if (schema instanceof ComposedSchema){
+        if (((ComposedSchema) schema).getOneOf() != null){
+        for (Schema s : ((ComposedSchema) schema).getOneOf())
+        schemaObject.addOne(new OneOfSchema(parseSchema(s)));
         }
-      }
-       */
+        if (((ComposedSchema) schema).getAnyOf() != null){
+        for (Schema s : ((ComposedSchema) schema).getAnyOf())
+        schemaObject.addAny(new AnyOfSchema(parseSchema(s)));
+        }
+        if (((ComposedSchema) schema).getAllOf() != null){
+        for (Schema s : ((ComposedSchema) schema).getAllOf())
+        schemaObject.addAll(new AllOfSchema(parseSchema(s)));
+        }
+        }
         if (schema.getReadOnly() != null)
         schemaObject.setReadOnly(schema.getReadOnly());
         if (schema.getWriteOnly() != null)
@@ -781,7 +778,7 @@ public static SchemaOb SchemaOb.parseSchema (Schema<?> schema) {
         schemaObject.setUniqueItems(schema.getUniqueItems());
         if (schema.getXml() != null)
         schemaObject.setX(XmlObject.parseXml(schema.getXml()));
-        if (schema.getExtensions().size() != 0) {
+        if (schema.getExtensions() != null) {
         for (String key : schema.getExtensions().keySet())
         schemaObject.addEx(new Extension(key, schema.getExtensions().get(key)));
         }

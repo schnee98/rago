@@ -116,11 +116,11 @@ HeaderObject : HeaderOb ::= <Description> <Required:Boolean> <DeprecatedBoolean:
 //Tag Object
 TagObject ::= <Name> <Description> [E:ExternalDocObject] Ex:Extension*;
 
-//Schema Object
+//Schema Object ()
 abstract SchemaOb;
 SchemaReference : SchemaOb ::= <Ref> <Summary> <Description>;
 rel SchemaReference.r -> SchemaObject;
-SchemaObject : SchemaOb ::= <AdditionalProperties:Object> <DefaultValue:Object> <Description> <DeprecatedBoolean:Boolean> <ExclusiveMaximum:Number> <ExclusiveMinimum:Number> <Format> <Maximum:Number> <Minimum:Number> <MaxItems:Integer> <MinItems:Integer> <MaxLength:Integer> <MinLength:Integer> <MaxProperties:Integer> <MinProperties:Integer> <MultipleOf:Number> <Pattern> <ReadOnly:Boolean> <WriteOnly:Boolean> <Type> <Title> <UniqueItems:Boolean> <MaxContains:Integer> <MinContains:Integer> <DependentRequired:Object> <DependentSchema:SchemaOb> <Const:Object> [D:DiscriminatorObject] E:EnumObj* El:ExampleElement* [Ext:ExternalDocObject] [I:ItemsSchema] [N:NotSchema] P:PropertyItem* R:RequiredField* All:AllOfSchema* Any:AnyOfSchema* One:OneOfSchema* T:TypeArray* [X:XmlObject] Ex:Extension*;
+SchemaObject : SchemaOb ::= <Name> <AdditionalProperties:Object> <DefaultValue:Object> <Description> <DeprecatedBoolean:Boolean> <ExclusiveMaximum:Boolean> <ExclusiveMinimum:Boolean> <Format> <Maximum:BigDecimal> <Minimum:BigDecimal> <MaxItems:Integer> <MinItems:Integer> <MaxLength:Integer> <MinLength:Integer> <MaxProperties:Integer> <MinProperties:Integer> <MultipleOf:BigDecimal> <Pattern> <ReadOnly:Boolean> <WriteOnly:Boolean> <Type> <Title> <UniqueItems:Boolean> <Nullable:Boolean> <MaxContains:Integer> <MinContains:Integer> <DependentRequired:Object> <DependentSchema:SchemaOb> <Const:Object> [D:DiscriminatorObject] E:EnumObj* El:ExampleElement* [Ext:ExternalDocObject] [I:ItemsSchema] [N:NotSchema] P:PropertyItem* R:RequiredField* All:AllOfSchema* Any:AnyOfSchema* One:OneOfSchema* T:TypeArray* [X:XmlObject] Ex:Extension*;
 
 ItemsSchema ::= Schema:SchemaOb;
 NotSchema ::= Schema:SchemaOb;
