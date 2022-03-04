@@ -10,6 +10,7 @@ import io.swagger.parser.OpenAPIParser;
 import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.parser.OpenAPIV3Parser;
+import io.swagger.v3.parser.core.models.ParseOptions;
 import io.swagger.v3.parser.core.models.SwaggerParseResult;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -58,6 +59,8 @@ public class OpenAPIMain_test {
       FileWriter actualWriter = new FileWriter((writerName.substring(0, writerName.length() - 5) + "-actual.json"));
 
       // parsed openAPI object with swagger-parser
+      ParseOptions options = new ParseOptions();
+      options.setResolve(true);
       SwaggerParseResult result = new OpenAPIParser().readLocation(resource.getPath() + "/" + file, null, null);
       POJOOpenAPI = result.getOpenAPI();
       System.out.println("Loading expression DSL file '" + file + "'.");
@@ -77,11 +80,9 @@ public class OpenAPIMain_test {
 
       // OpenAPI in POJO to OpenAPI in JastAdd
       jastAddObject = OpenAPIObject.parseOpenAPI(POJOOpenAPI);
-      System.out.println(jastAddObject.getPList().getChild(0).getRef());
 
       // OpenAPI in JastAdd to OpenAPI in POJO
       POJOOpenAPI = OpenAPIObject.reverseOpenAPI(jastAddObject);
-      System.out.println(POJOOpenAPI);
 
       // validation of transferred OpenAPI
       JsonNode actualNode = mapper.readTree(Json.mapper().writeValueAsString(POJOOpenAPI));

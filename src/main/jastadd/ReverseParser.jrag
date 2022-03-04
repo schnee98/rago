@@ -167,13 +167,8 @@ public static Components ComponentsObject.reverseComponents(ComponentsObject com
         if(componentsObject.getNumS()!=0){
         Map<String, io.swagger.v3.oas.models.media.Schema>schemaMap=new HashMap<>();
         SchemaOb s;
-        for(SchemaTuple t:componentsObject.getSList()){
-        s=t.getO();
-        if(s instanceof SchemaObject)
-        schemaMap.put(t.getKey(),((SchemaObject)s).reverseSchema(s));
-        else
-        schemaMap.put(t.getKey(),((SchemaReference)s).reverseSchema(s));
-        }
+        for(SchemaTuple t:componentsObject.getSList())
+        schemaMap.put(t.getKey(), t.getO().reverseSchema(t.getO()));
         components.setSchemas(schemaMap);
         }
         if(componentsObject.getNumR()!=0){
@@ -733,6 +728,25 @@ public static io.swagger.v3.oas.models.tags.Tag TagObject.reverseTag(TagObject t
         io.swagger.v3.oas.models.media.Schema<Object> schema=new io.swagger.v3.oas.models.media.Schema<Object>();
         SchemaObject s=(SchemaObject)schemaOb;
 
+        if(s.hasI()){
+        schema = new ArraySchema();
+        ((ArraySchema) schema).setItems(s.getI().getSchema().reverseSchema(s.getI().getSchema()));
+        }
+        if(s.getNumAll() != 0 || s.getNumAny() != 0 || s.getNumOne() != 0){
+        schema = new ComposedSchema();
+        if(s.getNumAll()!=0){
+        for(AllOfSchema a:s.getAllList())
+        ((ComposedSchema) schema).addAllOfItem(a.getSchema().reverseSchema(a.getSchema()));
+        }
+        if(s.getNumAny()!=0){
+        for(AnyOfSchema a:s.getAnyList())
+        ((ComposedSchema) schema).addAnyOfItem(a.getSchema().reverseSchema(a.getSchema()));
+        }
+        if(s.getNumOne()!=0){
+        for(OneOfSchema o:s.getOneList())
+        ((ComposedSchema) schema).addOneOfItem(o.getSchema().reverseSchema(o.getSchema()));
+        }
+        }
 
         if(s.getAdditionalProperties() != null)
         schema.setAdditionalProperties(s.getAdditionalProperties());
@@ -758,9 +772,6 @@ public static io.swagger.v3.oas.models.tags.Tag TagObject.reverseTag(TagObject t
         schema.setExternalDocs(ExternalDocObject.reverseExternalDocs(s.getExt()));
         if(!s.getFormat().isEmpty())
         schema.setFormat(s.getFormat());
-        System.out.println(s.getI().getSchema().toString());
-        if(s.hasI())
-        ((ArraySchema) schema).setItems(reverseSchema(s.getI().getSchema()));
         if(s.getMaximum()!=null)
         schema.setMaximum(s.getMaximum());
         if(s.getMinimum()!=null)
@@ -789,24 +800,12 @@ public static io.swagger.v3.oas.models.tags.Tag TagObject.reverseTag(TagObject t
         if(s.getNumP()!=0){
         Map<String, io.swagger.v3.oas.models.media.Schema>properties=new HashMap<>();
         for(PropertyItem p:s.getPList())
-        properties.put(p.getName(), reverseSchema(p.getSchema()));
+        properties.put(p.getName(), p.getSchema().reverseSchema(p.getSchema()));
         schema.setProperties(properties);
         }
         if(s.getNumR()!=0){
         for(RequiredField r:s.getRList())
         schema.addRequiredItem(r.getValue());
-        }
-        if(s.getNumAll()!=0){
-        for(AllOfSchema a:s.getAllList())
-        ((ComposedSchema) schema).addAllOfItem(reverseSchema(a.getSchema()));
-        }
-        if(s.getNumAny()!=0){
-        for(AnyOfSchema a:s.getAnyList())
-        ((ComposedSchema) schema).addAnyOfItem(reverseSchema(a.getSchema()));
-        }
-        if(s.getNumOne()!=0){
-        for(OneOfSchema o:s.getOneList())
-        ((ComposedSchema) schema).addOneOfItem(reverseSchema(o.getSchema()));
         }
         if(s.getReadOnly()!=null)
         schema.setReadOnly(s.getReadOnly());
