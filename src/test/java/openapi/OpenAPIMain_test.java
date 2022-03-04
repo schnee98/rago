@@ -5,13 +5,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.flipkart.zjsonpatch.JsonDiff;
 import com.jayway.jsonpath.JsonPath;
-import de.tudresden.inf.st.openapi.ast.OpenAPIObject;
+import de.tudresden.inf.st.openapi.ast.*;
 import io.swagger.parser.OpenAPIParser;
 import io.swagger.v3.core.util.Json;
+import io.swagger.v3.core.util.Yaml;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.parser.OpenAPIV3Parser;
 import io.swagger.v3.parser.core.models.ParseOptions;
 import io.swagger.v3.parser.core.models.SwaggerParseResult;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -44,6 +46,7 @@ public class OpenAPIMain_test {
     List<String> validation;
     List<String> filenames = new ArrayList<>();
     String genDir = "./src/test/apiGen/";
+    File genDirectory = new File(genDir);
     File[] contents;
 
     File resource = new File("./src/main/resources/3.0");
@@ -75,17 +78,17 @@ public class OpenAPIMain_test {
         System.out.println("validated!");
 
       // save expected object
-      expectedWriter.write(expectedNode.toPrettyString());
+      expectedWriter.write(POJOOpenAPI.toString());
       expectedWriter.close();
 
       // OpenAPI in POJO to OpenAPI in JastAdd
       jastAddObject = OpenAPIObject.parseOpenAPI(POJOOpenAPI);
 
       // OpenAPI in JastAdd to OpenAPI in POJO
-      POJOOpenAPI = OpenAPIObject.reverseOpenAPI(jastAddObject);
+      OpenAPI transformedAPI = OpenAPIObject.reverseOpenAPI(jastAddObject);
 
       // validation of transferred OpenAPI
-      JsonNode actualNode = mapper.readTree(Json.mapper().writeValueAsString(POJOOpenAPI));
+      JsonNode actualNode = mapper.readTree(Json.mapper().writeValueAsString(transformedAPI));
       validation = new OpenAPIV3Parser().readContents(actualNode.toString()).getMessages();
       if ( validation.size() != 0 )
         System.out.println("validation failed!");
@@ -93,19 +96,19 @@ public class OpenAPIMain_test {
         System.out.println("validated");
 
       // save generated object
-      actualWriter.write(actualNode.toPrettyString());
+      actualWriter.write(transformedAPI.toString());
       actualWriter.close();
 
       // compare if api (source object) is equivalent to api3 (generated object)
-      compareJson(expectedNode, actualNode, Paths.get(file));
+      //compareJson(expectedNode, actualNode, Paths.get(file));
     }
 
     // clean all generated jsons
-    //contents = genDirectory.listFiles();
-    //if (contents != null) {
-    //  for (File file : contents)
-    //  file.delete();
-    //}
+    contents = genDirectory.listFiles();
+    if (contents != null) {
+      for (File file : contents)
+      file.delete();
+    }
   }
 
   protected void compareJson(JsonNode expectedNode, JsonNode actualNode, Path path) throws IOException {

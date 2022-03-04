@@ -7,7 +7,7 @@ public static OpenAPI OpenAPIObject.reverseOpenAPI(OpenAPIObject openapi){
 
         if(!openapi.getOpenAPI().isEmpty())
         api.setOpenapi(openapi.getOpenAPI());
-        if(openapi.hasI())
+        if(openapi.getI() != null)
         api.setInfo(InfoObject.reverseInfo(openapi.getI()));
         if(openapi.getNumServ()!=0){
         List<Server> servers=new ArrayList<>();
@@ -23,7 +23,7 @@ public static OpenAPI OpenAPIObject.reverseOpenAPI(OpenAPIObject openapi){
         }
         api.setPaths(paths);
         }
-        if(openapi.hasC())
+        if(openapi.getC() != null)
         api.setComponents(ComponentsObject.reverseComponents(openapi.getC()));
         if(openapi.getNumSr()!=0){
         List<io.swagger.v3.oas.models.security.SecurityRequirement>securityRequirements=new ArrayList<>();
@@ -650,7 +650,7 @@ public static Example ExampleObject.reverseExample(ExampleObject exampleObject){
         syn io.swagger.v3.oas.models.headers.Header HeaderOb.reverseHeader(HeaderOb headerOb);
         eq HeaderReference.reverseHeader(HeaderOb headerOb){
         io.swagger.v3.oas.models.headers.Header header=new io.swagger.v3.oas.models.headers.Header();
-        HeaderReference h=new HeaderReference();
+        HeaderReference h=(HeaderReference) headerOb;
 
         if(!h.getRef().isEmpty()){
         header.set$ref(h.getRef());
@@ -719,7 +719,7 @@ public static io.swagger.v3.oas.models.tags.Tag TagObject.reverseTag(TagObject t
         SchemaReference s = (SchemaReference) schemaOb;
 
         if (!s.getRef().isEmpty()) {
-        schema.set$ref(schema.get$ref());
+        schema.set$ref(s.getRef());
         }
 
         return schema;

@@ -1,5 +1,5 @@
 //OpenAPI Object
-OpenAPIObject ::= <OpenAPI> <JsonSchemaDialect> I:InfoObject Serv:ServerObject* P:PathsObject* W:Webhook* [C:ComponentsObject] Sr:SecurityRequirementObject* T:TagObject* [E:ExternalDocObject] Ex:Extension* ;
+OpenAPIObject ::= <OpenAPI> <JsonSchemaDialect> I:InfoObject Serv:ServerObject* P:PathsObject* W:Webhook* C:ComponentsObject Sr:SecurityRequirementObject* T:TagObject* [E:ExternalDocObject] Ex:Extension* ;
 Webhook ::= <Key> p:PathItemOb;
 
 //Info Object
