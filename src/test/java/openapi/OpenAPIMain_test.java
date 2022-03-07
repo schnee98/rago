@@ -16,6 +16,7 @@ import io.swagger.v3.parser.core.models.SwaggerParseResult;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import de.tudresden.inf.st.jastadd.dumpAst.ast.Dumper;
 
 import java.awt.*;
 import java.io.File;
@@ -57,13 +58,11 @@ public class OpenAPIMain_test {
 
     for (String file : filenames) {
       String writerName = genDir + file;
-      System.out.println(writerName);
-      FileWriter expectedWriter = new FileWriter((writerName.substring(0, writerName.length() - 5) + "-expected.json"));
-      FileWriter actualWriter = new FileWriter((writerName.substring(0, writerName.length() - 5) + "-actual.json"));
+      writerName = writerName.substring(0, writerName.length() - 5);
+      FileWriter expectedWriter = new FileWriter(writerName + "-expected.json");
+      FileWriter actualWriter = new FileWriter(writerName + "-actual.json");
 
       // parsed openAPI object with swagger-parser
-      ParseOptions options = new ParseOptions();
-      options.setResolve(true);
       SwaggerParseResult result = new OpenAPIParser().readLocation(resource.getPath() + "/" + file, null, null);
       POJOOpenAPI = result.getOpenAPI();
       System.out.println("Loading expression DSL file '" + file + "'.");
@@ -78,11 +77,12 @@ public class OpenAPIMain_test {
         System.out.println("validated!");
 
       // save expected object
-      expectedWriter.write(POJOOpenAPI.toString());
+      expectedWriter.write(expectedNode.toPrettyString());
       expectedWriter.close();
 
       // OpenAPI in POJO to OpenAPI in JastAdd
       jastAddObject = OpenAPIObject.parseOpenAPI(POJOOpenAPI);
+      Dumper.read(jastAddObject).dumpAsPNG(Paths.get(writerName + ".png"));
 
       // OpenAPI in JastAdd to OpenAPI in POJO
       OpenAPI transformedAPI = OpenAPIObject.reverseOpenAPI(jastAddObject);
@@ -96,7 +96,7 @@ public class OpenAPIMain_test {
         System.out.println("validated");
 
       // save generated object
-      actualWriter.write(transformedAPI.toString());
+      actualWriter.write(actualNode.toPrettyString());
       actualWriter.close();
 
       // compare if api (source object) is equivalent to api3 (generated object)
