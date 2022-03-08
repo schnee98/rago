@@ -5,7 +5,7 @@ aspect ReverseParser{
     public static OpenAPI OpenAPIObject.reverseOpenAPI(OpenAPIObject openapi){
         OpenAPI api = new OpenAPI();
 
-        if (openapi.getOpenAPI() != null)
+        if (!openapi.getOpenAPI().isEmpty())
             api.setOpenapi(openapi.getOpenAPI());
         if (openapi.getI() != null)
             api.setInfo(InfoObject.reverseInfo(openapi.getI()));
@@ -56,13 +56,13 @@ aspect ReverseParser{
     public static io.swagger.v3.oas.models.info.Info InfoObject.reverseInfo(InfoObject infoObject){
         io.swagger.v3.oas.models.info.Info info = new io.swagger.v3.oas.models.info.Info();
 
-        if (infoObject.getTitle() != null)
+        if (!infoObject.getTitle().isEmpty())
             info.setTitle(infoObject.getTitle());
-        if (infoObject.getVersion() != null)
+        if (!infoObject.getVersion().isEmpty())
             info.setVersion(infoObject.getVersion());
-        if (infoObject.getDescription() != null)
+        if (!infoObject.getDescription().isEmpty())
             info.setDescription(infoObject.getDescription());
-        if (infoObject.getTermsOfService() != null)
+        if (!infoObject.getTermsOfService().isEmpty())
             info.setTermsOfService(infoObject.getTermsOfService());
         if (infoObject.hasC())
             info.setContact(ContactObject.reverseContact(infoObject.getC()));
@@ -81,11 +81,11 @@ aspect ReverseParser{
     public static io.swagger.v3.oas.models.info.Contact ContactObject.reverseContact(ContactObject contactObject){
         io.swagger.v3.oas.models.info.Contact contact = new io.swagger.v3.oas.models.info.Contact();
 
-        if (contactObject.getName() != null)
+        if (!contactObject.getName().isEmpty())
             contact.setName(contactObject.getName());
-        if (contactObject.getUrl() != null)
+        if (!contactObject.getUrl().isEmpty())
             contact.setUrl(contactObject.getUrl());
-        if (contactObject.getEmail() != null)
+        if (!contactObject.getEmail().isEmpty())
             contact.setEmail(contactObject.getEmail());
         if (contactObject.getNumEx() != 0) {
             Map<String, Object> extensions = new HashMap<>();
@@ -100,9 +100,9 @@ aspect ReverseParser{
     public static io.swagger.v3.oas.models.info.License LicenseObject.reverseLicense(LicenseObject licenseObject){
         io.swagger.v3.oas.models.info.License license = new io.swagger.v3.oas.models.info.License();
 
-        if (licenseObject.getName() != null)
+        if (!licenseObject.getName().isEmpty())
             license.setName(licenseObject.getName());
-        if (licenseObject.getUrl() != null)
+        if (!licenseObject.getUrl().isEmpty())
             license.setUrl(licenseObject.getUrl());
         if (licenseObject.getNumEx() != 0) {
             Map<String, Object> extensions = new HashMap<>();
@@ -117,9 +117,9 @@ aspect ReverseParser{
     public static Server ServerObject.reverseServer(ServerObject serverObject){
         Server server = new Server();
 
-        if (serverObject.getUrl() != null)
+        if (!serverObject.getUrl().isEmpty())
             server.setUrl(serverObject.getUrl());
-        if (serverObject.getDescription() != null)
+        if (!serverObject.getDescription().isEmpty())
             server.setDescription(serverObject.getDescription());
         if (serverObject.getNumSt() != 0) {
             ServerVariables serverVariables = new ServerVariables();
@@ -140,9 +140,9 @@ aspect ReverseParser{
     public static ServerVariable ServerVariableObject.reverseServerVariable(ServerVariableObject serverVariableObject){
         ServerVariable serverVariable = new ServerVariable();
 
-        if (serverVariableObject.getDefault() != null)
+        if (!serverVariableObject.getDefault().isEmpty())
             serverVariable.setDefault(serverVariableObject.getDefault());
-        if (serverVariableObject.getDescription() != null)
+        if (!serverVariableObject.getDescription().isEmpty())
             serverVariable.setDescription(serverVariableObject.getDescription());
         if (serverVariableObject.getNumE() != 0) {
             List<String> enums = new ArrayList<>();
@@ -270,9 +270,9 @@ aspect ReverseParser{
         PathItem path = new PathItem();
         PathItemObject p = (PathItemObject) pathItemOb;
 
-        if (p.getSummary() != null)
+        if (!p.getSummary().isEmpty())
             path.setSummary(p.getSummary());
-        if (p.getDescription() != null)
+        if (!p.getDescription().isEmpty())
             path.setDescription(p.getDescription());
         if (p.hasG())
             path.setGet(OperationObject.reverseOperation(p.getG().getO()));
@@ -313,13 +313,13 @@ aspect ReverseParser{
             for (de.tudresden.inf.st.openapi.ast.Tag t : operationObject.getTList())
                 operation.addTagsItem(t.getTag());
         }
-        if (operationObject.getSummary() != null)
+        if (!operationObject.getSummary().isEmpty())
             operation.setSummary(operationObject.getSummary());
-        if (operationObject.getDescription() != null)
+        if (!operationObject.getDescription().isEmpty())
             operation.setDescription(operationObject.getDescription());
         if (operationObject.hasEd())
             operation.setExternalDocs(ExternalDocObject.reverseExternalDocs(operationObject.getEd()));
-        if (operationObject.getOperationID() != null)
+        if (!operationObject.getOperationID().isEmpty())
             operation.setOperationId(operationObject.getOperationID());
         if (operationObject.getNumP() != 0) {
             for (ParameterOb p : operationObject.getPList())
@@ -362,9 +362,9 @@ aspect ReverseParser{
     public static io.swagger.v3.oas.models.ExternalDocumentation ExternalDocObject.reverseExternalDocs(ExternalDocObject externalDocObject){
         ExternalDocumentation externalDocs = new ExternalDocumentation();
 
-        if (externalDocObject.getDescription() != null)
+        if (!externalDocObject.getDescription().isEmpty())
             externalDocs.setDescription(externalDocObject.getDescription());
-        if (externalDocObject.getUrl() != null)
+        if (!externalDocObject.getUrl().isEmpty())
             externalDocs.setUrl(externalDocObject.getUrl());
         if (externalDocObject.getNumEx() != 0) {
             Map<String, Object> extensionMap = new HashMap<>();
@@ -381,7 +381,7 @@ aspect ReverseParser{
         io.swagger.v3.oas.models.parameters.Parameter parameter = new io.swagger.v3.oas.models.parameters.Parameter();
         ParameterReference p = (ParameterReference) parameterOb;
 
-        if (p.getRef() != null) {
+        if (!p.getRef().isEmpty()) {
             parameter.set$ref(p.getRef());
         }
 
@@ -391,13 +391,13 @@ aspect ReverseParser{
         io.swagger.v3.oas.models.parameters.Parameter parameter = new io.swagger.v3.oas.models.parameters.Parameter();
         ParameterObject p = (ParameterObject) parameterOb;
 
-        if (p.getName() != null)
+        if (!p.getName().isEmpty())
             parameter.setName(p.getName());
-        if (p.getIn() != null)
+        if (!p.getIn().isEmpty())
             parameter.setIn(p.getIn());
         if (p.getRequired() != null)
             parameter.setRequired(p.getRequired());
-        if (p.getDescription() != null)
+        if (!p.getDescription().isEmpty())
             parameter.setDescription(p.getDescription());
         if (p.getDeprecatedBoolean() != null)
             parameter.setDeprecated(p.getDeprecatedBoolean());
@@ -461,7 +461,7 @@ aspect ReverseParser{
         RequestBody requestBody = new RequestBody();
         RequestBodyReference r = (RequestBodyReference) requestBodyOb;
 
-        if (r.getRef() != null) {
+        if (!r.getRef().isEmpty()) {
             requestBody.set$ref(r.getRef());
         }
 
@@ -477,7 +477,7 @@ aspect ReverseParser{
                 contents.put(t.getKey(), MediaTypeObject.reverseMediaType(t.getM()));
             requestBody.setContent(contents);
         }
-        if (r.getDescription() != null)
+        if (!r.getDescription().isEmpty())
             requestBody.setDescription(r.getDescription());
         if (r.getRequired() != null)
             requestBody.setRequired(r.getRequired());
@@ -515,7 +515,7 @@ aspect ReverseParser{
         io.swagger.v3.oas.models.media.Encoding encodingProperty = new io.swagger.v3.oas.models.media.Encoding();
         HeaderOb h;
 
-        if (encodingObject.getContentType() != null)
+        if (!encodingObject.getContentType().isEmpty())
             encodingProperty.setContentType(encodingObject.getContentType());
         if (encodingObject.getNumH() != 0) {
             Map<String, Header> headers = new HashMap<>();
@@ -525,7 +525,7 @@ aspect ReverseParser{
             }
             encodingProperty.setHeaders(headers);
         }
-        // if (!encodingObject.getStyle().isEmpty())
+        //if (!encodingObject.getStyle().isEmpty())
         //  encodingProperty.setStyle(Encoding.StyleEnum.valueOf());
         if (encodingObject.getExplode() != null)
             encodingProperty.setExplode(encodingObject.getExplode());
@@ -544,7 +544,7 @@ aspect ReverseParser{
         ApiResponse response = new ApiResponse();
         ResponseReference r = (ResponseReference) responseOb;
 
-        if (r.getRef() != null) {
+        if (!r.getRef().isEmpty()) {
             response.set$ref(r.getRef());
         }
 
@@ -554,7 +554,7 @@ aspect ReverseParser{
         ApiResponse response = new ApiResponse();
         ResponseObject r = (ResponseObject) responseOb;
 
-        if (r.getDescription() != null)
+        if (!r.getDescription().isEmpty())
             response.setDescription(r.getDescription());
         if (r.getNumH() != 0) {
             Map<String, Header> headers = new HashMap<>();
@@ -583,7 +583,7 @@ aspect ReverseParser{
         io.swagger.v3.oas.models.callbacks.Callback callback = new io.swagger.v3.oas.models.callbacks.Callback();
         CallbackReference c = (CallbackReference) callbackOb;
 
-        if (c.getRef() != null) {
+        if (!c.getRef().isEmpty()) {
             callback.set$ref(c.getRef());
         }
 
@@ -606,13 +606,13 @@ aspect ReverseParser{
     public static Example ExampleObject.reverseExample(ExampleObject exampleObject){
         Example example = new Example();
 
-        if (exampleObject.getSummary() != null)
+        if (!exampleObject.getSummary().isEmpty())
             example.setSummary(exampleObject.getSummary());
-        if (exampleObject.getDescription() != null)
+        if (!exampleObject.getDescription().isEmpty())
             example.setDescription(exampleObject.getDescription());
         if (exampleObject.getValue() != null)
             example.setValue(exampleObject.getValue());
-        if (exampleObject.getExternalValue() != null)
+        if (!exampleObject.getExternalValue().isEmpty())
             example.setExternalValue(exampleObject.getExternalValue());
         if (exampleObject.getNumEx() != 0) {
             Map<String, Object> extension = new HashMap<>();
@@ -629,7 +629,7 @@ aspect ReverseParser{
         io.swagger.v3.oas.models.links.Link link = new io.swagger.v3.oas.models.links.Link();
         LinkReference l = (LinkReference) linkOb;
 
-        if (l.getRef() != null)
+        if (!l.getRef().isEmpty())
             link.set$ref(l.getRef());
 
         return link;
@@ -638,9 +638,9 @@ aspect ReverseParser{
         io.swagger.v3.oas.models.links.Link link = new io.swagger.v3.oas.models.links.Link();
         LinkObject l = (LinkObject) linkOb;
 
-        if (l.getOperationRef() != null)
+        if (!l.getOperationRef().isEmpty())
             link.setOperationRef(l.getOperationRef());
-        if (l.getOperationID() != null)
+        if (!l.getOperationID().isEmpty())
             link.setOperationId(l.getOperationID());
         if (l.getNumL() != 0) {
             Map<String, String> parameters = new HashMap<>();
@@ -648,7 +648,7 @@ aspect ReverseParser{
                 parameters.put(t.getKey(), t.getValue());
             link.setParameters(parameters);
         }
-        if (l.getDescription() != null)
+        if (!l.getDescription().isEmpty())
             link.setDescription(l.getDescription());
         if (l.hasS())
             link.setServer(ServerObject.reverseServer(l.getS()));
@@ -665,7 +665,7 @@ aspect ReverseParser{
         io.swagger.v3.oas.models.headers.Header header = new io.swagger.v3.oas.models.headers.Header();
         HeaderReference h = (HeaderReference) headerOb;
 
-        if (h.getRef() != null) {
+        if (!h.getRef().isEmpty()) {
             header.set$ref(h.getRef());
         }
 
@@ -677,7 +677,7 @@ aspect ReverseParser{
 
         if (h.getRequired() != null)
             header.setRequired(h.getRequired());
-        if (h.getDescription() != null)
+        if (!h.getDescription().isEmpty())
             header.setDescription(h.getDescription());
         switch (h.getStyle()) {
             case "simple":
@@ -686,7 +686,7 @@ aspect ReverseParser{
         }
         if (h.getExplode() != null)
             header.setExplode(h.getExplode());
-        //  if (h.getAllowReserved() != null)
+        //if (h.getAllowReserved() != null)
         //  header.setAllowReserved(h.getAllowReserved());
         if (h.getExample() != null)
             header.setExample(h.getExample());
@@ -696,7 +696,7 @@ aspect ReverseParser{
                 examples.put(t.getKey(), ExampleObject.reverseExample(t.getO()));
             header.setExample(examples);
         }
-        if (h.getNumChild() != 0) {
+        if (h.getNumC() != 0) {
             io.swagger.v3.oas.models.media.Content contents = new io.swagger.v3.oas.models.media.Content();
             for (ContentTuple t : h.getCList())
                 contents.put(t.getKey(), MediaTypeObject.reverseMediaType(t.getM()));
@@ -713,7 +713,7 @@ aspect ReverseParser{
 
         tag.setName(tagObject.getName());
 
-        if (tagObject.getDescription() != null)
+        if (!tagObject.getDescription().isEmpty())
             tag.setDescription(tagObject.getDescription());
         if (tagObject.hasE())
             tag.setExternalDocs(ExternalDocObject.reverseExternalDocs(tagObject.getE()));
@@ -733,7 +733,7 @@ aspect ReverseParser{
         io.swagger.v3.oas.models.media.Schema schema = new io.swagger.v3.oas.models.media.Schema();
         SchemaReference s = (SchemaReference) schemaOb;
 
-        if (s.getRef() != null) {
+        if (!s.getRef().isEmpty()) {
             schema.set$ref(s.getRef());
         }
 
@@ -767,7 +767,7 @@ aspect ReverseParser{
             schema.setAdditionalProperties(s.getAdditionalProperties());
         if (s.getDefaultValue() != null)
             schema.setDefault(s.getDefaultValue());
-        if (s.getDescription() != null)
+        if (!s.getDescription().isEmpty())
             schema.setDescription(s.getDescription());
         if (s.getDeprecatedBoolean() != null)
             schema.setDeprecated(s.getDeprecatedBoolean());
@@ -786,7 +786,7 @@ aspect ReverseParser{
             schema.setExclusiveMinimum(s.getExclusiveMinimum());
         if (s.hasExt())
             schema.setExternalDocs(ExternalDocObject.reverseExternalDocs(s.getExt()));
-        if (s.getFormat() != null)
+        if (!s.getFormat().isEmpty())
             schema.setFormat(s.getFormat());
         if (s.getMaximum() != null)
             schema.setMaximum(s.getMaximum());
@@ -811,7 +811,7 @@ aspect ReverseParser{
         // Nullable will be excluded in version 3.1.0
         if (s.getNullable() != null)
             schema.setNullable(s.getNullable());
-        if (s.getPattern() != null)
+        if (!s.getPattern().isEmpty())
             schema.setPattern(s.getPattern());
         if (s.getNumP() != 0) {
             Map<String, io.swagger.v3.oas.models.media.Schema> properties = new HashMap<>();
@@ -827,9 +827,9 @@ aspect ReverseParser{
             schema.setReadOnly(s.getReadOnly());
         if (s.getWriteOnly() != null)
             schema.setWriteOnly(s.getWriteOnly());
-        if (s.getType() != null)
+        if (!s.getType().isEmpty())
             schema.setType(s.getType());
-        if (s.getTitle() != null)
+        if (!s.getTitle().isEmpty())
             schema.setTitle(s.getTitle());
         if (s.getUniqueItems() != null)
             schema.setUniqueItems(s.getUniqueItems());
@@ -848,7 +848,7 @@ aspect ReverseParser{
     public static io.swagger.v3.oas.models.media.Discriminator DiscriminatorObject.reverseDiscriminator(DiscriminatorObject discriminatorObject){
         io.swagger.v3.oas.models.media.Discriminator discriminator = new io.swagger.v3.oas.models.media.Discriminator();
 
-        if (discriminatorObject.getPropertyName() != null)
+        if (!discriminatorObject.getPropertyName().isEmpty())
             discriminator.setPropertyName(discriminatorObject.getPropertyName());
         if (discriminatorObject.getNumM() != 0) {
             Map<String, String> mapping = new HashMap<>();
@@ -863,11 +863,11 @@ aspect ReverseParser{
     public static io.swagger.v3.oas.models.media.XML XmlObject.reverseXml(XmlObject xmlObject){
         io.swagger.v3.oas.models.media.XML xml = new io.swagger.v3.oas.models.media.XML();
 
-        if (xmlObject.getName() != null)
+        if (!xmlObject.getName().isEmpty())
             xml.setName(xmlObject.getName());
-        if (xmlObject.getNamespace() != null)
+        if (!xmlObject.getNamespace().isEmpty())
             xml.setNamespace(xmlObject.getNamespace());
-        if (xmlObject.getPrefix() != null)
+        if (!xmlObject.getPrefix().isEmpty())
             xml.setPrefix(xmlObject.getPrefix());
         if (xmlObject.getAttribute() != null)
             xml.setAttribute(xmlObject.getAttribute());
@@ -882,7 +882,7 @@ aspect ReverseParser{
         io.swagger.v3.oas.models.security.SecurityScheme securityScheme = new io.swagger.v3.oas.models.security.SecurityScheme();
         SecuritySchemeReference s = (SecuritySchemeReference) securitySchemeOb;
 
-        if (s.getRef() != null) {
+        if (!s.getRef().isEmpty()) {
             securityScheme.set$ref(s.getRef());
         }
 
@@ -906,7 +906,7 @@ aspect ReverseParser{
                 securityScheme.setType(SecurityScheme.Type.OPENIDCONNECT);
                 break;
         }
-        if (s.getName() != null)
+        if (!s.getName().isEmpty())
             securityScheme.setName(s.getName());
         switch (s.getIn()) {
             case "cookie":
@@ -919,16 +919,17 @@ aspect ReverseParser{
                 securityScheme.setIn(SecurityScheme.In.QUERY);
                 break;
         }
-        if (s.getScheme() != null)
+        if (!s.getScheme().isEmpty())
             securityScheme.setScheme(s.getScheme());
-        if (s.getOpenIdConnectUrl() != null)
+        if (!s.getOpenIdConnectUrl().isEmpty())
             securityScheme.setOpenIdConnectUrl(s.getOpenIdConnectUrl());
         if (s.getO() != null)
             securityScheme.setFlows(OAuthFlowsObject.reverseOAuthFlows(s.getO()));
-        if (s.getDescription() != null)
+        if (!s.getDescription().isEmpty())
             securityScheme.setDescription(s.getDescription());
-        if (s.getBearerFormat() != null)
+        if (!s.getBearerFormat().isEmpty())
             securityScheme.setBearerFormat(s.getBearerFormat());
+
         if (s.getNumEx() != 0) {
             Map<String, Object> extensionMap = new HashMap<>();
             for (Extension e : s.getExList())
@@ -958,14 +959,14 @@ aspect ReverseParser{
         io.swagger.v3.oas.models.security.OAuthFlow oAuthFlow = new io.swagger.v3.oas.models.security.OAuthFlow();
         Scopes scopes = new Scopes();
 
-        if (oAuthFlowObject.getAuthorizationUrl() != null)
+        if (!oAuthFlowObject.getAuthorizationUrl().isEmpty())
             oAuthFlow.setAuthorizationUrl(oAuthFlowObject.getAuthorizationUrl());
-        if (oAuthFlowObject.getTokenUrl() != null)
+        if (!oAuthFlowObject.getTokenUrl().isEmpty())
             oAuthFlow.setTokenUrl(oAuthFlowObject.getTokenUrl());
         for (ScopesTuple t : oAuthFlowObject.getSList())
             scopes.put(t.getScopesKey(), t.getScopesValue());
         oAuthFlow.setScopes(scopes);
-        if (oAuthFlowObject.getRefreshUrl() != null)
+        if (!oAuthFlowObject.getRefreshUrl().isEmpty())
             oAuthFlow.setRefreshUrl(oAuthFlowObject.getRefreshUrl());
 
         return oAuthFlow;

@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -41,7 +42,6 @@ public class OpenAPIMain_test {
 
     for (File file : resource.listFiles())
       filenames.add(file.getName());
-    System.out.println(filenames.size());
 
     for (String file : filenames) {
       String writerName = genDir + file;
@@ -130,7 +130,9 @@ public class OpenAPIMain_test {
 
       pathNode = result.substring(0, result.length()-1);
       // check, if this node exists or has an empty value.
-      if (JsonPath.parse(actualNode.toString()).read(pathNode, String.class) == null || JsonPath.parse(actualNode.toString()).read(pathNode, String.class).isEmpty())
+      if (JsonPath.parse(expectedNode.toString()).read(pathNode, String.class).isEmpty())
+        ((ArrayNode) diff).remove(i);
+      else if (JsonPath.parse(actualNode.toString()).read(pathNode, String.class) == null || JsonPath.parse(actualNode.toString()).read(pathNode, String.class).isEmpty())
         ((ArrayNode) diff).remove(i);
       else if (!JsonPath.parse(actualNode.toString()).read(pathNode.substring(0, pathNode.lastIndexOf(".")).concat(".$ref"), String.class).isEmpty())
         ((ArrayNode) diff).remove(i);
