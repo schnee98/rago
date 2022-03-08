@@ -100,15 +100,17 @@ public class OpenAPIMain_test {
       actualWriter.close();
 
       // compare if api (source object) is equivalent to api3 (generated object)
-      //compareJson(expectedNode, actualNode, Paths.get(file));
+      compareJson(expectedNode, actualNode, Paths.get(file));
     }
 
     // clean all generated jsons
+    /*
     contents = genDirectory.listFiles();
     if (contents != null) {
       for (File file : contents)
       file.delete();
     }
+     */
   }
 
   protected void compareJson(JsonNode expectedNode, JsonNode actualNode, Path path) throws IOException {
@@ -128,6 +130,8 @@ public class OpenAPIMain_test {
 
 
       // check, if this node exists or has an empty value.
+      System.out.println("1");
+      System.out.println(pathNode);
       if (JsonPath.parse(actualNode.toString()).read(pathNode, String.class) == null || JsonPath.parse(actualNode.toString()).read(pathNode, String.class).isEmpty())
         ((ArrayNode) diff).remove(i);
       else if (!JsonPath.parse(actualNode.toString()).read(pathNode.substring(0, pathNode.lastIndexOf(".")).concat(".$ref"), String.class).isEmpty())
