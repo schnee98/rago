@@ -13,31 +13,18 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.parser.OpenAPIV3Parser;
 import io.swagger.v3.parser.core.models.ParseOptions;
 import io.swagger.v3.parser.core.models.SwaggerParseResult;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import de.tudresden.inf.st.jastadd.dumpAst.ast.Dumper;
 
-import java.awt.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 public class OpenAPIMain_test {
-
-  protected static boolean isNumeric(String str) {
-    try {
-      int d = Integer.parseInt(str);
-    } catch (NumberFormatException nfe) {
-      return false;
-    }
-    return true;
-  }
 
   @Test
   public void test() throws Exception {
@@ -71,8 +58,11 @@ public class OpenAPIMain_test {
       // validation of OpenAPI in POJO
       JsonNode expectedNode = mapper.readTree(Json.mapper().writeValueAsString(POJOOpenAPI));
       validation = new OpenAPIV3Parser().readContents(expectedNode.toString()).getMessages();
-      if ( validation.size() != 0 )
+      if ( validation.size() != 0 ) {
         System.out.println("validation failed!");
+        for ( String s : validation )
+          System.out.println(s);
+      }
       else
         System.out.println("validated!");
 
@@ -82,7 +72,6 @@ public class OpenAPIMain_test {
 
       // OpenAPI in POJO to OpenAPI in JastAdd
       jastAddObject = OpenAPIObject.parseOpenAPI(POJOOpenAPI);
-      Dumper.read(jastAddObject).dumpAsPNG(Paths.get(writerName + ".png"));
 
       // OpenAPI in JastAdd to OpenAPI in POJO
       OpenAPI transformedAPI = OpenAPIObject.reverseOpenAPI(jastAddObject);
@@ -90,8 +79,11 @@ public class OpenAPIMain_test {
       // validation of transferred OpenAPI
       JsonNode actualNode = mapper.readTree(Json.mapper().writeValueAsString(transformedAPI));
       validation = new OpenAPIV3Parser().readContents(actualNode.toString()).getMessages();
-      if ( validation.size() != 0 )
+      if ( validation.size() != 0 ) {
         System.out.println("validation failed!");
+        for ( String s : validation )
+          System.out.println(s);
+      }
       else
         System.out.println("validated");
 
@@ -116,26 +108,34 @@ public class OpenAPIMain_test {
   protected void compareJson(JsonNode expectedNode, JsonNode actualNode, Path path) throws IOException {
     JsonNode diff = JsonDiff.asJson(expectedNode, actualNode);
     String pathNode;
+    String result = "";
 
     for (int i = diff.size() - 1; i >= 0; i--) {
       // get the path of a node involving difference.
-      pathNode = "$" + diff.get(i).get("path").toString()
+      pathNode = "$" + diff.get(i).get("path").toString();
+      for (String s : pathNode.split("/")) {
+        if (s.contains("."))
+          pathNode = pathNode.replace(s, "['" + s + "']");
+      }
+      pathNode = pathNode
           .replace("/", ".")
           .replace("~1", "/")
           .replace("\"", "");
       for (String s : pathNode.split("\\.")) {
-        if (isNumeric(s) && Integer.parseInt(s) < 100)
-          pathNode = pathNode.replace(s, "[" + s + "]");
+        if ( !s.contains("['") && isNumeric(s) && Integer.parseInt(s) < 100)
+          result = result.concat("[" + s + "].");
+        else
+          result = result.concat(s + ".");
       }
 
-
+      pathNode = result.substring(0, result.length()-1);
       // check, if this node exists or has an empty value.
-      System.out.println("1");
-      System.out.println(pathNode);
       if (JsonPath.parse(actualNode.toString()).read(pathNode, String.class) == null || JsonPath.parse(actualNode.toString()).read(pathNode, String.class).isEmpty())
         ((ArrayNode) diff).remove(i);
       else if (!JsonPath.parse(actualNode.toString()).read(pathNode.substring(0, pathNode.lastIndexOf(".")).concat(".$ref"), String.class).isEmpty())
         ((ArrayNode) diff).remove(i);
+
+      result = "";
     }
 
     // if the Jsons are equivalent, there is no reason to to the text comparison.
@@ -143,5 +143,14 @@ public class OpenAPIMain_test {
     if (diff.size() != 0) {
       Assertions.assertEquals(actualNode.toPrettyString(), expectedNode.toPrettyString(), "JSONs for " + path + " are different:\n" + diff.toPrettyString());
     }
+  }
+
+  protected static boolean isNumeric(String str) {
+    try {
+      int d = Integer.parseInt(str);
+    } catch (NumberFormatException nfe) {
+      return false;
+    }
+    return true;
   }
 }
