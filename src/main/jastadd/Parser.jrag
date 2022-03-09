@@ -23,10 +23,18 @@ public static OpenAPIObject OpenAPIObject.parseOpenAPI(OpenAPI api) {
         openapi.setOpenAPI(api.getOpenapi());
         if (api.getInfo() != null)
         openapi.setI(InfoObject.parseInfo(api.getInfo()));
-        if (api.getPaths() != null) {
-        for (String key : api.getPaths().keySet())
-        openapi.addP(new PathsObject(key, PathItemObject.parsePath(api.getPaths().get(key))));
+    if (api.getPaths() != null) {
+        for (String key : api.getPaths().keySet()) {
+            PathsObject path = new PathsObject();
+            path.setRef(key);
+            path.setP(PathItemObject.parsePath(api.getPaths().get(key)));
+            if (api.getPaths().getExtensions() != null) {
+                for (String pKey : api.getPaths().getExtensions().keySet())
+                    path.addEx(new Extension(pKey, api.getPaths().getExtensions().get(pKey)));
+            }
+            openapi.addP(path);
         }
+    }
         if (api.getServers() != null) {
         for (io.swagger.v3.oas.models.servers.Server s : api.getServers())
         openapi.addServ(ServerObject.parseServer(s));
@@ -379,6 +387,8 @@ public static ParameterOb ParameterOb.parseParameter(Parameter parameter) {
         parameterObject.setExplode(parameter.getExplode());
         if (parameter.getAllowReserved() != null)
         parameterObject.setAllowReserved(parameter.getAllowReserved());
+            if (parameter.getAllowEmptyValue() != null)
+                parameterObject.setAllowEmptyValue(parameter.getAllowEmptyValue());
         if (parameter.getSchema() != null)
         parameterObject.setSchema(SchemaOb.parseSchema(parameter.getSchema()));
         if (parameter.getExample() != null)
@@ -508,8 +518,9 @@ public static ResponseOb ResponseOb.parseResponse(ApiResponse response) {
         responseObject.addL(new LinkTuple(key, LinkOb.parseLink(response.getLinks().get(key))));
         }
         if (response.getExtensions() != null) {
-        for (String key : response.getExtensions().keySet())
-        responseObject.addEx(new Extension(key, response.getExtensions().get(key)));
+        for (String key : response.getExtensions().keySet()) {
+            responseObject.addEx(new Extension(key, response.getExtensions().get(key)));
+        }
         }
         }
 
@@ -744,12 +755,10 @@ public static SchemaOb SchemaOb.parseSchema (Schema<?> schema) {
         }
         if (schema.getPattern() != null)
         schemaObject.setPattern(schema.getPattern());
-        if (schema.getProperties() != null) {
-        for (String key : schema.getProperties().keySet()) {
-        PropertyItem propertyItem = new PropertyItem();
-        schemaObject.addP(new PropertyItem(key, parseSchema(schema.getProperties().get(key))));
-        }
-        }
+                if (schema.getProperties() != null) {
+                        for (String key : schema.getProperties().keySet())
+                                schemaObject.addP(new PropertyItem(key, parseSchema(schema.getProperties().get(key))));
+                }
         if (schema.getRequired() != null) {
         for (String s : schema.getRequired()) {
         RequiredField requiredField = new RequiredField();

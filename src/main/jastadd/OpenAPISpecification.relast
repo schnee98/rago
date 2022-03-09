@@ -34,7 +34,7 @@ CallbackTuple ::= <Key> O:CallbackOb;
 PathItemTuple ::= <Key> O:PathItemOb;
 
 //Paths Object
-PathsObject ::= <Ref> P:PathItemOb;
+PathsObject ::= <Ref> P:PathItemOb Ex:Extension*;
 
 //Path Item Object
 abstract PathItemOb;

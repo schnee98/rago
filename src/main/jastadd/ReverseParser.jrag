@@ -15,14 +15,16 @@ aspect ReverseParser{
                 servers.add(ServerObject.reverseServer(s));
             api.setServers(servers);
         }
-        if (openapi.getNumP() != 0) {
             Paths paths = new Paths();
             for (PathsObject p : openapi.getPList()) {
                 if (p.getP() instanceof PathItemObject)
                     paths.addPathItem(p.getRef(), p.getP().reversePath(p.getP()));
+                if (p.getNumEx() != 0) {
+                    for (Extension e : p.getExList())
+                        paths.addExtension(e.getKey(), e.getValue());
+                }
             }
             api.setPaths(paths);
-        }
         if (openapi.getC() != null)
             api.setComponents(ComponentsObject.reverseComponents(openapi.getC()));
         if (openapi.getNumSr() != 0) {
@@ -56,7 +58,7 @@ aspect ReverseParser{
     public static io.swagger.v3.oas.models.info.Info InfoObject.reverseInfo(InfoObject infoObject){
         io.swagger.v3.oas.models.info.Info info = new io.swagger.v3.oas.models.info.Info();
 
-        if (!infoObject.getTitle().isEmpty())
+        if (infoObject.getTitle() != null)
             info.setTitle(infoObject.getTitle());
         if (!infoObject.getVersion().isEmpty())
             info.setVersion(infoObject.getVersion());
@@ -391,9 +393,9 @@ aspect ReverseParser{
         io.swagger.v3.oas.models.parameters.Parameter parameter = new io.swagger.v3.oas.models.parameters.Parameter();
         ParameterObject p = (ParameterObject) parameterOb;
 
-        if (!p.getName().isEmpty())
+        if (p.getName() != null)
             parameter.setName(p.getName());
-        if (!p.getIn().isEmpty())
+        if (p.getIn() != null)
             parameter.setIn(p.getIn());
         if (p.getRequired() != null)
             parameter.setRequired(p.getRequired());
@@ -426,6 +428,8 @@ aspect ReverseParser{
         }
         if (p.getAllowReserved() != null)
             parameter.setAllowReserved(p.getAllowReserved());
+        if (p.getAllowEmptyValue() != null)
+            parameter.setAllowEmptyValue(p.getAllowEmptyValue());
         if (p.getExplode() != null)
             parameter.setExplode(p.getExplode());
         if (p.getSchema() != null)
@@ -471,16 +475,18 @@ aspect ReverseParser{
         RequestBody requestBody = new RequestBody();
         RequestBodyObject r = (RequestBodyObject) requestBodyOb;
 
-        if (r.getNumC() != 0) {
-            io.swagger.v3.oas.models.media.Content contents = new Content();
-            for (ContentTuple t : r.getCList())
-                contents.put(t.getKey(), MediaTypeObject.reverseMediaType(t.getM()));
-            requestBody.setContent(contents);
-        }
+        io.swagger.v3.oas.models.media.Content contents = new Content();
+        for (ContentTuple t : r.getCList())
+            contents.put(t.getKey(), MediaTypeObject.reverseMediaType(t.getM()));
+        requestBody.setContent(contents);
         if (!r.getDescription().isEmpty())
             requestBody.setDescription(r.getDescription());
         if (r.getRequired() != null)
             requestBody.setRequired(r.getRequired());
+        if (r.getNumEx() != 0){
+            for ( Extension e : r.getExList() )
+                requestBody.addExtension(e.getKey(), e.getValue());
+        }
 
         return requestBody;
     }
@@ -525,8 +531,20 @@ aspect ReverseParser{
             }
             encodingProperty.setHeaders(headers);
         }
-        //if (!encodingObject.getStyle().isEmpty())
-        //  encodingProperty.setStyle(Encoding.StyleEnum.valueOf());
+        switch (encodingObject.getStyle()) {
+            case ("form") :
+                encodingProperty.setStyle(Encoding.StyleEnum.FORM);
+                break;
+            case ("spaceDelimited") :
+                encodingProperty.setStyle(Encoding.StyleEnum.SPACE_DELIMITED);
+                break;
+            case ("pipeDelimited") :
+                encodingProperty.setStyle(Encoding.StyleEnum.PIPE_DELIMITED);
+                break;
+            case ("deepObject") :
+                encodingProperty.setStyle(Encoding.StyleEnum.DEEP_OBJECT);
+                break;
+        }
         if (encodingObject.getExplode() != null)
             encodingProperty.setExplode(encodingObject.getExplode());
         if (encodingObject.getNumEx() != 0) {
@@ -573,6 +591,12 @@ aspect ReverseParser{
             for (LinkTuple t : r.getLList())
                 links.put(t.getKey(), t.getO().reverseLink(t.getO()));
             response.setLinks(links);
+        }
+        if (r.getNumEx() != 0) {
+            Map<String, Object> extensions = new HashMap<>();
+            for (Extension e : r.getExList())
+                extensions.put(e.getKey(), e.getValue());
+            response.setExtensions(extensions);
         }
 
         return response;
@@ -715,6 +739,12 @@ eq ExampleReference.reverseExample(ExampleOb exampleOb){
         }
         if (h.hasS())
             header.setSchema(h.getS().reverseSchema(h.getS()));
+        if (h.getNumEx() != 0){
+            Map<String, Object> extensions = new HashMap<>();
+            for(Extension e : h.getExList())
+                extensions.put(e.getKey(), e.getValue());
+            header.setExtensions(extensions);
+        }
 
         return header;
     }
@@ -884,6 +914,10 @@ eq ExampleReference.reverseExample(ExampleOb exampleOb){
             xml.setAttribute(xmlObject.getAttribute());
         if (xmlObject.getWrapped() != null)
             xml.setWrapped(xmlObject.getWrapped());
+        if (xmlObject.getNumEx() != 0) {
+            for ( Extension e : xmlObject.getExList() )
+                xml.addExtension(e.getKey(), e.getValue());
+        }
 
         return xml;
     }

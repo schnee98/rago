@@ -62,7 +62,7 @@ public class OpenAPIMain_test {
           .replace("~1", "/")
           .replace("\"", "");
       for (String s : pathNode.split("\\.")) {
-        if ( !s.contains("['") && isNumeric(s) && Integer.parseInt(s) < 100)
+        if ( !s.contains("['") && isNumeric(s) && Integer.parseInt(s) < 200)
           result = result.concat("[" + s + "].");
         else
           result = result.concat(s + ".");
@@ -71,14 +71,14 @@ public class OpenAPIMain_test {
       pathNode = result.substring(0, result.length()-1);
       //System.out.println(JsonPath.parse(expectedNode.toString()).read(pathNode, String.class));
       //System.out.println(JsonPath.parse(actualNode.toString()).read(pathNode, String.class));
-      System.out.println(pathNode);
+      //System.out.println(pathNode);
       // check, if this node exists or has an empty value.
       if (JsonPath.parse(expectedNode.toString()).read(pathNode, String.class) == null || JsonPath.parse(expectedNode.toString()).read(pathNode, String.class).isEmpty())
         ((ArrayNode) diff).remove(i);
       else if (JsonPath.parse(actualNode.toString()).read(pathNode, String.class) == null || JsonPath.parse(actualNode.toString()).read(pathNode, String.class).isEmpty())
         ((ArrayNode) diff).remove(i);
-      else if (!JsonPath.parse(actualNode.toString()).read(pathNode.substring(0, pathNode.lastIndexOf(".")).concat(".$ref"), String.class).isEmpty())
-        ((ArrayNode) diff).remove(i);
+      //else if (!JsonPath.parse(actualNode.toString()).read(pathNode.substring(0, pathNode.lastIndexOf(".")).concat(".$ref"), String.class).isEmpty())
+      //  ((ArrayNode) diff).remove(i);
 
       result = "";
     }
