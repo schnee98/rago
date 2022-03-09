@@ -542,9 +542,20 @@ public static CallbackOb CallbackOb.parseCallback(Callback callback) {
 
         return callbackObject;
         }
-
-public static ExampleObject ExampleObject.parseExample(Example example){
+public static ExampleOb ExampleOb.parseExample(Example example){
         ExampleObject exampleObject = new ExampleObject();
+
+    if (example.get$ref() != null) {
+        ExampleReference e = new ExampleReference();
+        e.setRef(example.get$ref());
+
+      /* 3.1.0 features
+      if (example.getSummary() != null) ...
+      if (example.getDescription() != null) ...
+       */
+
+        return e;
+    } else {
 
         if (example.getSummary() != null)
         exampleObject.setSummary(example.getSummary());
@@ -558,6 +569,7 @@ public static ExampleObject ExampleObject.parseExample(Example example){
         for (String key : example.getExtensions().keySet())
         exampleObject.addEx(new Extension(key, example.getExtensions().get(key)));
         }
+    }
 
         return exampleObject;
         }
@@ -791,14 +803,14 @@ public static DiscriminatorObject DiscriminatorObject.parseDiscriminator (Discri
         DiscriminatorObject discriminatorObject = new DiscriminatorObject();
 
         if (discriminator.getPropertyName() != null)
-        discriminatorObject.setPropertyName(discriminator.getPropertyName());
+                discriminatorObject.setPropertyName(discriminator.getPropertyName());
         if (discriminator.getMapping() != null) {
-        MappingTuple mapping = new MappingTuple();
-        for (String key : discriminator.getMapping().keySet()) {
-        mapping.setKey(key);
-        mapping.setValue(discriminator.getMapping().get(key));
-        discriminatorObject.addM(mapping);
-        }
+                for (String key : discriminator.getMapping().keySet()) {
+                        MappingTuple mapping = new MappingTuple();
+                        mapping.setKey(key);
+                        mapping.setValue(discriminator.getMapping().get(key));
+                        discriminatorObject.addM(mapping);
+                }
         }
 
         return discriminatorObject;

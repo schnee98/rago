@@ -191,7 +191,7 @@ aspect ReverseParser{
         if (componentsObject.getNumE() != 0) {
             Map<String, Example> exampleMap = new HashMap<>();
             for (ExampleTuple t : componentsObject.getEList())
-                exampleMap.put(t.getKey(), ExampleObject.reverseExample(t.getO()));
+                exampleMap.put(t.getKey(), t.getO().reverseExample(t.getO()));
             components.setExamples(exampleMap);
         }
         if (componentsObject.getNumRb() != 0) {
@@ -435,7 +435,7 @@ aspect ReverseParser{
         if (p.getNumE() != 0) {
             Map<String, Example> exampleMap = new HashMap<>();
             for (ExampleTuple t : p.getEList())
-                exampleMap.put(t.getKey(), ExampleObject.reverseExample(t.getO()));
+                exampleMap.put(t.getKey(), t.getO().reverseExample(t.getO()));
             parameter.setExamples(exampleMap);
         }
         if (p.getNumC() != 0) {
@@ -498,7 +498,7 @@ aspect ReverseParser{
         if (mediaTypeObject.getNumE() != 0) {
             Map<String, Example> exampleMap = new HashMap<>();
             for (ExampleTuple t : mediaTypeObject.getEList())
-                exampleMap.put(t.getKey(), ExampleObject.reverseExample(t.getO()));
+                exampleMap.put(t.getKey(), t.getO().reverseExample(t.getO()));
             mediaType.setExamples(exampleMap);
         }
         if (mediaTypeObject.getNumEn() != 0) {
@@ -554,7 +554,7 @@ aspect ReverseParser{
         ApiResponse response = new ApiResponse();
         ResponseObject r = (ResponseObject) responseOb;
 
-        if (!r.getDescription().isEmpty())
+        if (r.getDescription() != null)
             response.setDescription(r.getDescription());
         if (r.getNumH() != 0) {
             Map<String, Header> headers = new HashMap<>();
@@ -603,26 +603,37 @@ aspect ReverseParser{
         return callback;
     }
 
-    public static Example ExampleObject.reverseExample(ExampleObject exampleObject){
+            syn Example ExampleOb.reverseExample(ExampleOb exampleOb);
+eq ExampleReference.reverseExample(ExampleOb exampleOb){
         Example example = new Example();
+        ExampleReference e = (ExampleReference) exampleOb;
 
-        if (!exampleObject.getSummary().isEmpty())
-            example.setSummary(exampleObject.getSummary());
-        if (!exampleObject.getDescription().isEmpty())
-            example.setDescription(exampleObject.getDescription());
-        if (exampleObject.getValue() != null)
-            example.setValue(exampleObject.getValue());
-        if (!exampleObject.getExternalValue().isEmpty())
-            example.setExternalValue(exampleObject.getExternalValue());
-        if (exampleObject.getNumEx() != 0) {
-            Map<String, Object> extension = new HashMap<>();
-            for (Extension e : exampleObject.getExList())
-                extension.put(e.getKey(), e.getValue());
-            example.setExtensions(extension);
+        if(!e.getRef().isEmpty())
+            example.set$ref(e.getRef());
+
+            return example;
+}
+        eq ExampleObject.reverseExample(ExampleOb exampleOb){
+            Example example = new Example();
+            ExampleObject exampleObject = (ExampleObject) exampleOb;
+
+            if (!exampleObject.getSummary().isEmpty())
+                example.setSummary(exampleObject.getSummary());
+            if (!exampleObject.getDescription().isEmpty())
+                example.setDescription(exampleObject.getDescription());
+            if (exampleObject.getValue() != null)
+                example.setValue(exampleObject.getValue());
+            if (!exampleObject.getExternalValue().isEmpty())
+                example.setExternalValue(exampleObject.getExternalValue());
+            if (exampleObject.getNumEx() != 0) {
+                Map<String, Object> extension = new HashMap<>();
+                for (Extension e : exampleObject.getExList())
+                    extension.put(e.getKey(), e.getValue());
+                example.setExtensions(extension);
+            }
+
+            return example;
         }
-
-        return example;
-    }
 
     syn io.swagger.v3.oas.models.links.Link LinkOb.reverseLink(LinkOb linkOb);
     eq LinkReference.reverseLink(LinkOb linkOb){
@@ -693,7 +704,7 @@ aspect ReverseParser{
         if (h.getNumE() != 0) {
             Map<String, Example> examples = new HashMap<>();
             for (ExampleTuple t : h.getEList())
-                examples.put(t.getKey(), ExampleObject.reverseExample(t.getO()));
+                examples.put(t.getKey(), t.getO().reverseExample(t.getO()));
             header.setExample(examples);
         }
         if (h.getNumC() != 0) {

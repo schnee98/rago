@@ -38,74 +38,12 @@ public class OpenAPIMain_test {
     File genDirectory = new File(genDir);
     File[] contents;
 
-    File resource = new File("./src/main/resources/3.0");
+    File resource = new File("./src/main/resources");
 
-    for (File file : resource.listFiles())
-      filenames.add(file.getName());
-
-    for (String file : filenames) {
-      String writerName = genDir + file;
-      writerName = writerName.substring(0, writerName.length() - 5);
-      FileWriter expectedWriter = new FileWriter(writerName + "-expected.json");
-      FileWriter actualWriter = new FileWriter(writerName + "-actual.json");
-
-      // parsed openAPI object with swagger-parser
-      SwaggerParseResult result = new OpenAPIParser().readLocation(resource.getPath() + "/" + file, null, null);
-      POJOOpenAPI = result.getOpenAPI();
-      System.out.println("Loading expression DSL file '" + file + "'.");
-
-
-      // validation of OpenAPI in POJO
-      JsonNode expectedNode = mapper.readTree(Json.mapper().writeValueAsString(POJOOpenAPI));
-      validation = new OpenAPIV3Parser().readContents(expectedNode.toString()).getMessages();
-      if ( validation.size() != 0 ) {
-        System.out.println("validation failed!");
-        for ( String s : validation )
-          System.out.println(s);
-      }
-      else
-        System.out.println("validated!");
-
-      // save expected object
-      expectedWriter.write(expectedNode.toPrettyString());
-      expectedWriter.close();
-
-      // OpenAPI in POJO to OpenAPI in JastAdd
-      jastAddObject = OpenAPIObject.parseOpenAPI(POJOOpenAPI);
-
-      // OpenAPI in JastAdd to OpenAPI in POJO
-      OpenAPI transformedAPI = OpenAPIObject.reverseOpenAPI(jastAddObject);
-
-      // validation of transferred OpenAPI
-      JsonNode actualNode = mapper.readTree(Json.mapper().writeValueAsString(transformedAPI));
-      validation = new OpenAPIV3Parser().readContents(actualNode.toString()).getMessages();
-      if ( validation.size() != 0 ) {
-        System.out.println("validation failed!");
-        for ( String s : validation )
-          System.out.println(s);
-      }
-      else
-        System.out.println("validated");
-
-      // save generated object
-      actualWriter.write(actualNode.toPrettyString());
-      actualWriter.close();
-
-      // compare if api (source object) is equivalent to api3 (generated object)
-      compareJson(expectedNode, actualNode, Paths.get(file));
-    }
-
-    // clean all generated jsons
-    /*
-    contents = genDirectory.listFiles();
-    if (contents != null) {
-      for (File file : contents)
-      file.delete();
-    }
-     */
+    recursiveTest(resource);
   }
 
-  protected void compareJson(JsonNode expectedNode, JsonNode actualNode, Path path) throws IOException {
+  protected static void compareJson(JsonNode expectedNode, JsonNode actualNode, Path path) throws IOException {
     JsonNode diff = JsonDiff.asJson(expectedNode, actualNode);
     String pathNode;
     String result = "";
@@ -115,6 +53,8 @@ public class OpenAPIMain_test {
       pathNode = "$" + diff.get(i).get("path").toString();
       for (String s : pathNode.split("/")) {
         if (s.contains("."))
+          pathNode = pathNode.replace(s, "['" + s + "']");
+        else if (s.contains(" "))
           pathNode = pathNode.replace(s, "['" + s + "']");
       }
       pathNode = pathNode
@@ -129,8 +69,11 @@ public class OpenAPIMain_test {
       }
 
       pathNode = result.substring(0, result.length()-1);
+      //System.out.println(JsonPath.parse(expectedNode.toString()).read(pathNode, String.class));
+      //System.out.println(JsonPath.parse(actualNode.toString()).read(pathNode, String.class));
+      System.out.println(pathNode);
       // check, if this node exists or has an empty value.
-      if (JsonPath.parse(expectedNode.toString()).read(pathNode, String.class).isEmpty())
+      if (JsonPath.parse(expectedNode.toString()).read(pathNode, String.class) == null || JsonPath.parse(expectedNode.toString()).read(pathNode, String.class).isEmpty())
         ((ArrayNode) diff).remove(i);
       else if (JsonPath.parse(actualNode.toString()).read(pathNode, String.class) == null || JsonPath.parse(actualNode.toString()).read(pathNode, String.class).isEmpty())
         ((ArrayNode) diff).remove(i);
@@ -154,5 +97,68 @@ public class OpenAPIMain_test {
       return false;
     }
     return true;
+  }
+
+  protected static void recursiveTest(File file) throws Exception {
+    if ( file.isDirectory() ) {
+      for ( File f : file.listFiles() )
+        recursiveTest(f);
+    } else if ( file.isFile() && file.getPath().contains("yaml") ) {
+      OpenAPIObject jastAddObject;
+      OpenAPI POJOOpenAPI;
+      ObjectMapper mapper = new ObjectMapper();
+      List<String> validation;
+      /*
+      String writerName = genDir + file;
+      writerName = writerName.substring(0, writerName.length() - 5);
+      FileWriter expectedWriter = new FileWriter(writerName + "-expected.json");
+      FileWriter actualWriter = new FileWriter(writerName + "-actual.json");
+       */
+
+      // parsed openAPI object with swagger-parser
+      SwaggerParseResult result = new OpenAPIParser().readLocation(file.getPath(), null, null);
+      POJOOpenAPI = result.getOpenAPI();
+      System.out.println("Loading expression DSL file '" + file + "'.");
+
+
+      // validation of OpenAPI in POJO
+      JsonNode expectedNode = mapper.readTree(Json.mapper().writeValueAsString(POJOOpenAPI));
+      validation = new OpenAPIV3Parser().readContents(expectedNode.toString()).getMessages();
+      if ( validation.size() != 0 ) {
+        System.out.println("validation failed!");
+        for ( String s : validation )
+          System.out.println(s);
+      }
+      else
+        System.out.println("validated!");
+
+      // save expected object
+      //expectedWriter.write(expectedNode.toPrettyString());
+      //expectedWriter.close();
+
+      // OpenAPI in POJO to OpenAPI in JastAdd
+      jastAddObject = OpenAPIObject.parseOpenAPI(POJOOpenAPI);
+
+      // OpenAPI in JastAdd to OpenAPI in POJO
+      OpenAPI transformedAPI = OpenAPIObject.reverseOpenAPI(jastAddObject);
+
+      // validation of transferred OpenAPI
+      JsonNode actualNode = mapper.readTree(Json.mapper().writeValueAsString(transformedAPI));
+      validation = new OpenAPIV3Parser().readContents(actualNode.toString()).getMessages();
+      if ( validation.size() != 0 ) {
+        System.out.println("validation failed!");
+        for ( String s : validation )
+          System.out.println(s);
+      }
+      else
+        System.out.println("validated");
+
+      // save generated object
+      //actualWriter.write(actualNode.toPrettyString());
+      //actualWriter.close();
+
+      // compare if api (source object) is equivalent to api3 (generated object)
+      compareJson(expectedNode, actualNode, Paths.get(file.getPath()));
+    }
   }
 }

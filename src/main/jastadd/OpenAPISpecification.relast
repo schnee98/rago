@@ -25,7 +25,7 @@ ComponentsObject ::= S:SchemaTuple* R:ResponseTuple* P:ParameterTuple* E:Example
 SchemaTuple ::= <Key> O:SchemaOb;
 ResponseTuple ::= <Key> O:ResponseOb;
 ParameterTuple ::= <Key> O:ParameterOb;
-ExampleTuple ::= <Key> O:ExampleObject;
+ExampleTuple ::= <Key> O:ExampleOb;
 RequestBodyTuple ::= <Key> O:RequestBodyOb;
 HeaderTuple ::= <Key> O:HeaderOb;
 SecuritySchemeTuple ::= <Key> O:SecuritySchemeOb;
@@ -97,7 +97,10 @@ Extension ::= <Key> <Value:Object>;
 Expression ::= <Name> P:PathItemOb;
 
 //Example Object
-ExampleObject ::= <Summary> <Description> <Value:Object> <ExternalValue> Ex:Extension*;
+abstract ExampleOb;
+ExampleReference : ExampleOb ::= <Ref> <Summary> <Description>;
+rel ExampleReference.r -> ExampleObject;
+ExampleObject : ExampleOb ::= <Summary> <Description> <Value:Object> <ExternalValue> Ex:Extension*;
 
 //Link Object
 abstract LinkOb;
