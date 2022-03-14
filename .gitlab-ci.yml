@@ -10,8 +10,6 @@ stages:
 build:
   image: openjdk:11
   stage: build
-  needs:
-    - "./gradlew relast"
   script:
     - "./gradlew assemble"
   artifacts:
