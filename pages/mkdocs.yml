@@ -1,10 +1,10 @@
-site_name: Motion Grammar JastAdd Implementation Example
-repo_url: https://git-st.inf.tu-dresden.de/jastadd/motion-grammar-example
+site_name: RAGO - RAG OpenAPI Framework
+repo_url: https://git-st.inf.tu-dresden.de/jastadd/rago
 site_dir: ../public
 
 nav:
   - "Overview": index.md
-  - "Parsing Example": parsing.md
+  - "Fuzzing Example": fuzzing.md
   - "API documentation": ragdoc/index.html
 
 theme:
