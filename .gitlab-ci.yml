@@ -5,6 +5,7 @@ stages:
   - build
   - test
   - ragdoc
+  - pages
   - publish
 
 build:
