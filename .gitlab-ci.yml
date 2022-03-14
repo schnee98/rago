@@ -74,7 +74,6 @@ pages:
   before_script:
     - pip install -r pages/requirements.txt
   script:
-    - cp -r src/gen/resources/diagrams/ pages/docs/diagrams
     - cd pages && mkdocs build
   artifacts:
     paths:
