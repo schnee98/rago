@@ -1,0 +1,11 @@
+{% block footer %}
+<p>{% if config.copyright %}
+<small>{{ config.copyright }}<br></small>
+{% endif %}
+<hr>
+Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+{% if page and page.meta and page.meta.git_revision_date_localized %}
+<small><br><i>Last updated {{ page.meta.git_revision_date_localized }}</i></small>
+{% endif %}
+</p>
+{% endblock %}
