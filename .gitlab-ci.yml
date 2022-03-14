@@ -10,6 +10,8 @@ stages:
 build:
   image: openjdk:11
   stage: build
+  needs:
+    - "./chmod +x gradlew"
   script:
     - "./gradlew assemble"
   artifacts:
