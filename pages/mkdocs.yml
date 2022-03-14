@@ -1,0 +1,27 @@
+site_name: RAGO - RAG OpenAPI Framework
+repo_url: https://git-st.inf.tu-dresden.de/jastadd/rago
+site_dir: ../public
+
+nav:
+  - "Overview": index.md
+  - "Fuzzing Example": fuzzing.md
+  - "API documentation": ragdoc/index.html
+
+theme:
+  name: readthedocs
+  custom_dir: custom_theme/
+
+markdown_extensions:
+  - toc:
+      permalink: 
+  - admonition
+  - footnotes
+
+plugins:
+  - search
+  - git-revision-date-localized:
+      type: datetime
+      timezone: Europe/Berlin
+      locale: en
+      fallback_to_build_date: True
+  - macros

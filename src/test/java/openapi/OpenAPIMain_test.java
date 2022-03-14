@@ -1,26 +1,76 @@
 package openapi;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.flipkart.zjsonpatch.JsonDiff;
 import com.jayway.jsonpath.JsonPath;
-import de.tudresden.inf.st.openapi.ast.OpenAPIObject;
+import de.tudresden.inf.st.openapi.ast.*;
+import io.swagger.parser.OpenAPIParser;
+import io.swagger.v3.core.util.Json;
+import io.swagger.v3.core.util.Yaml;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.parser.OpenAPIV3Parser;
+import io.swagger.v3.parser.core.models.SwaggerParseResult;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.openapi4j.core.validation.ValidationResults;
-import org.openapi4j.parser.OpenApi3Parser;
-import org.openapi4j.parser.model.v3.OpenApi3;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 
 public class OpenAPIMain_test {
+
+  @Test
+  public void test() throws Exception {
+    File resource = new File("./src/main/resources");
+
+    recursiveTest(resource);
+  }
+
+  protected static void compareJson(JsonNode expectedNode, JsonNode actualNode, Path path) throws IOException {
+    JsonNode diff = JsonDiff.asJson(expectedNode, actualNode);
+    String pathNode;
+    String result = "";
+
+    for (int i = diff.size() - 1; i >= 0; i--) {
+      // get the path of a node involving difference.
+      pathNode = "$" + diff.get(i).get("path").toString();
+      for (String s : pathNode.split("/")) {
+        if (s.contains("."))
+          pathNode = pathNode.replace(s, "['" + s + "']");
+        else if (s.contains(" "))
+          pathNode = pathNode.replace(s, "['" + s + "']");
+      }
+      pathNode = pathNode
+          .replace("/", ".")
+          .replace("~1", "/")
+          .replace("\"", "");
+      for (String s : pathNode.split("\\.")) {
+        if ( !s.contains("['") && isNumeric(s) && Integer.parseInt(s) < 200)
+          result = result.concat("[" + s + "].");
+        else
+          result = result.concat(s + ".");
+      }
+      pathNode = result.substring(0, result.length()-1);
+
+      // check, if this node is null or has an empty value.
+      if (JsonPath.parse(expectedNode.toString()).read(pathNode, String.class) == null || JsonPath.parse(expectedNode.toString()).read(pathNode, String.class).isEmpty())
+        ((ArrayNode) diff).remove(i);
+      else if (JsonPath.parse(actualNode.toString()).read(pathNode, String.class) == null || JsonPath.parse(actualNode.toString()).read(pathNode, String.class).isEmpty())
+        ((ArrayNode) diff).remove(i);
+
+      result = "";
+    }
+
+    // if the Jsons are equivalent, there is no reason to to the text comparison.
+    // if there is a difference, a text comparison might look better than just the diff.
+    if (diff.size() != 0) {
+      Assertions.assertEquals(actualNode.toPrettyString(), expectedNode.toPrettyString(), "JSONs for " + path + " are different:\n" + diff.toPrettyString());
+    }
+  }
 
   protected static boolean isNumeric(String str) {
     try {
@@ -31,96 +81,51 @@ public class OpenAPIMain_test {
     return true;
   }
 
-  @Test
-  public void test() throws Exception {
-    OpenAPIObject openApi = new OpenAPIObject();
-    OpenApi3 api3;
-    ValidationResults results;
-    List<String> filenames = new ArrayList<>();
-    String genDir = "./gen-api-ex/";
-    File genDirectory = new File(genDir);
-    File[] contents;
+  protected static void recursiveTest(File file) throws Exception {
+    if ( file.isDirectory() ) {
+      for ( File f : file.listFiles() )
+        recursiveTest(f);
+    } else if ( file.isFile() && file.getPath().contains("yaml") ) {
+      OpenAPIObject jastAddObject;
+      OpenAPI POJOOpenAPI;
+      ObjectMapper mapper = new ObjectMapper();
+      List<String> validation;
 
-    File resource = new File("./src/main/resources");
-
-    for (File file : resource.listFiles())
-      filenames.add(file.getName());
-    System.out.println(filenames.size());
-
-    for (String file : filenames) {
-      String writerName = genDir + file;
-      FileWriter expectedWriter = new FileWriter((writerName.substring(0, writerName.length() - 5) + "-expected.json"));
-      FileWriter actualWriter = new FileWriter((writerName.substring(0, writerName.length() - 5) + "-actual.json"));
-      URL expUrl = OpenAPIMain_test.class.getClassLoader().getResource(file);
-
-      // parsed openAPI object with openapi4j
-      OpenApi3 api = new OpenApi3Parser().parse(expUrl, new ArrayList<>(), true);
+      // parsed openAPI object with swagger-parser
+      SwaggerParseResult result = new OpenAPIParser().readLocation(file.getPath(), null, null);
+      POJOOpenAPI = result.getOpenAPI();
       System.out.println("Loading expression DSL file '" + file + "'.");
-      // save expected object
-      expectedWriter.write(api.toNode().toPrettyString());
-      expectedWriter.close();
 
-      //results = OpenApi3Validator.instance().validate(api);
-      //System.out.println(results.isValid());
+      // validation of OpenAPI in POJO
+      JsonNode expectedNode = mapper.readTree(Json.mapper().writeValueAsString(POJOOpenAPI));
+      validation = new OpenAPIV3Parser().readContents(expectedNode.toString()).getMessages();
+      if ( validation.size() != 0 ) {
+        System.out.println("validation failed!");
+        for ( String s : validation )
+          System.out.println(s);
+      }
+      else
+        System.out.println("validated!");
 
-      // openAPI object is integrated in JastAdd grammar
-      openApi = openApi.parseOpenAPI(api);
-      System.out.println(openApi.getPathsObject(0).getPathItemObject().getPost().getOperationObject().getResponseTuple(0).getResponseOb().responseObject().getContentTuple(0).getMediaTypeObject().getSchemaOb().getClass().getName());
+      // OpenAPI in POJO to OpenAPI in JastAdd
+      jastAddObject = OpenAPIObject.parseOpenAPI(POJOOpenAPI);
 
-      //Map<ResponseObject, String> map = openApi.generateRequests();
+      // OpenAPI in JastAdd to OpenAPI in POJO
+      OpenAPI transformedAPI = OpenAPIObject.reverseOpenAPI(jastAddObject);
 
-      // composed openAPI object, it is expected to be equivalent to parsed source object
-      api3 = OpenAPIObject.composeOpenAPI(openApi);
-
-      // check, if the composed openAPI object is valid
-      //results = OpenApi3Validator.instance().validate(api3);
-      //System.out.println(results.isValid());
-
-      //System.out.println(api.toNode().equals(api3.toNode()));
-
-      // save generated object
-      actualWriter.write(api3.toNode().toPrettyString());
-      actualWriter.close();
+      // validation of transferred OpenAPI
+      JsonNode actualNode = mapper.readTree(Json.mapper().writeValueAsString(transformedAPI));
+      validation = new OpenAPIV3Parser().readContents(actualNode.toString()).getMessages();
+      if ( validation.size() != 0 ) {
+        System.out.println("validation failed!");
+        for ( String s : validation )
+          System.out.println(s);
+      }
+      else
+        System.out.println("validated");
 
       // compare if api (source object) is equivalent to api3 (generated object)
-      compareJson(api3.toNode(), api.toNode(), Paths.get(file));
-    }
-
-    // clean all generated jsons
-    contents = genDirectory.listFiles();
-    if (contents != null) {
-      for (File file : contents)
-        file.delete();
-    }
-  }
-
-  protected void compareJson(JsonNode expectedNode, JsonNode actualNode, Path path) throws IOException {
-    JsonNode diff = JsonDiff.asJson(expectedNode, actualNode);
-    String pathNode;
-
-    for (int i = diff.size() - 1; i >= 0; i--) {
-      // get the path of a node involving difference.
-      pathNode = "$" + diff.get(i).get("path").toString()
-          .replace("/", ".")
-          .replace("~1", "/")
-          .replace("\"", "");
-      for (String s : pathNode.split("\\.")) {
-        if (isNumeric(s) && Integer.parseInt(s) < 100)
-          pathNode = pathNode.replace(s, "[" + s + "]");
-      }
-
-
-      // check, if this node exists or has an empty value.
-      if (JsonPath.parse(actualNode.toString()).read(pathNode, String.class) == null || JsonPath.parse(actualNode.toString()).read(pathNode, String.class).isEmpty())
-        ((ArrayNode) diff).remove(i);
-      else if (!JsonPath.parse(actualNode.toString()).read(pathNode.substring(0, pathNode.lastIndexOf(".")).concat(".$ref"), String.class).isEmpty())
-        ((ArrayNode) diff).remove(i);
-    }
-
-    // if the Jsons are equivalent, there is no reason to to the text comparison.
-    // if there is a difference, a text comparison might look better than just the diff.
-    if (diff.size() != 0) {
-      Assertions.assertEquals(actualNode.toPrettyString(), expectedNode.toPrettyString(), "JSONs for " + path + " are different:\n" + diff.toPrettyString());
+      compareJson(expectedNode, actualNode, Paths.get(file.getPath()));
     }
   }
 }

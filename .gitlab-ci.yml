@@ -1,0 +1,83 @@
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
+stages:
+  - build
+  - test
+  - ragdoc
+  - publish
+
+build:
+  image: openjdk:11
+  stage: build
+  script:
+    - "./gradlew relast"
+    - "./gradlew assemble"
+  artifacts:
+    paths:
+      - "src/gen/java"
+      - "src/gen/jastadd"
+
+test:
+  image: openjdk:11
+  stage: test
+  needs:
+    - build
+  script:
+    - "./gradlew test"
+  artifacts:
+    reports:
+      junit: "*/build/test-results/test/TEST-*.xml"
+    paths:
+      - "src/gen/resources"
+
+ragdoc_build:
+  image:
+    name: "git-st.inf.tu-dresden.de:4567/jastadd/ragdoc-builder"
+    entrypoint: [""]
+  stage: ragdoc
+  needs:
+    - build
+  script:
+    - JAVA_FILES="$(find src/main -name '*.java') $(find src/gen -name '*.java')"
+    - /ragdoc-builder/start-builder.sh -excludeGenerated -d data/ $JAVA_FILES
+  artifacts:
+    paths:
+      - "data/"
+
+ragdoc_view:
+  image:
+    name: "git-st.inf.tu-dresden.de:4567/jastadd/ragdoc-view:relations"
+    entrypoint: [""]
+  stage: ragdoc
+  needs:
+    - ragdoc_build
+  script:
+    - DATA_DIR=$(pwd -P)/data
+    - mkdir -p pages/docs/ragdoc
+    - OUTPUT_DIR=$(pwd -P)/pages/docs/ragdoc
+    - cd /ragdoc-view/src/ && rm -rf data && ln -s $DATA_DIR
+    - /ragdoc-view/build-view.sh --output-path=$OUTPUT_DIR
+  only:
+    - tests/openapi-generator
+    - main
+  artifacts:
+    paths:
+      - "pages/docs/ragdoc"
+
+pages:
+  image: python:3.10.0-bullseye
+  stage: publish
+  needs:
+    - ragdoc_view
+    - test
+  before_script:
+    - pip install -r pages/requirements.txt
+  script:
+    - cd pages && mkdocs build
+  artifacts:
+    paths:
+      - public/
+  only:
+    - tests/openapi-generator
+    - main
