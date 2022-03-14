@@ -10,8 +10,8 @@ stages:
 build:
   image: openjdk:11
   stage: build
-  before_script:
-    - apt-get update && apt-get -y install graphviz
+  needs:
+    - "./gradlew relast"
   script:
     - "./gradlew assemble"
   artifacts:
@@ -24,10 +24,8 @@ test:
   stage: test
   needs:
     - build
-  before_script:
-    - apt-get update && apt-get -y install graphviz
   script:
-    - "./gradlew test generateGrammarDiagrams"
+    - "./gradlew test"
   artifacts:
     reports:
       junit: "*/build/test-results/test/TEST-*.xml"
