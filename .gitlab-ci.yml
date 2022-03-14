@@ -5,7 +5,6 @@ stages:
   - build
   - test
   - ragdoc
-  - pages
   - publish
 
 build:
@@ -60,7 +59,7 @@ ragdoc_view:
     - cd /ragdoc-view/src/ && rm -rf data && ln -s $DATA_DIR
     - /ragdoc-view/build-view.sh --output-path=$OUTPUT_DIR
   only:
-    - dev
+    - tests/openapi-generator
     - main
   artifacts:
     paths:
