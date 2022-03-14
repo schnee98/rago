@@ -80,4 +80,5 @@ pages:
     paths:
       - public/
   only:
+    - tests/openapi-generator
     - main
