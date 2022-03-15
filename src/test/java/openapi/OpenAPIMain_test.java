@@ -32,7 +32,7 @@ public class OpenAPIMain_test {
   @BeforeAll
   public void init() throws Exception {
     File r = new File("./src/main/resources");
-    initResources(resources, r);
+    initResources(r);
   }
 
   @MethodSource("getResources")
@@ -137,11 +137,11 @@ public class OpenAPIMain_test {
     return true;
   }
 
-  protected static void initResources(List<File> res, File file) {
+  protected static void initResources(File file) {
     if ( file.isDirectory() ) {
       for ( File f : file.listFiles() )
-        initResources(res, f);
+        initResources(f);
     } else if ( file.isFile() && file.getPath().contains("yaml") )
-      res.add(file);
+      resources.add(file);
   }
 }
