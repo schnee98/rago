@@ -31,8 +31,8 @@ public class OpenAPIMain_test {
 
   static List<File> resources = new ArrayList<>();
 
-  @Test
-  public void init() throws Exception {
+  @BeforeAll
+  static void init() throws Exception {
     File r = new File("./src/main/resources");
     initResources(r);
   }
