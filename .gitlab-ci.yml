@@ -26,8 +26,6 @@ test:
   script:
     - "./gradlew test"
   artifacts:
-    paths:
-      - "src/main/resources"
     when: always
       reports:
         junit: build/test-results/test/**/TEST-*.xml
