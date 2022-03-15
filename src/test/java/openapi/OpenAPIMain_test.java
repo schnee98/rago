@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class OpenAPIMain_test {
 
@@ -84,8 +85,8 @@ public class OpenAPIMain_test {
     compareJson(expectedNode, actualNode, Paths.get(file.getPath()));
   }
 
-  protected static List<File> getResources() {
-    return resources;
+  protected static Stream<File> getResources() {
+    return resources.stream();
   }
 
   protected static void compareJson(JsonNode expectedNode, JsonNode actualNode, Path path) throws IOException {
