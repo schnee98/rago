@@ -33,6 +33,8 @@ public class OpenAPIMain_test {
   public void init() throws Exception {
     File r = new File("./src/main/resources");
     initResources(r);
+    for ( File f : resources )
+      System.out.println(f);
   }
 
   @MethodSource("getResources")
