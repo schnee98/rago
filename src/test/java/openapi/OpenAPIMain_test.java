@@ -38,7 +38,7 @@ public class OpenAPIMain_test {
     initResources(r);
   }
 
-  @MethodSource("getResources")
+  @MethodSource("")
   @ParameterizedTest
   static void parserTest(File file) throws Exception {
     OpenAPIObject jastAddObject;
