@@ -29,7 +29,7 @@ test:
     reports:
       junit: "*/build/test-results/test/TEST-*.xml"
     paths:
-      - "src/gen/resources"
+      - "src/main/resources"
 
 ragdoc_build:
   image:
