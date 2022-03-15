@@ -32,7 +32,7 @@ public class OpenAPIMain_test {
   static List<File> resources = new ArrayList<>();
 
   @BeforeAll
-  static void init() throws Exception {
+  static void init() {
     File r = new File("./src/main/resources");
     initResources(r);
   }
@@ -40,7 +40,7 @@ public class OpenAPIMain_test {
   @MethodSource("getResources")
   @DisplayName("Parser Test (System Messages)")
   @ParameterizedTest(name = "Parser test for resource file ''{0}''")
-  protected static void parserTest(File file) throws Exception {
+  static void parserTest(File file) throws Exception {
     OpenAPIObject jastAddObject;
     OpenAPI POJOOpenAPI;
     ObjectMapper mapper = new ObjectMapper();
@@ -84,11 +84,11 @@ public class OpenAPIMain_test {
     compareJson(expectedNode, actualNode, Paths.get(file.getPath()));
   }
 
-  protected static Stream<File> getResources() {
+  static Stream<File> getResources() {
     return resources.stream();
   }
 
-  protected static void compareJson(JsonNode expectedNode, JsonNode actualNode, Path path) throws IOException {
+  static void compareJson(JsonNode expectedNode, JsonNode actualNode, Path path) throws IOException {
     JsonNode diff = JsonDiff.asJson(expectedNode, actualNode);
     String pathNode;
     String result = "";
@@ -130,7 +130,7 @@ public class OpenAPIMain_test {
     }
   }
 
-  protected static boolean isNumeric(String str) {
+  static boolean isNumeric(String str) {
     try {
       int d = Integer.parseInt(str);
     } catch (NumberFormatException nfe) {
@@ -139,7 +139,7 @@ public class OpenAPIMain_test {
     return true;
   }
 
-  protected static void initResources(File file) {
+  static void initResources(File file) {
     if ( file.isDirectory() ) {
       for ( File f : file.listFiles() )
         initResources(f);
