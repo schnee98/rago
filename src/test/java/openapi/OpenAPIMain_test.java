@@ -29,12 +29,11 @@ public class OpenAPIMain_test {
 
   static List<File> resources;
 
-  @Test
   @BeforeAll
   public void test() throws Exception {
     File r = new File("./src/main/resources");
 
-    recur(resources, r);
+    initResources(resources, r);
   }
 
   @MethodSource("getResources")
@@ -139,10 +138,10 @@ public class OpenAPIMain_test {
     return true;
   }
 
-  protected static void recur(List<File> res, File file) {
+  protected static void initResources(List<File> res, File file) {
     if ( file.isDirectory() ) {
       for ( File f : file.listFiles() )
-        recur(res, f);
+        initResources(res, f);
     } else if ( file.isFile() && file.getPath().contains("yaml") )
       res.add(file);
   }
