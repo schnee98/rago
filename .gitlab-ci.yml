@@ -27,7 +27,7 @@ test:
     - "./gradlew test"
   artifacts:
     paths:
-      - "src/main/resources"
+      - "src/test/resources"
 
 ragdoc_build:
   image:
