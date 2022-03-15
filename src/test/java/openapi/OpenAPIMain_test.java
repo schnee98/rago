@@ -18,6 +18,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,8 +39,7 @@ public class OpenAPIMain_test {
   }
 
   @MethodSource("getResources")
-  @DisplayName("Parser Test (System Messages)")
-  @ParameterizedTest(name = "Parser test for resource file ''{0}''")
+  @ParameterizedTest
   static void parserTest(File file) throws Exception {
     OpenAPIObject jastAddObject;
     OpenAPI POJOOpenAPI;
@@ -84,7 +84,7 @@ public class OpenAPIMain_test {
     compareJson(expectedNode, actualNode, Paths.get(file.getPath()));
   }
 
-  static Stream<File> getResources() {
+  static Stream<File> resources() {
     return resources.stream();
   }
 
