@@ -38,9 +38,9 @@ public class OpenAPIMain_test {
     initResources(r);
   }
 
-  @Test
-  static void parserTest() throws Exception {
-    File file = resources.get(0);
+  @MethodSource("resources")
+  @ParameterizedTest
+  void parserTest(File file) throws Exception {
     OpenAPIObject jastAddObject;
     OpenAPI POJOOpenAPI;
     ObjectMapper mapper = new ObjectMapper();
