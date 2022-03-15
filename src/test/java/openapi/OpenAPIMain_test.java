@@ -23,19 +23,18 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
 public class OpenAPIMain_test {
 
-  static List<File> resources;
+  static List<File> resources = new ArrayList<>();
 
-  @BeforeAll
+  @Test
   public void init() throws Exception {
     File r = new File("./src/main/resources");
     initResources(r);
-    for ( File f : resources )
-      System.out.println(f);
   }
 
   @MethodSource("getResources")
