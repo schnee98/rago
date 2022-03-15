@@ -30,9 +30,8 @@ public class OpenAPIMain_test {
   static List<File> resources;
 
   @BeforeAll
-  public void test() throws Exception {
+  public void init() throws Exception {
     File r = new File("./src/main/resources");
-
     initResources(resources, r);
   }
 
