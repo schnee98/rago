@@ -12,10 +12,7 @@ import io.swagger.v3.core.util.Yaml;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.parser.OpenAPIV3Parser;
 import io.swagger.v3.parser.core.models.SwaggerParseResult;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -46,41 +43,24 @@ public class OpenAPIMain_test {
     ObjectMapper mapper = new ObjectMapper();
     List<String> validation;
 
-    // parsed openAPI object with swagger-parser
+    // parse OpenAPI in POJO, parse Json by POJO and validate OpenAPI-Json
     SwaggerParseResult result = new OpenAPIParser().readLocation(file.getPath(), null, null);
     POJOOpenAPI = result.getOpenAPI();
     System.out.println("Loading expression DSL file '" + file + "'.");
-
-    // validation of OpenAPI in POJO
     JsonNode expectedNode = mapper.readTree(Json.mapper().writeValueAsString(POJOOpenAPI));
     validation = new OpenAPIV3Parser().readContents(expectedNode.toString()).getMessages();
-    if ( validation.size() != 0 ) {
-      System.out.println("validation failed!");
-      for ( String s : validation )
-        System.out.println(s);
-      validation.clear();
-    }
-    else
-      System.out.println("validated!");
 
-    // OpenAPI in POJO to OpenAPI in JastAdd
+    Assumptions.assumeFalse(validation.size() != 0, "validation of the input yaml not succeeded");
+
+    // parse OpenAPI in JastAdd, transform it to OpenAPI-POJO back and validate this
     jastAddObject = OpenAPIObject.parseOpenAPI(POJOOpenAPI);
-
-    // OpenAPI in JastAdd to OpenAPI in POJO
     OpenAPI transformedAPI = OpenAPIObject.reverseOpenAPI(jastAddObject);
-
-    // validation of transferred OpenAPI
     JsonNode actualNode = mapper.readTree(Json.mapper().writeValueAsString(transformedAPI));
     validation = new OpenAPIV3Parser().readContents(actualNode.toString()).getMessages();
-    if ( validation.size() != 0 ) {
-      System.out.println("validation failed!");
-      for ( String s : validation )
-        System.out.println(s);
-    }
-    else
-      System.out.println("validated");
 
-    // compare if api (source object) is equivalent to api3 (generated object)
+    Assumptions.assumeFalse(validation.size() != 0, "validation of the transformed yaml not succeeded");
+
+    // compare if parsed OpenAPI (source object, Json) is equivalent to back-transformed OpenAPI (generated object, Json)
     compareJson(expectedNode, actualNode, Paths.get(file.getPath()));
   }
 

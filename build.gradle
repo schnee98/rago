@@ -72,6 +72,7 @@ jar {
 }
 
 test {
+    testLogging.showStandardStreams = true
     useJUnitPlatform()
 
     maxHeapSize = '1G'
