@@ -10,6 +10,8 @@ stages:
 build:
   image: openjdk:11
   stage: build
+  before_script:
+    - apt-get update && apt-get -y install graphviz
   script:
     - "./gradlew relast"
     - "./gradlew assemble"
