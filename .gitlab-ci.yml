@@ -13,10 +13,12 @@ build:
   script:
     - "./gradlew relast"
     - "./gradlew assemble"
+    - "./gradlew generateGrammarDiagrams"
   artifacts:
     paths:
       - "src/gen/java"
       - "src/gen/jastadd"
+      - "src/gen/resources"
 
 test:
   image: openjdk:11
@@ -58,9 +60,6 @@ ragdoc_view:
     - OUTPUT_DIR=$(pwd -P)/pages/docs/ragdoc
     - cd /ragdoc-view/src/ && rm -rf data && ln -s $DATA_DIR
     - /ragdoc-view/build-view.sh --output-path=$OUTPUT_DIR
-  only:
-    - tests/openapi-generator
-    - main
   artifacts:
     paths:
       - "pages/docs/ragdoc"
@@ -74,10 +73,8 @@ pages:
   before_script:
     - pip install -r pages/requirements.txt
   script:
+    - cp -r src/gen/resources/diagrams/ pages/docs/diagrams
     - cd pages && mkdocs build
   artifacts:
     paths:
       - public/
-  only:
-    - tests/openapi-generator
-    - main
