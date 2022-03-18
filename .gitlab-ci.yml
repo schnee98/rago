@@ -85,6 +85,7 @@ publish_package:
   image: openjdk:11
   stage: publish
   needs:
+    - build
     - test
   script:
     - "./gradlew setDevVersionForCI"
