@@ -35,31 +35,6 @@ dependencies {
     testImplementation group: 'com.jayway.jsonpath', name: 'json-path', version: "${json_path_version}"
 }
 
-def versionFile = 'src/main/resources/version.properties'
-def oldProps = new Properties()
-
-try {
-    file(versionFile).withInputStream { stream -> oldProps.load(stream) }
-    version = oldProps['version']
-} catch (e) {
-    // this happens, if either the properties file is not present, or cannot be read from
-    throw new GradleException("File ${versionFile} not found or unreadable. Aborting.", e)
-}
-
-task printVersion() {
-    doLast {
-        println(version)
-    }
-}
-
-task newVersion() {
-    doFirst {
-        def props = new Properties()
-        props['version'] = value
-        props.store(file(versionFile).newWriter(), null)
-    }
-}
-
 buildscript {
     repositories.mavenCentral()
     dependencies {
@@ -185,15 +160,43 @@ jastadd {
     }
 }
 
+def versionFile = 'src/main/resources/version.properties'
+def oldProps = new Properties()
+
+try {
+    file(versionFile).withInputStream { stream -> oldProps.load(stream) }
+    version = oldProps['version']
+} catch (e) {
+    // this happens, if either the properties file is not present, or cannot be read from
+    throw new GradleException("File ${versionFile} not found or unreadable. Aborting.", e)
+}
+
+task printVersion() {
+    doLast {
+        println(version)
+    }
+}
+
+task newVersion() {
+    doFirst {
+        def props = new Properties()
+        props['version'] = value
+        props.store(file(versionFile).newWriter(), null)
+    }
+}
+
+task setDevVersionForCI() {
+    doFirst {
+        def props = new Properties()
+        props['version'] = version + "-$System.env.CI_PIPELINE_IID"
+        props.store(file(versionFile).newWriter(), null)
+    }
+}
 
 publishing {
     publications {
         maven(MavenPublication) {
-            artifactId = 'test-rago'
-            // from components.java
-            artifact("build/libs/rago-${version}.jar") {
-                extension 'jar'
-            }
+            from components.java
         }
     }
     repositories {

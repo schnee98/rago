@@ -87,7 +87,7 @@ publish_package:
   needs:
     - test
   script:
+    - "./gradlew setDevVersionForCI"
     - "./gradlew publish"
-  artifacts:
-    paths:
-      - "build/libs/rago-0.1.0.jar"
+  only:
+    - 8-create-maven-package
