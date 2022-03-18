@@ -26,10 +26,11 @@ test:
   script:
     - "./gradlew test"
   artifacts:
-    reports:
-      junit: "*/build/test-results/test/TEST-*.xml"
     paths:
-      - "src/gen/resources"
+      - "src/main/resources"
+    when: always
+    reports:
+      junit: build/test-results/test/**/TEST-*.xml
 
 ragdoc_build:
   image:
