@@ -20,9 +20,15 @@ repositories {
     }
 }
 
+configurations {
+    grammar2uml
+    relast
+}
+
 dependencies {
     implementation group: 'com.flipkart.zjsonpatch', name: 'zjsonpatch', version: "${json_patch_version}"
     implementation group: 'io.swagger.parser.v3', name: 'swagger-parser', version: "${swagger_parser_version}"
+    grammar2uml group: 'de.tudresden.inf.st', name: 'grammar2uml', version: "${grammar2uml_version}"
 
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: "${junit_jupiter_version}"
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: "${junit_jupiter_version}"
@@ -63,12 +69,12 @@ buildscript {
 
 
 jar {
-  manifest {
-    attributes(
-      'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
-      'Main-Class': "${mainClassName}"
-    )
-  }
+    manifest {
+        attributes(
+                'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
+                'Main-Class': "${mainClassName}"
+        )
+    }
 }
 
 test {
@@ -85,6 +91,22 @@ def relastOutputFiles = [
         "src/gen/jastadd/OpenAPISpecification.ast",
         "src/gen/jastadd/OpenAPISpecification.jadd"
 ]
+def genAst = [
+        "src/gen/jastadd/RelAst.ast"
+]
+def grammarDiagramFile = './src/gen/resources/diagrams/grammar/openapiRelast.png'
+
+
+task generateGrammarDiagrams(type: JavaExec) {
+    group = 'Documentation'
+    classpath = configurations.grammar2uml
+
+    args "--output=${grammarDiagramFile}", '--defaultFolders'
+    args genAst
+
+    inputs.files genAst
+    outputs.files file(grammarDiagramFile)
+}
 
 task relast(type: JavaExec) {
     classpath = files("libs/relast.jar")
@@ -162,6 +184,7 @@ jastadd {
         delete "src/gen-res"
     }
 }
+
 
 publishing {
     publications {
