@@ -50,7 +50,7 @@ public class OpenAPIMain_test {
     JsonNode expectedNode = mapper.readTree(Json.mapper().writeValueAsString(POJOOpenAPI));
     validation = new OpenAPIV3Parser().readContents(expectedNode.toString()).getMessages();
 
-    Assumptions.assumeFalse(validation.size() != 0, "validation of the input yaml not succeeded");
+    Assertions.assertFalse(validation.size() != 0, "validation of the input yaml not succeeded");
 
     // parse OpenAPI in JastAdd, transform it to OpenAPI-POJO back and validate this
     jastAddObject = OpenAPIObject.parseOpenAPI(POJOOpenAPI);
@@ -58,7 +58,7 @@ public class OpenAPIMain_test {
     JsonNode actualNode = mapper.readTree(Json.mapper().writeValueAsString(transformedAPI));
     validation = new OpenAPIV3Parser().readContents(actualNode.toString()).getMessages();
 
-    Assumptions.assumeFalse(validation.size() != 0, "validation of the transformed yaml not succeeded");
+    Assertions.assertFalse(validation.size() != 0, "validation of the transformed yaml not succeeded");
 
     // compare if parsed OpenAPI (source object, Json) is equivalent to back-transformed OpenAPI (generated object, Json)
     compareJson(expectedNode, actualNode, Paths.get(file.getPath()));
