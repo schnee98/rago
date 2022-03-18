@@ -5,6 +5,7 @@ apply plugin: 'java'
 apply plugin: 'jastadd'
 apply plugin: 'application'
 apply plugin: 'idea'
+apply plugin: 'maven-publish'
 
 mainClassName = 'de.tudresden.inf.st.openapi'
 
@@ -159,5 +160,35 @@ jastadd {
     cleanGen.doFirst {
         delete "src/gen"
         delete "src/gen-res"
+    }
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            artifactId = 'test-rago'
+            // from components.java
+            artifact("build/libs/rago-${version}.jar") {
+                extension 'jar'
+            }
+        }
+    }
+    repositories {
+        maven {
+            url "https://git-st.inf.tu-dresden.de/api/v4/projects/$System.env.CI_PROJECT_ID/packages/maven"
+            // Uncomment the following lines to publish manually (and comment out the other credentials section)
+//            credentials(HttpHeaderCredentials) {
+//                name = "Private-Token"
+//                value = gitLabPrivateToken // the variable resides in ~/.gradle/gradle.properties
+//            }
+            credentials(HttpHeaderCredentials) {
+                name = 'Job-Token'
+                value = System.getenv("CI_JOB_TOKEN")
+            }
+            authentication {
+                header(HttpHeaderAuthentication)
+            }
+        }
+
     }
 }
