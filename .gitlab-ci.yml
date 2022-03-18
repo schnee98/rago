@@ -89,4 +89,4 @@ publish_package:
   script:
     - "./gradlew publish"
   artifacts:
-    - build/libs/rago-0.1.0.jar
+    - "build/libs/rago-0.1.0.jar"
