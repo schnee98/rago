@@ -80,3 +80,11 @@ pages:
   artifacts:
     paths:
       - public/
+
+publish_package:
+  image: openjdk:11
+  stage: publish
+  needs:
+    - test
+  script:
+    - "./gradlew publish"
