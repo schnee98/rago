@@ -7,7 +7,7 @@ apply plugin: 'application'
 apply plugin: 'idea'
 apply plugin: 'maven-publish'
 
-mainClassName = 'de.tudresden.inf.st.openapi'
+mainClassName = 'de.tudresden.inf.st.rago'
 
 sourceCompatibility = 1.8
 

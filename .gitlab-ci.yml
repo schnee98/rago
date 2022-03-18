@@ -88,3 +88,5 @@ publish_package:
     - test
   script:
     - "./gradlew publish"
+  artifacts:
+    - build/libs/rago-0.1.0.jar
