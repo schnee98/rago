@@ -99,6 +99,7 @@ def grammarDiagramFile = './src/gen/resources/diagrams/grammar/openapiRelast.png
 task generateGrammarDiagrams(type: JavaExec) {
     group = 'Documentation'
     classpath = configurations.grammar2uml
+    main = 'de.tudresden.inf.st.jastadd.grammar2uml.compiler.Compiler'
 
     args "--output=${grammarDiagramFile}", '--defaultFolders'
     args genAst
@@ -183,3 +184,6 @@ jastadd {
         delete "src/gen-res"
     }
 }
+
+generateAst.dependsOn relast
+generateGrammarDiagrams.dependsOn generateAst
