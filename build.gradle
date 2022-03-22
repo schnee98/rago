@@ -90,9 +90,6 @@ def relastOutputFiles = [
         "src/gen/jastadd/OpenAPISpecification.ast",
         "src/gen/jastadd/OpenAPISpecification.jadd"
 ]
-def genAst = [
-        "src/gen/jastadd/RelAst.ast"
-]
 def grammarDiagramFile = './src/gen/resources/diagrams/grammar/openapiRelast.png'
 
 
@@ -102,9 +99,9 @@ task generateGrammarDiagrams(type: JavaExec) {
     main = 'de.tudresden.inf.st.jastadd.grammar2uml.compiler.Compiler'
 
     args "--output=${grammarDiagramFile}", '--defaultFolders'
-    args genAst
+    args relastInputFiles
 
-    inputs.files genAst
+    inputs.files relastInputFiles
     outputs.files file(grammarDiagramFile)
 }
 
