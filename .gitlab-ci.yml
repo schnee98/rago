@@ -71,6 +71,7 @@ pages:
   image: python:3.10.0-bullseye
   stage: publish
   needs:
+    - build
     - ragdoc_view
     - test
   before_script:
