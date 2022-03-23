@@ -12,25 +12,63 @@ import io.swagger.v3.core.util.Yaml;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.parser.OpenAPIV3Parser;
 import io.swagger.v3.parser.core.models.SwaggerParseResult;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class OpenAPIMain_test {
 
-  @Test
-  public void test() throws Exception {
-    File resource = new File("./src/main/resources");
+  static List<File> resources = new ArrayList<>();
 
-    recursiveTest(resource);
+  @BeforeAll
+  static void init() {
+    File r = new File("./src/main/resources");
+    initResources(r);
   }
 
-  protected static void compareJson(JsonNode expectedNode, JsonNode actualNode, Path path) throws IOException {
+  @MethodSource("resources")
+  @ParameterizedTest
+  void parserTest(File file) throws Exception {
+    OpenAPIObject jastAddObject;
+    OpenAPI POJOOpenAPI;
+    ObjectMapper mapper = new ObjectMapper();
+    List<String> validation;
+
+    // parse OpenAPI in POJO, parse Json by POJO and validate OpenAPI-Json
+    SwaggerParseResult result = new OpenAPIParser().readLocation(file.getPath(), null, null);
+    POJOOpenAPI = result.getOpenAPI();
+    System.out.println("Loading expression DSL file '" + file + "'.");
+    JsonNode expectedNode = mapper.readTree(Json.mapper().writeValueAsString(POJOOpenAPI));
+    validation = new OpenAPIV3Parser().readContents(expectedNode.toString()).getMessages();
+
+    Assertions.assertFalse(validation.size() != 0, "validation of the input yaml not succeeded");
+
+    // parse OpenAPI in JastAdd, transform it to OpenAPI-POJO back and validate this
+    jastAddObject = OpenAPIObject.parseOpenAPI(POJOOpenAPI);
+    OpenAPI transformedAPI = OpenAPIObject.reverseOpenAPI(jastAddObject);
+    JsonNode actualNode = mapper.readTree(Json.mapper().writeValueAsString(transformedAPI));
+    validation = new OpenAPIV3Parser().readContents(actualNode.toString()).getMessages();
+
+    Assertions.assertFalse(validation.size() != 0, "validation of the transformed yaml not succeeded");
+
+    // compare if parsed OpenAPI (source object, Json) is equivalent to back-transformed OpenAPI (generated object, Json)
+    compareJson(expectedNode, actualNode, Paths.get(file.getPath()));
+  }
+
+  static Stream<File> resources() {
+    return resources.stream();
+  }
+
+  static void compareJson(JsonNode expectedNode, JsonNode actualNode, Path path) throws IOException {
     JsonNode diff = JsonDiff.asJson(expectedNode, actualNode);
     String pathNode;
     String result = "";
@@ -72,7 +110,7 @@ public class OpenAPIMain_test {
     }
   }
 
-  protected static boolean isNumeric(String str) {
+  static boolean isNumeric(String str) {
     try {
       int d = Integer.parseInt(str);
     } catch (NumberFormatException nfe) {
@@ -81,51 +119,11 @@ public class OpenAPIMain_test {
     return true;
   }
 
-  protected static void recursiveTest(File file) throws Exception {
+  static void initResources(File file) {
     if ( file.isDirectory() ) {
       for ( File f : file.listFiles() )
-        recursiveTest(f);
-    } else if ( file.isFile() && file.getPath().contains("yaml") ) {
-      OpenAPIObject jastAddObject;
-      OpenAPI POJOOpenAPI;
-      ObjectMapper mapper = new ObjectMapper();
-      List<String> validation;
-
-      // parsed openAPI object with swagger-parser
-      SwaggerParseResult result = new OpenAPIParser().readLocation(file.getPath(), null, null);
-      POJOOpenAPI = result.getOpenAPI();
-      System.out.println("Loading expression DSL file '" + file + "'.");
-
-      // validation of OpenAPI in POJO
-      JsonNode expectedNode = mapper.readTree(Json.mapper().writeValueAsString(POJOOpenAPI));
-      validation = new OpenAPIV3Parser().readContents(expectedNode.toString()).getMessages();
-      if ( validation.size() != 0 ) {
-        System.out.println("validation failed!");
-        for ( String s : validation )
-          System.out.println(s);
-      }
-      else
-        System.out.println("validated!");
-
-      // OpenAPI in POJO to OpenAPI in JastAdd
-      jastAddObject = OpenAPIObject.parseOpenAPI(POJOOpenAPI);
-
-      // OpenAPI in JastAdd to OpenAPI in POJO
-      OpenAPI transformedAPI = OpenAPIObject.reverseOpenAPI(jastAddObject);
-
-      // validation of transferred OpenAPI
-      JsonNode actualNode = mapper.readTree(Json.mapper().writeValueAsString(transformedAPI));
-      validation = new OpenAPIV3Parser().readContents(actualNode.toString()).getMessages();
-      if ( validation.size() != 0 ) {
-        System.out.println("validation failed!");
-        for ( String s : validation )
-          System.out.println(s);
-      }
-      else
-        System.out.println("validated");
-
-      // compare if api (source object) is equivalent to api3 (generated object)
-      compareJson(expectedNode, actualNode, Paths.get(file.getPath()));
-    }
+        initResources(f);
+    } else if ( file.isFile() && file.getPath().contains("yaml") )
+      resources.add(file);
   }
 }
