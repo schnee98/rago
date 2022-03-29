@@ -1,3 +1,3 @@
 Index
 
-![](diagrams/grammar/uml.png)
+![](diagrams/grammar/openapiRelast.png)
