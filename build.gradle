@@ -5,8 +5,9 @@ apply plugin: 'java'
 apply plugin: 'jastadd'
 apply plugin: 'application'
 apply plugin: 'idea'
+apply plugin: 'maven-publish'
 
-mainClassName = 'de.tudresden.inf.st.openapi'
+mainClassName = 'de.tudresden.inf.st.rago'
 
 sourceCompatibility = 1.8
 
@@ -35,31 +36,6 @@ dependencies {
     testImplementation group: 'com.jayway.jsonpath', name: 'json-path', version: "${json_path_version}"
 }
 
-def versionFile = 'src/main/resources/version.properties'
-def oldProps = new Properties()
-
-try {
-    file(versionFile).withInputStream { stream -> oldProps.load(stream) }
-    version = oldProps['version']
-} catch (e) {
-    // this happens, if either the properties file is not present, or cannot be read from
-    throw new GradleException("File ${versionFile} not found or unreadable. Aborting.", e)
-}
-
-task printVersion() {
-    doLast {
-        println(version)
-    }
-}
-
-task newVersion() {
-    doFirst {
-        def props = new Properties()
-        props['version'] = value
-        props.store(file(versionFile).newWriter(), null)
-    }
-}
-
 buildscript {
     repositories.mavenCentral()
     dependencies {
@@ -69,12 +45,12 @@ buildscript {
 
 
 jar {
-  manifest {
-    attributes(
-      'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
-      'Main-Class': "${mainClassName}"
-    )
-  }
+    manifest {
+        attributes(
+                'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
+                'Main-Class': "${mainClassName}"
+        )
+    }
 }
 
 test {
@@ -184,5 +160,61 @@ jastadd {
     }
 }
 
-generateAst.dependsOn relast
-generateGrammarDiagrams.dependsOn generateAst
+def versionFile = 'src/main/resources/version.properties'
+def oldProps = new Properties()
+
+try {
+    file(versionFile).withInputStream { stream -> oldProps.load(stream) }
+    version = oldProps['version']
+} catch (e) {
+    // this happens, if either the properties file is not present, or cannot be read from
+    throw new GradleException("File ${versionFile} not found or unreadable. Aborting.", e)
+}
+
+task printVersion() {
+    doLast {
+        println(version)
+    }
+}
+
+task newVersion() {
+    doFirst {
+        def props = new Properties()
+        props['version'] = value
+        props.store(file(versionFile).newWriter(), null)
+    }
+}
+
+task setDevVersionForCI() {
+    doFirst {
+        def props = new Properties()
+        props['version'] = version + "-$System.env.CI_PIPELINE_IID"
+        props.store(file(versionFile).newWriter(), null)
+    }
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url "https://git-st.inf.tu-dresden.de/api/v4/projects/$System.env.CI_PROJECT_ID/packages/maven"
+            // Uncomment the following lines to publish manually (and comment out the other credentials section)
+//            credentials(HttpHeaderCredentials) {
+//                name = "Private-Token"
+//                value = gitLabPrivateToken // the variable resides in ~/.gradle/gradle.properties
+//            }
+            credentials(HttpHeaderCredentials) {
+                name = 'Job-Token'
+                value = System.getenv("CI_JOB_TOKEN")
+            }
+            authentication {
+                header(HttpHeaderAuthentication)
+            }
+        }
+
+    }
+}
