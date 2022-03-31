@@ -28,9 +28,14 @@ OpenAPIObject ::=   <OpenAPI> <JsonSchemaDialect> I:InfoObject Serv:ServerObject
 
 There are some implementation details developers must consider:
 
-- JastAdd doesn't support `Map`. So, it must be constructed in a tuple (AST-Node). e.g. `ServerVariablesTuple ::= <Name> S:ServerVariableObject;` <-> `variables` in [Server Object](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#serverObject)
+- JastAdd doesn't support `Map`. So, it must be constructed in a tuple (AST-Node). e.g.
+  - `ServerVariablesTuple ::= <Name> S:ServerVariableObject;` 
+  - `variables` in [Server Object](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#serverObject)
 
-- In OAS, several objects can be replaced by [Reference Object](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#referenceObject). In `RAGO`, we implemented this structure in an abstract node to every concerned object. e.g. [Parameter Object](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#parameterObject) 
+- In OAS, several objects can be replaced by [Reference Object](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#referenceObject). In `RAGO`, we implemented this structure in an abstract node to every concerned object. e.g. 
+    - [Parameter Object](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#parameterObject)
+    - following abstract node in JastAdd
+
   ``` 
   abstract ParameterOb;
   ParameterReference : ParameterOb ::= <Ref> ...;
