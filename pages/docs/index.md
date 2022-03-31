@@ -10,7 +10,7 @@ First of all, This tool parses [an OpenAPI specification (Swagger)](https://swag
 ![](img/parser.png)
 
 
-After a parsing phase, `RAGO` is prepared to generate tests automatically in two different ways based on Fuzzing, `Random Testing` and `Parameter Inference`
+After the parsing phase, `RAGO` is prepared to generate tests automatically in two different ways based on Fuzzing, `Random Testing` and `Parameter Inference`.
 
 ## OpenAPI in RAG
 
@@ -18,6 +18,12 @@ After a parsing phase, `RAGO` is prepared to generate tests automatically in two
 - Short mention of OpenAPI
 - UML for OpenAPIObject
 - Relast for OpenAPIObject
+
+![](img/openapi.png)
+
+```
+OpenAPIObject ::= <OpenAPI> <JsonSchemaDialect> I:InfoObject Serv:ServerObject* P:PathsObject* W:Webhook* C:ComponentsObject Sr:SecurityRequirementObject* T:TagObject* [E:ExternalDocObject] Ex:Extension*;
+```
 
 ## Fuzzing Methods
 
