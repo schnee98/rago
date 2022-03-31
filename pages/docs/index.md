@@ -7,7 +7,7 @@
 
 First of all, This tool parses [an OpenAPI specification (Swagger)](https://swagger.io/specification/) in Java classes and transfers it into JastAdd Objects. These Objects are able to be re-transformed and saved in JSON which describes its API Specification, if needed.
 
-![](img/parser.svg)
+![](img/parser.png)
 
 
 After a parsing phase, `RAGO` is prepared to generate tests automatically in two different ways based on Fuzzing, `Random Testing` and `Parameter Inference`
