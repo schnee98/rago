@@ -43,6 +43,7 @@ There are some implementation details developers must consider:
   ParameterObject : ParameterOb ::= <Name> <In> ...;
  ```
 
+
 - Most objects can be extended with `Extension` containing unfixed name and values. In JastAdd, this is also implemented in a tuple (AST-Node) `Extension ::= <Key> <Value:Object>;`
 
 ## Fuzzing in RAGO
