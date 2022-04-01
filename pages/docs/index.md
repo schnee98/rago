@@ -32,16 +32,15 @@ There are some implementation details developers must consider:
     - `ServerVariablesTuple ::= <Name> S:ServerVariableObject;` 
     - `variables` in [Server Object](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#serverObject)
 
-- In OAS, several objects can be replaced by [Reference Object](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#referenceObject). In `RAGO`, we implemented this structure in an abstract node to every concerned object. e.g. 
-    - [Parameter Object](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#parameterObject)
-    - following abstract node in JastAdd
-  
-<br></br>
+- In OAS, several objects can be replaced by [Reference Object](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#referenceObject). In `RAGO`, we implemented this structure in an abstract node to every concerned object. 
+
+
 ``` 
   abstract ParameterOb;
   ParameterReference : ParameterOb ::= <Ref> ...;
   ParameterObject : ParameterOb ::= <Name> <In> ...;
  ```
+Example to implementation of [Reference Object](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#referenceObject)
 
 
 - Most objects can be extended with `Extension` containing unfixed name and values. In JastAdd, this is also implemented in a tuple (AST-Node) `Extension ::= <Key> <Value:Object>;`
