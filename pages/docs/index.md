@@ -36,7 +36,7 @@ There are some implementation details developers must consider:
     - [Parameter Object](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#parameterObject)
     - following abstract node in JastAdd
   
-
+<br></br>
 ``` 
   abstract ParameterOb;
   ParameterReference : ParameterOb ::= <Ref> ...;
@@ -48,7 +48,7 @@ There are some implementation details developers must consider:
 
 ## Fuzzing in RAGO
 
-To generate API tests automatically, `RAGO` supports two following techniques based on Fuzzing, which involves  providing invalid, unexpected, or random data as inputs to an API.
+To generate API tests automatically, `RAGO` supports two following techniques based on Fuzzing which involves providing invalid, unexpected, or random data as inputs to an API.
 
 In this first version, this tool considers only two request types, `GET` and `POST`, and parameters. It means that `RAGO` currently generates only URLs.
 
