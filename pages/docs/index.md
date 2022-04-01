@@ -29,8 +29,8 @@ OpenAPIObject ::=   <OpenAPI> <JsonSchemaDialect> I:InfoObject Serv:ServerObject
 There are some implementation details developers must consider:
 
 - JastAdd doesn't support `Map`. So, it must be constructed in a tuple (AST-Node). e.g.
-  - `ServerVariablesTuple ::= <Name> S:ServerVariableObject;` 
-  - `variables` in [Server Object](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#serverObject)
+    - `ServerVariablesTuple ::= <Name> S:ServerVariableObject;` 
+    - `variables` in [Server Object](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#serverObject)
 
 - In OAS, several objects can be replaced by [Reference Object](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#referenceObject). In `RAGO`, we implemented this structure in an abstract node to every concerned object. e.g. 
     - [Parameter Object](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#parameterObject)
@@ -44,8 +44,19 @@ There are some implementation details developers must consider:
 
 - Most objects can be extended with `Extension` containing unfixed name and values. In JastAdd, this is also implemented in a tuple (AST-Node) `Extension ::= <Key> <Value:Object>;`
 
-## Fuzzing Methods
+## Fuzzing in RAGO
+
+To generate API tests automatically, `RAGO` supports two following techniques based on Fuzzing, which involves  providing invalid, unexpected, or random data as inputs to an API.
+
+In this first version, this tool considers only two request types, `GET` and `POST`, and parameters. It means that `RAGO` currently generates only URLs.
 
 ### <a name="ragoRandTest"></a>Random Testing
 
+Random testing is based on the simple randomizer, `RandomRequestGenerator`. This generator reads an `OpenAPIObject` mapped by an OpenAPI documentation and checks all parameter types of operations existing in the `OpenAPIObject`.
+
+
+`RandomRequestGenerator` knows which request needs which parameter type and generates random parameters for all requests and URLs appending these parameters.
+
+
 ### <a name="ragoParamInf"></a>Parameter Inference
+
