@@ -1,4 +1,5 @@
-/*import com.fasterxml.jackson.databind.JsonNode;
+/*
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
@@ -144,60 +145,5 @@ aspect InferParameter{
       writeDictionary(schema.schemaObject().getItemsSchema().getSchemaOb(), props.next().toString());
 
   }
-
-  public void Get.connectGET(String path){
-
-    try {
-      URL url = new URL(path);
-      HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
-      con.setRequestProperty("User-Agent", "Mozilla/5.0"); // add request header
-
-      con.setRequestMethod("GET"); // optional default is GET
-
-      int responseCode = con.getResponseCode();
-      BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-      String inputLine;
-      StringBuffer response = new StringBuffer();
-
-      while ((inputLine = in.readLine()) != null) {
-        response.append(inputLine);
-      }
-      in.close();
-
-      // print result
-      System.out.println("Inferred path : " + path);
-      System.out.println("HTTP status code (GET) : " + responseCode);
-    } catch (Exception e) {
-      System.out.println(e.toString());
-    }
-  }
-
-  public void Post.connectPOST(String path){
-    try {
-      URL url = new URL(path);
-      HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
-
-      con.setRequestMethod("POST"); // HTTP POST
-      con.setRequestProperty("User-Agent", "Mozilla/5.0"); // add request header
-      con.setDoOutput(true); // POST
-
-      int responseCode = con.getResponseCode();
-      BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-      String inputLine;
-      StringBuffer response = new StringBuffer();
-
-      while ((inputLine = in.readLine()) != null) {
-        response.append(inputLine);
-      }
-      in.close();
-
-      // print result
-      System.out.println("Inferred path : " + path);
-      System.out.println("HTTP status code (POST) : " + responseCode);
-    } catch (Exception e) {
-      System.out.println(e.toString());
-    }
-  }
 }
-
  */

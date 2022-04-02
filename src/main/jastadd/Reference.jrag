@@ -1,4 +1,3 @@
-/*
 import java.util.*;
 aspect Reference {
 
@@ -42,7 +41,7 @@ aspect Reference {
   eq ParameterReference.parameterObject() {
     for (ParameterTuple t : root().parameterTuples()) {
       if (t.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1, getRef().length())))
-        return t.getParameterOb().parameterObject();
+        return t.getO().parameterObject();
     }
     return new ParameterObject();
   }
@@ -52,7 +51,7 @@ aspect Reference {
   eq SchemaReference.schemaObject() {
     for (SchemaTuple t : root().schemaTuples()) {
       if (t.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1, getRef().length())))
-        return t.getSchemaOb().schemaObject();
+        return t.getO().schemaObject();
     }
     return new SchemaObject();
   }
@@ -62,7 +61,7 @@ aspect Reference {
   eq RequestBodyReference.requestBodyObject() {
     for (RequestBodyTuple t : root().requestBodyTuples()) {
       if (t.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1, getRef().length())))
-        return t.getRequestBodyOb().requestBodyObject();
+        return t.getO().requestBodyObject();
     }
     return new RequestBodyObject();
   }
@@ -72,7 +71,7 @@ aspect Reference {
   eq ResponseReference.responseObject() {
     for (ResponseTuple t : root().responseTuples()) {
       if (t.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1, getRef().length())))
-        return t.getResponseOb().responseObject();
+        return t.getO().responseObject();
     }
     return new ResponseObject();
   }
@@ -82,7 +81,7 @@ aspect Reference {
   eq CallbackReference.callbackObject() {
     for (CallbackTuple t : root().callbackTuples()) {
       if (t.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1, getRef().length())))
-        return t.getCallbackOb().callbackObject();
+        return t.getO().callbackObject();
     }
     return new CallbackObject();
   }
@@ -92,7 +91,7 @@ aspect Reference {
   eq LinkReference.linkObject() {
     for (LinkTuple t : root().linkTuples()) {
       if (t.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1, getRef().length())))
-        return t.getLinkOb().linkObject();
+        return t.getO().linkObject();
     }
     return new LinkObject();
   }
@@ -102,7 +101,7 @@ aspect Reference {
   eq HeaderReference.headerObject() {
     for (HeaderTuple t : root().headerTuples()) {
       if (t.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1, getRef().length())))
-        return t.getHeaderOb().headerObject();
+        return t.getO().headerObject();
     }
     return new HeaderObject();
   }
@@ -112,10 +111,9 @@ aspect Reference {
   eq SecuritySchemeReference.securitySchemeObject() {
     for (SecuritySchemeTuple t : root().securitySchemeTuples()) {
       if (t.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1, getRef().length())))
-        return t.getSecuritySchemeOb().securitySchemeObject();
+        return t.getO().securitySchemeObject();
     }
     return new SecuritySchemeObject();
   }
 
 }
-*/

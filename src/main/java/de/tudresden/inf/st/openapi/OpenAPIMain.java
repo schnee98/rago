@@ -2,6 +2,7 @@ package de.tudresden.inf.st.openapi;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.tudresden.inf.st.openapi.ast.OpenAPIObject;
 import io.swagger.models.reader.SwaggerParser;
 import io.swagger.parser.OpenAPIParser;
 import io.swagger.report.MessageBuilder;
@@ -19,8 +20,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,43 +30,13 @@ public class OpenAPIMain {
      * main-method, calls the set of methods to test the OpenAPI-Generator with JastAdd
      **/
     public static void main(String[] args) throws Exception {
-        List<String> filenames = new ArrayList<>();
-        String genDir = "./gen-api-ex/";
-        File genDirectory = new File(genDir);
-        File[] contents;
-        File resource = new File("./src/main/resources");
-
-        // init parser
         String fileName = "./src/main/resources/3.0/petstore.yaml";
-        /*
-        ParseOptions options = new ParseOptions();
-        options.setResolve(true);
-        options.setResolveFully(true);
-        options.setAllowEmptyString(false);
-         */
+        OpenAPIObject jastAddObject;
         SwaggerParseResult result = new OpenAPIParser().readLocation(fileName, null, null);
-
-        String resultString;
         OpenAPI openAPI = result.getOpenAPI();
+        List<String> generatedURLs = new ArrayList<>();
 
-        OpenAPIDeserializer deserializer = new OpenAPIDeserializer();
-        String res = Json.mapper().writeValueAsString(openAPI);
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode node = mapper.readTree(res);
-        //System.out.println(node.toPrettyString());
-
-
-        /** OpenAPI Validator! **/
-        List<String> validation = new OpenAPIV3Parser().readContents(res).getMessages();
-        for(String mes : validation)
-            System.out.println("message : " + mes);
-
-
-        //Json.mapper().createParser(Json.mapper().writeValueAsString(openAPI)).
-
-        // Yaml String
-        //System.out.println(Yaml.mapper().writerWithDefaultPrettyPrinter().writeValueAsString(openAPI));
-        //resultString = Yaml.mapper().writerWithDefaultPrettyPrinter().writeValueAsString(openAPI);
+        jastAddObject = OpenAPIObject.parseOpenAPI(openAPI);
 
         URL expUrl = OpenAPIMain.class.getClassLoader().getResource(fileName);
         File file = null;
@@ -85,6 +54,62 @@ public class OpenAPIMain {
         if (args.length > 0) {
             fileName = args[0];
         }
+    }
 
+    public void sendRandomRequests() {}
+
+    public void sendInferredRequests(List<String> randomRequests) {}
+
+    public void connectGET(String path){
+        try {
+            URL url = new URL(path);
+            HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
+            con.setRequestProperty("User-Agent", "Mozilla/5.0"); // request header
+
+            con.setRequestMethod("GET"); // optional default is GET
+
+            int responseCode = con.getResponseCode();
+            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+            String inputLine;
+            StringBuffer response = new StringBuffer();
+
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+
+            // print result
+            System.out.println("connected path : " + path);
+            System.out.println("HTTP status code (GET) : " + responseCode);
+        } catch (Exception e) {
+            System.out.println(e.toString());
+        }
+    }
+
+    public void connectPOST(String path){
+        try {
+            URL url = new URL(path);
+            HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
+
+            con.setRequestMethod("POST"); // HTTP POST
+            con.setRequestProperty("User-Agent", "Mozilla/5.0"); // request header
+            con.setDoOutput(true); // POST
+
+            int responseCode = con.getResponseCode();
+            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+            String inputLine;
+            StringBuffer response = new StringBuffer();
+
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+
+            // print result
+            System.out.println("connected path : " + path);
+            System.out.println("HTTP status code (POST) : " + responseCode);
+        } catch (Exception e) {
+            System.out.println(e.toString());
+        }
     }
 }
