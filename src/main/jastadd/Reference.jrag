@@ -36,6 +36,20 @@ aspect Reference {
         CallbackTuple contributes this
         to OpenAPIObject.callbackTuples();
 
+        coll List<PathItemTuple> OpenAPIObject.pathItemTuples() [new ArrayList<>()] root OpenAPIObject;
+        PathItemTuple contributes this
+        to OpenAPIObject.pathItemTuples();
+
+  syn PathItemObject PathItemOb.pathItemObject();
+  eq PathItemObject.pathItemObject() = this;
+  eq PathItemReference.pathItemObject() {
+      for (PathItemTuple t : root().pathItemTuples()) {
+          if (t.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1, getRef().length())))
+              return t.getO().pathItemObject();
+      }
+      return new PathItemObject();
+  }
+
   syn ParameterObject ParameterOb.parameterObject();
   eq ParameterObject.parameterObject() = this;
   eq ParameterReference.parameterObject() {

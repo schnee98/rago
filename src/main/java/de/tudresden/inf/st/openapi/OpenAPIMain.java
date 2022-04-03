@@ -35,8 +35,11 @@ public class OpenAPIMain {
         SwaggerParseResult result = new OpenAPIParser().readLocation(fileName, null, null);
         OpenAPI openAPI = result.getOpenAPI();
         List<String> generatedURLs = new ArrayList<>();
+        List<String> dictionary = new ArrayList<>();
 
         jastAddObject = OpenAPIObject.parseOpenAPI(openAPI);
+
+        generatedURLs = jastAddObject.generateRequests();
 
         URL expUrl = OpenAPIMain.class.getClassLoader().getResource(fileName);
         File file = null;

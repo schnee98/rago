@@ -40,39 +40,40 @@ aspect RandomRequestGenerator{
     return pathRef;
   }
 
-  syn boolean OpenAPIObject.generateRequests(){
+  syn List<String> OpenAPIObject.generateRequests(){
+    List<String> urls = new ArrayList<>();
     try {
       for (PathsObject p : getPList())
-        p.generateUrl();
+        urls.addAll(p.generateUrl());
     } catch (Exception e) {
-      return false;
+      System.out.println(e.toString());
+      return null;
     }
-    return true;
+    return urls;
   }
 
-  inh boolean PathsObject.generateUrl();
+  inh List<String> PathsObject.generateUrl();
   eq OpenAPIObject.getP(int i).generateUrl(){
-          /*
+    List<String> urls = new ArrayList<>();
     try {
-      PathItemObject p = getPathsObject(i).getPathItemObject();
-      String path = getServerObject(0).getUrl();
+      PathItemObject p = getP(i).getP().pathItemObject();
+      String path = getServ(0).getUrl();
 
-      if (p.hasGet())
-        p.getGet().generateRandomUrl(path + getPathsObject(i).getRef());
-      else if (p.hasPost())
-        p.getPost().generateRandomUrl(path + getPathsObject(i).getRef());
+      if (p.hasG())
+        urls.add(p.getG().generateRandomUrl(path + getP(i).getRef()));
+      else if (p.hasPostOb())
+        urls.add(p.getPostOb().generateRandomUrl(path + getP(i).getRef()));
 
-      return true;
+      return urls;
     } catch (Exception e) {
-      return false;
-    }*/
-    return true;
+      System.out.println(e.toString());
+      return null;
+    }
   }
 
-  syn boolean Get.generateRandomUrl(String pathRef){
-          /*
+  syn String Get.generateRandomUrl(String pathRef){
     try {
-      for (ParameterOb o : getOperationObject().getParameterObs()) {
+      for (ParameterOb o : getO().getPList()) {
         ParameterObject p = o.parameterObject();
         if (p.getIn().equals("path"))
           pathRef = p.randomPathParameter(pathRef);
@@ -80,28 +81,15 @@ aspect RandomRequestGenerator{
           pathRef = p.randomQueryParameter(pathRef);
       }
       System.out.println("Generated path : " + pathRef);
-
-      for (ResponseTuple t : getOperationObject().getResponseTuples()) {
-        if (t.getKey().equals("200") && responseCode == 200) {
-          //System.out.println("Response successfully saved!");
-          SchemaOb respSchema = t.getResponseOb().responseObject().getContentTuple(0).getMediaTypeObject().getSchemaOb();
-          if (respSchema.schemaObject().getType().equals("array"))
-            getOperationObject().writeDictionaryWithArray(respSchema, response.toString());
-          else
-            getOperationObject().writeDictionary(respSchema, response.toString());
-        }
-      }
-      return true;
+      return pathRef;
     } catch (Exception e) {
       System.out.println(e.toString());
-      return false;
-    }*/
-    return true;
+      return null;
+    }
   }
-  syn boolean Post.generateRandomUrl(String pathRef){
-          /*
+  syn String Post.generateRandomUrl(String pathRef){
     try {
-      for (ParameterOb o : getOperationObject().getParameterObs()) {
+      for (ParameterOb o : getO().getPList()) {
         ParameterObject p = o.parameterObject();
         if (p.getIn().equals("path"))
           pathRef = p.randomPathParameter(pathRef);
@@ -109,23 +97,11 @@ aspect RandomRequestGenerator{
           pathRef = p.randomQueryParameter(pathRef);
       }
       System.out.println("Generated path : " + pathRef);
-
-      for (ResponseTuple t : getOperationObject().getResponseTuples()) {
-        if (t.getKey().equals("200") && responseCode == 200) {
-          //System.out.println("Response successfully saved!");
-          SchemaOb respSchema = t.getResponseOb().responseObject().getContentTuple(0).getMediaTypeObject().getSchemaOb();
-          if (respSchema.schemaObject().getType().equals("array"))
-            getOperationObject().writeDictionaryWithArray(respSchema, response.toString());
-          else
-            getOperationObject().writeDictionary(respSchema, response.toString());
-        }
-      }
-      return true;
+      return pathRef;
     } catch (Exception e) {
       System.out.println(e.toString());
-      return false;
-    }*/
-    return true;
+      return null;
+    }
   }
 
   syn String ParameterObject.generateRandomString(Random rand,JastAddList<EnumObj> objs){
