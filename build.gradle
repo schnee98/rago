@@ -83,9 +83,6 @@ task generateGrammarDiagrams(type: JavaExec) {
     outputs.files file(grammarDiagramFile)
 }
 
-// task generateRandomRequests
-// task generateInferredRequests
-
 task relast(type: JavaExec) {
     classpath = files("libs/relast.jar")
     group = 'Build'
