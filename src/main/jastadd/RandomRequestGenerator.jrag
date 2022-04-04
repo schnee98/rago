@@ -1,14 +1,13 @@
 aspect RandomRequestGenerator{
 
   syn String ParameterObject.randomPathParameter(String pathRef){
-    Random rand = new Random();
     SchemaObject s = getSchema().schemaObject();
     String pathPart = pathRef.substring(pathRef.indexOf("{"), pathRef.indexOf("}") + 1);
 
     if (s.getType().equals("string"))
-      pathRef = pathRef.replace(pathPart, generateRandomString(rand, s.getEList()));
+      pathRef = pathRef.replace(pathPart, generateRandomString(s.getEList()));
     else if (s.getType().equals("integer"))
-      pathRef = pathRef.replace(pathPart, generateRandomInt(rand,
+      pathRef = pathRef.replace(pathPart, generateRandomInt(
               -1, // s.getMinimum() != null ? s.getMinimum().intValue() : -1,
               10 // s.getMaximum() != null ? s.getMaximum().intValue() : -1
       ));
@@ -16,22 +15,21 @@ aspect RandomRequestGenerator{
   }
 
   syn String ParameterObject.randomQueryParameter(String pathRef){
-    Random rand = new Random();
     SchemaObject s = getSchema().schemaObject();
 
     if (s.getType().equals("string"))
-      pathRef = pathRef + "?" + getName() + "=" + generateRandomString(rand, s.getEList());
+      pathRef = pathRef + "?" + getName() + "=" + generateRandomString(s.getEList());
     else if (s.getType().equals("integer"))
-      pathRef = pathRef + "?" + getName() + "=" + generateRandomInt(rand,
+      pathRef = pathRef + "?" + getName() + "=" + generateRandomInt(
               -1, // s.getMinimum() != null ? s.getMinimum().intValue() : -1,
               10); // s.getMaximum() != null ? s.getMaximum().intValue() : -1
     else if (s.getType().equals("array")) {
       if (s.getI().getSchema().schemaObject().getType().equals("string")) {
         for (EnumObj e : s.getI().getSchema().schemaObject().getEList())
-          pathRef = rand.nextDouble() < 0.5 ? pathRef + "&" + getName() + "=" + e.getEnumOb() : pathRef;
+          pathRef = pathWithEnum(e, pathRef);
       } else if (s.getI().getSchema().schemaObject().getType().equals("integer")) {
         for (int i = 0; i < 5; i++)
-          pathRef = pathRef + "&" + getName() + "=" + generateRandomInt(rand,
+          pathRef = pathRef + "&" + getName() + "=" + generateRandomInt(
                   -1, // s.getMinimum() != null ? s.getMinimum().intValue() : -1,
                   10); // s.getMaximum() != null ? s.getMaximum().intValue() : -1
       }
@@ -104,7 +102,8 @@ aspect RandomRequestGenerator{
     }
   }
 
-  syn String ParameterObject.generateRandomString(Random rand,JastAddList<EnumObj> objs){
+  public String ParameterObject.generateRandomString(JastAddList<EnumObj> objs){
+    Random rand = new Random();
     if (objs.getNumChild() != 0)
       return objs.getChild(rand.nextInt(objs.getNumChild())).getEnumOb().toString();
 
@@ -115,7 +114,8 @@ aspect RandomRequestGenerator{
         .toString();
   }
 
-  syn String ParameterObject.generateRandomInt(Random rand,int minimum,int maximum){
+  public String ParameterObject.generateRandomInt(int minimum,int maximum){
+    Random rand = new Random();
     if (minimum > -1 && maximum > 0)
       return String.valueOf(rand.nextInt(minimum + maximum) - minimum);
     else if (minimum > -1)
@@ -123,5 +123,19 @@ aspect RandomRequestGenerator{
     else if (maximum > 0)
       return String.valueOf(rand.nextInt(maximum));
     return String.valueOf(rand.nextInt());
+  }
+
+  public String ParameterObject.pathWithEnum(EnumObj e, String pathRef){
+    Random rand = new Random();
+    return rand.nextDouble() < 0.5 ?
+            pathRef + "&" + this.getName() + "=" + e.getEnumOb() : pathRef;
+  }
+
+  syn String OpenAPIObject.getURLFromGeneratedURLs(List<String> urls, String ref){
+    for( String url : urls ){
+      if( url.contains(ref) )
+        return url;
+    }
+    return null;
   }
 }

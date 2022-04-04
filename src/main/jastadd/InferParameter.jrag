@@ -1,149 +1,140 @@
-/*
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 aspect InferParameter{
-  syn String PropertyItem.writePropertyName(SchemaOb schema,PropertyItem p)=((SchemaReference) schema).getRef().substring(((SchemaReference) schema).getRef().lastIndexOf("/") + 1) + p.getName();
 
-  syn String PropertyItem.writePropertyValue(JsonNode node,PropertyItem p)=node.get(p.getName()).toString().startsWith("\"") && node.get(p.getName()).toString().endsWith("\"") ? node.get(p.getName()).toString().substring(1, node.get(p.getName()).toString().length() - 1) : node.get(p.getName()).toString();
+  syn String ParameterObject.dictName(String dict) = dict.substring(0, dict.indexOf("?"));
+  syn String ParameterObject.dictValue(String dict) = dict.substring(dict.indexOf("?")+1);
 
-  coll Set<InferredParameter> OpenAPIObject.collectInferredParameters()[new HashSet<InferredParameter>()];
-  InferredParameter contributes this
-    to OpenAPIObject.collectInferredParameters();
+  inh List<String> PathsObject.inferUrl(List<String> dict);
+  eq OpenAPIObject.getP(int i).inferUrl(List<String> dict){
+    List<String> paths = new ArrayList<>();
+    PathItemObject p = getP(i).getP().pathItemObject();
+    String path = getServ(0).getUrl();
 
-  syn String InferredParameter.name()=getParameter().substring(0, getParameter().indexOf("?"));
-  syn String InferredParameter.value()=getParameter().substring(getParameter().indexOf("?") + 1);
+    if (p.hasG())
+      paths.addAll(p.getG().inferRandomUrl(path + getP(i).getRef(), p.getG().getO(), dict));
+    else if (p.hasPostOb())
+      paths.addAll(p.getPostOb().inferRandomUrl(path + getP(i).getRef(), p.getPostOb().getO(), dict));
 
-  public void OpenAPIObject.generateRequestsWithInferredParameters()throws Exception{
-    Set<String> urls = new HashSet<>();
-
-    generateRequests();
-
-    for (PathsObject p : getPathsObjects())
-      p.inferUrl();
+    return paths;
   }
 
-  inh boolean PathsObject.inferUrl();
-  eq OpenAPIObject.getPathsObject(int i).inferUrl(){
-    PathItemObject p = getPathsObject(i).getPathItemObject();
-    String path = getServerObject(0).getUrl();
-
-    if (p.hasGet())
-      p.getGet().inferRandomUrl(path + getPathsObject(i).getRef(), p.getGet().getOperationObject());
-    else if (p.hasPost())
-      p.getPost().inferRandomUrl(path + getPathsObject(i).getRef(), p.getPost().getOperationObject());
-
-    return true;
-  }
-
-  syn String Get.inferRandomUrl(String pathRef,OperationObject operationObject){
+  syn List<String> Get.inferRandomUrl(String pathRef,OperationObject operationObject, List<String> dict){
     List<String> paths = new ArrayList<>();
 
-    for (ParameterOb o : operationObject.getParameterObs()) {
+    for (ParameterOb o : operationObject.getPList()) {
       ParameterObject p = o.parameterObject();
-      SchemaObject s = p.getSchemaOb().schemaObject();
+      SchemaObject s = p.getSchema().schemaObject();
 
       // check if the parameter is in type 'path'.
       if (p.getIn().equals("path"))
-        paths = p.addinfPathParameters(pathRef, paths);
+        paths = p.addinfPathParameters(pathRef, dict);
         // check if the parameter is in type 'query'
       else if (p.getIn().equals("query"))
-        paths = p.addinfQueryParameters(pathRef, paths);
-
-      System.out.println(paths.size() + " Paths are inferred.");
+        paths = p.addinfQueryParameters(pathRef, dict);
     }
-    for (String path : paths)
-      connectGET(path);
-    return pathRef;
+
+    System.out.println(paths.size() + " paths for " + pathRef + " GET request are inferred");
+    return paths;
   }
 
-  syn String Post.inferRandomUrl(String pathRef,OperationObject operationObject){
+  syn List<String> Post.inferRandomUrl(String pathRef,OperationObject operationObject, List<String> dict){
     List<String> paths = new ArrayList<>();
 
-    for (ParameterOb o : operationObject.getParameterObs()) {
+    for (ParameterOb o : operationObject.getPList()) {
       ParameterObject p = o.parameterObject();
-      SchemaObject s = p.getSchemaOb().schemaObject();
+      SchemaObject s = p.getSchema().schemaObject();
 
       // check if the parameter is in type 'path'.
       if (p.getIn().equals("path"))
-        paths = p.addinfPathParameters(pathRef, paths);
+        paths = p.addinfPathParameters(pathRef, dict);
         // check if the parameter is in type 'query'
       else if (p.getIn().equals("query"))
-        paths = p.addinfQueryParameters(pathRef, paths);
-
-      System.out.println(paths.size() + " Paths are inferred.");
+        paths = p.addinfQueryParameters(pathRef, dict);
     }
-    for (String path : paths)
-      connectPOST(path);
-    return pathRef;
+
+    System.out.println(paths.size() + " paths for " + pathRef + " POST request are inferred");
+    return paths;
   }
 
-  syn List<String> ParameterObject.addinfPathParameters(String pathRef,List<String> paths){
-    for (InferredParameter i : root().collectInferredParameters()) {
+  syn List<String> ParameterObject.addinfPathParameters(String pathRef,List<String> dict){
+    List<String> paths = new ArrayList<>();
+    for (String d : dict){
       // get the field which must be modified
-      String pathPart = pathRef.substring(pathRef.indexOf("{"), pathRef.indexOf("}") + 1);
+      String pathPart = pathRef.substring(pathRef.indexOf("{"), pathRef.indexOf("}")+1);
       // case insensitive comparison of parameter name and name of inferred parameters
-      if (getName().equalsIgnoreCase(i.name()))
+      if (getName().equalsIgnoreCase(d.substring(0, d.indexOf("?"))))
         // add inferred parameter in url
-        paths.add(pathRef.replace(pathPart, i.value()));
+        paths = root().addInList(paths, pathRef.replace(pathPart, d.substring(d.indexOf("?")+1)));
     }
     return paths;
   }
 
-  syn List<String> ParameterObject.addinfQueryParameters(String pathRef,List<String> paths){
-    SchemaObject s = getSchemaOb().schemaObject();
+  syn List<String> ParameterObject.addinfQueryParameters(String pathRef,List<String> dict){
+    List<String> paths = new ArrayList<>();
+    SchemaObject s = getSchema().schemaObject();
     // check if query parameter is in type 'array'
     if (s.getType().equals("array")) {
-      for (InferredParameter i : root().collectInferredParameters()) {
+      for (String d : dict){
         // case insensitive comparison of parameter name and name of inferred parameters
-        if (getName().equalsIgnoreCase(i.name()))
+        if (getName().equalsIgnoreCase(dictName(d)) && !pathRef.contains(getName() + "=" + dictValue(d)))
           // add inferred parameter in url
-          pathRef = pathRef + "&" + getName() + "=" + i.value();
+          pathRef = pathRef + "&" + getName() + "=" + dictValue(d);
       }
-      paths.add(pathRef.replaceFirst("&", "?"));
+      paths = root().addInList(paths, pathRef.replaceFirst("&", "?"));
     } else {
-      for (InferredParameter i : root().collectInferredParameters()) {
+      for (String d : dict){
         // case insensitive comparison of parameter name and name of inferred parameters
-        if (getName().equalsIgnoreCase(i.name()))
+        if (getName().equalsIgnoreCase(dictName(d)))
           // add inferred parameter in url
-          paths.add(pathRef + "?" + getName() + "=" + i.value());
+          paths = root().addInList(paths, pathRef + "?" + getName() + "=" + dictValue(d));
       }
     }
     return paths;
   }
 
-  public void OperationObject.writeDictionary(SchemaOb schema,String resp)throws Exception{
+  public List<String> OperationObject.writeDictionary(SchemaOb schema,String resp, List<String> dict)throws Exception{
     ObjectMapper mapper = new ObjectMapper();
     JsonNode respNode = mapper.readTree(resp);
     String value;
 
     if (schema instanceof SchemaReference) {
-      for (PropertyItem p : schema.schemaObject().getPropertyItems()) {
-        String infName = p.writePropertyName(schema, p);
-        value = p.writePropertyValue(respNode, p);
+      for (PropertyItem p : schema.schemaObject().getPList()) {
+        String infName = ((SchemaReference) schema).getRef().substring(((SchemaReference) schema).getRef().lastIndexOf("/") + 1) + p.getName();
+        value = respNode.get(p.getName()).toString().startsWith("\"") &&
+                respNode.get(p.getName()).toString().endsWith("\"") ?
+                respNode.get(p.getName()).toString().substring(1, respNode.get(p.getName()).toString().length() - 1) : respNode.get(p.getName()).toString();
 
-        root().addInferredParameter(new InferredParameter(infName + "?" + value));
-        root().addInferredParameter(new InferredParameter(p.getName() + "?" + value));
+        dict = root().addInList(dict, infName + "?" + value);
+        dict = root().addInList(dict, p.getName() + "?" + value);
       }
     } else {
-      for (PropertyItem p : schema.schemaObject().getPropertyItems()) {
-        value = p.writePropertyValue(respNode, p);
+      for (PropertyItem p : schema.schemaObject().getPList()) {
+        value = respNode.get(p.getName()).toString().startsWith("\"") &&
+                respNode.get(p.getName()).toString().endsWith("\"") ?
+                respNode.get(p.getName()).toString().substring(1, respNode.get(p.getName()).toString().length() - 1) : respNode.get(p.getName()).toString();
 
-        root().addInferredParameter(new InferredParameter(p.getName() + "?" + respNode.get(p.getName()).textValue()));
+        dict = root().addInList(dict, p.getName() + "?" + respNode.get(p.getName()).textValue());
       }
     }
-
+    return dict;
   }
 
-  public void OperationObject.writeDictionaryWithArray(SchemaOb schema,String resp)throws Exception{
+  public List<String> OperationObject.writeDictionaryWithArray(SchemaOb schema,String resp, List<String> dict)throws Exception{
     ObjectMapper mapper = new ObjectMapper();
     ArrayNode respNode = ((ArrayNode) mapper.readTree(resp));
     Iterator<JsonNode> props = respNode.elements();
 
     while (props.hasNext())
-      writeDictionary(schema.schemaObject().getItemsSchema().getSchemaOb(), props.next().toString());
+      dict = writeDictionary(schema.schemaObject().getI().getSchema(), props.next().toString(), dict);
+    return dict;
+  }
 
+  public List<String> OpenAPIObject.addInList(List<String> list, String value){
+    if( !list.contains(value) )
+      list.add(value);
+    return list;
   }
 }
- */
