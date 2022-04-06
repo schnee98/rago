@@ -83,6 +83,10 @@ aspect RandomRequestGenerator{
     }
   }
 
+  /**
+    * Checks which schema type the parameter has (String or Integer) and generates parameters.
+    * @return A generated Path parameter.
+    */
   syn String ParameterObject.randomPathParameter(String pathRef){
     SchemaObject s = getSchema().schemaObject();
     String pathPart = pathRef.substring(pathRef.indexOf("{"), pathRef.indexOf("}") + 1);
@@ -97,6 +101,10 @@ aspect RandomRequestGenerator{
     return pathRef;
   }
 
+  /**
+    * Checks which schema type the parameter has (String or Integer) and generates parameters.
+    * @return A generated Query parameter.
+    */
   syn String ParameterObject.randomQueryParameter(String pathRef){
     SchemaObject s = getSchema().schemaObject();
 
@@ -121,6 +129,10 @@ aspect RandomRequestGenerator{
     return pathRef;
   }
 
+  /**
+    * Generates a random String value.
+    * @return A random String.
+    */
   public String ParameterObject.generateRandomString(JastAddList<EnumObj> objs){
     Random rand = new Random();
     if (objs.getNumChild() != 0)
@@ -133,6 +145,10 @@ aspect RandomRequestGenerator{
         .toString();
   }
 
+  /**
+    * Generates a random Integer value.
+    * @return A random Integer.
+    */
   public String ParameterObject.generateRandomInt(int minimum,int maximum){
     Random rand = new Random();
     if (minimum > -1 && maximum > 0)
@@ -144,17 +160,25 @@ aspect RandomRequestGenerator{
     return String.valueOf(rand.nextInt());
   }
 
+  /**
+    * Generates a random value of Enum.
+    * @return A random value of Enum.
+    */
   public String ParameterObject.pathWithEnum(EnumObj e, String pathRef){
     Random rand = new Random();
     return rand.nextDouble() < 0.5 ?
             pathRef + "&" + this.getName() + "=" + e.getEnumOb() : pathRef;
   }
 
+  /**
+    * This is a method to avoid the duplication of Urls.
+    * @return The list of Urls.
+    */
   syn String OpenAPIObject.getURLFromGeneratedURLs(List<String> urls, String ref){
     for( String url : urls ){
       if( url.contains(ref) )
         return url;
     }
-    return null;
+    return url;
   }
 }
