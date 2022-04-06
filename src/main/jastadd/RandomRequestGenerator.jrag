@@ -179,6 +179,6 @@ aspect RandomRequestGenerator{
       if( url.contains(ref) )
         return url;
     }
-    return url;
+    return ref;
   }
 }

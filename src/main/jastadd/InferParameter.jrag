@@ -20,6 +20,11 @@ aspect InferParameter{
   */
   syn String ParameterObject.dictValue(String dict) = dict.substring(dict.indexOf("?")+1);
 
+  /**
+  * Checks if a path has the request types <code>GET</code> and/or <code>POST</code>, and calls <code>inferUrl(String pathRef,OperationObject operationObject, List<String> dict)</code>.
+  * <p>Afterwards, inferred URLs are saved in a list.</p>
+  * @return The list of String representing the inferred URLs.
+  */
   inh List<String> PathsObject.inferUrl(List<String> dict);
   eq OpenAPIObject.getP(int i).inferUrl(List<String> dict){
     List<String> paths = new ArrayList<>();
@@ -27,14 +32,19 @@ aspect InferParameter{
     String path = getServ(0).getUrl();
 
     if (p.hasG())
-      paths.addAll(p.getG().inferRandomUrl(path + getP(i).getRef(), p.getG().getO(), dict));
+      paths.addAll(p.getG().inferUrl(path + getP(i).getRef(), p.getG().getO(), dict));
     else if (p.hasPostOb())
-      paths.addAll(p.getPostOb().inferRandomUrl(path + getP(i).getRef(), p.getPostOb().getO(), dict));
+      paths.addAll(p.getPostOb().inferUrl(path + getP(i).getRef(), p.getPostOb().getO(), dict));
 
     return paths;
   }
 
-  syn List<String> Get.inferRandomUrl(String pathRef,OperationObject operationObject, List<String> dict){
+  /**
+    * Checks which parameter types the targeted GET request has (Path or Query) and calls corresponding parameter inferrer.
+    * <p>Afterwards, inferred parameters are written in the url.</p>
+    * @return An URL with the inferred parameters in String.
+    */
+  syn List<String> Get.inferUrl(String pathRef,OperationObject operationObject, List<String> dict){
     List<String> paths = new ArrayList<>();
 
     for (ParameterOb o : operationObject.getPList()) {
@@ -53,7 +63,12 @@ aspect InferParameter{
     return paths;
   }
 
-  syn List<String> Post.inferRandomUrl(String pathRef,OperationObject operationObject, List<String> dict){
+  /**
+    * Checks which parameter types the targeted POST request has (Path or Query) and calls corresponding parameter inferrer.
+    * <p>Afterwards, inferred parameters are written in the url.</p>
+    * @return An URL with the inferred parameters in String.
+    */
+  syn List<String> Post.inferUrl(String pathRef,OperationObject operationObject, List<String> dict){
     List<String> paths = new ArrayList<>();
 
     for (ParameterOb o : operationObject.getPList()) {
@@ -72,6 +87,11 @@ aspect InferParameter{
     return paths;
   }
 
+  /**
+    * Checks if there are Path parameters that are saved in the dictionary and might be usable.
+    * <p>Search is provided by schema names and Case-Insensitivity./p>
+    * @return The list of Urls with the added Url from the dicitionary.
+    */
   syn List<String> ParameterObject.addinfPathParameters(String pathRef,List<String> dict){
     List<String> paths = new ArrayList<>();
     for (String d : dict){
@@ -85,6 +105,11 @@ aspect InferParameter{
     return paths;
   }
 
+  /**
+    * Checks if there are Query parameters that are saved in the dictionary and might be usable.
+    * <p>Search is provided by schema names and Case-Insensitivity./p>
+    * @return The list of Urls with the added Url from the dicitionary.
+    */
   syn List<String> ParameterObject.addinfQueryParameters(String pathRef,List<String> dict){
     List<String> paths = new ArrayList<>();
     SchemaObject s = getSchema().schemaObject();
@@ -108,6 +133,10 @@ aspect InferParameter{
     return paths;
   }
 
+  /**
+    * Saves single response JSON data into the dictionary.
+    * @return The list of response data (dictionary).
+    */
   public List<String> OperationObject.writeDictionary(SchemaOb schema,String resp, List<String> dict)throws Exception{
     ObjectMapper mapper = new ObjectMapper();
     JsonNode respNode = mapper.readTree(resp);
@@ -135,6 +164,10 @@ aspect InferParameter{
     return dict;
   }
 
+  /**
+    * Saves array response JSON data into the dictionary.
+    * @return The list of response data (dictionary).
+    */
   public List<String> OperationObject.writeDictionaryWithArray(SchemaOb schema,String resp, List<String> dict)throws Exception{
     ObjectMapper mapper = new ObjectMapper();
     ArrayNode respNode = ((ArrayNode) mapper.readTree(resp));
