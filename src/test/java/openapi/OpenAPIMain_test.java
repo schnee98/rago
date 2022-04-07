@@ -12,6 +12,7 @@ import io.swagger.v3.core.util.Yaml;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.parser.OpenAPIV3Parser;
 import io.swagger.v3.parser.core.models.SwaggerParseResult;
+import org.apache.commons.validator.routines.UrlValidator;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -62,6 +63,25 @@ public class OpenAPIMain_test {
 
     // compare if parsed OpenAPI (source object, Json) is equivalent to back-transformed OpenAPI (generated object, Json)
     compareJson(expectedNode, actualNode, Paths.get(file.getPath()));
+  }
+
+  @MethodSource("resources")
+  @ParameterizedTest
+  void RandomUrlTest(File file) throws Exception {
+    OpenAPIObject jastAddObject;
+    OpenAPI POJOOpenAPI;
+    List<String> urls;
+    UrlValidator urlValidator = new UrlValidator();
+
+    SwaggerParseResult result = new OpenAPIParser().readLocation(file.getPath(), null, null);
+    POJOOpenAPI = result.getOpenAPI();
+    System.out.println("Loading expression DSL file '" + file + "'.");
+
+    jastAddObject = OpenAPIObject.parseOpenAPI(POJOOpenAPI);
+    urls = jastAddObject.generateRequests();
+
+    for ( String url : urls )
+      Assertions.assertFalse( urlValidator.isValid(url), "validation of the generated Urls not succeeded" );
   }
 
   static Stream<File> resources() {

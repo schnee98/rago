@@ -20,6 +20,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -123,6 +124,8 @@ public class OpenAPIMain {
                 }
             }
         } catch (Exception e) {
+            if (e instanceof MalformedURLException)
+                System.out.println("MalformedURLException");
             //System.out.println(e.toString());
         }
         return dict;
@@ -161,6 +164,8 @@ public class OpenAPIMain {
                 }
             }
         } catch (Exception e) {
+            if (e instanceof MalformedURLException)
+                System.out.println("MalformedURLException");
             //System.out.println(e.toString());
         }
         return dict;
