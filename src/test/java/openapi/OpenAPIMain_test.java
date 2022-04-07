@@ -81,7 +81,7 @@ public class OpenAPIMain_test {
     urls = jastAddObject.generateRequests();
 
     for ( String url : urls )
-      Assertions.assertFalse( urlValidator.isValid(url), "validation of the generated Urls not succeeded" );
+      Assertions.assertTrue( urlValidator.isValid(url), "validation of the generated Urls not succeeded" );
   }
 
   static Stream<File> resources() {
