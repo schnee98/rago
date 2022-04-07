@@ -1,29 +1,15 @@
 package de.tudresden.inf.st.openapi;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import de.tudresden.inf.st.openapi.ast.*;
-import io.swagger.models.reader.SwaggerParser;
 import io.swagger.parser.OpenAPIParser;
-import io.swagger.report.MessageBuilder;
-import io.swagger.util.Yaml;
-import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.parser.OpenAPIV3Parser;
-import io.swagger.v3.parser.core.models.ParseOptions;
 import io.swagger.v3.parser.core.models.SwaggerParseResult;
-import io.swagger.v3.parser.util.OpenAPIDeserializer;
-import io.swagger.validate.ApiDeclarationJsonValidator;
-import io.swagger.validate.SwaggerSchemaValidator;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.HttpClientBuilder;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class OpenAPIMain {

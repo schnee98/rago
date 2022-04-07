@@ -20,6 +20,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -81,7 +83,7 @@ public class OpenAPIMain_test {
     urls = jastAddObject.generateRequests();
 
     for ( String url : urls )
-      Assertions.assertTrue( urlValidator.isValid(url), "validation of the generated Urls not succeeded" );
+      Assertions.assertTrue(urlValidator.isValid(url), "validation of " + url + " not succeeded");
   }
 
   static Stream<File> resources() {

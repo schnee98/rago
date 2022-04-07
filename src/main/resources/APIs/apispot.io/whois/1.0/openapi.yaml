@@ -1,6 +1,5 @@
 openapi: 3.0.2
 servers:
-  - url: http://localhost:5000
   - url: https://apispot.io/api
 info:
   description: Domain API (WHOIS, Check, Batch)

@@ -9,7 +9,7 @@ apply plugin: 'maven-publish'
 
 mainClassName = 'de.tudresden.inf.st.rago'
 
-sourceCompatibility = 1.8
+sourceCompatibility = 10
 
 repositories {
     mavenCentral()
@@ -34,7 +34,7 @@ dependencies {
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: "${junit_jupiter_version}"
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: "${junit_jupiter_version}"
     testImplementation group: 'com.jayway.jsonpath', name: 'json-path', version: "${json_path_version}"
-    testImplementation group: 'commons-validator', name: 'commons-validator', version: "${commons_validator_version}"
+    implementation group: 'commons-validator', name: 'commons-validator', version: "${commons_validator_version}"
 }
 
 buildscript {

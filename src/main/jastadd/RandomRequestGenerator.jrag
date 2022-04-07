@@ -1,3 +1,6 @@
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
+
 aspect RandomRequestGenerator{
 
   /**
@@ -6,10 +9,11 @@ aspect RandomRequestGenerator{
     */  syn List<String> OpenAPIObject.generateRequests(){
     List<String> urls = new ArrayList<>();
     try {
+      System.out.println(getNumP());
       for (PathsObject p : getPList())
         urls.addAll(p.generateUrl());
     } catch (Exception e) {
-      System.out.println(e.toString());
+      System.out.println(e.toString() + " at OpenAPIObject.generateRequests()");
       return null;
     }
     return urls;
@@ -28,7 +32,7 @@ aspect RandomRequestGenerator{
       String path = getServ(0).getUrl();
       if (getServ(0).getNumSt() != 0){
         for ( ServerVariablesTuple t : getServ(0).getStList() )
-          path = path.replace("{" + t.getName() + "}", t.getS().getE(0).getEnumValue());
+          path = path.replace("{" + t.getName() + "}", t.getS().getDefault());
       }
 
       if (p.hasG()) {
@@ -40,7 +44,7 @@ aspect RandomRequestGenerator{
 
       return urls;
     } catch (Exception e) {
-      System.out.println(e.toString());
+      System.out.println(e.toString() + " at PathsObject.generateUrl()");
       return null;
     }
   }
@@ -59,10 +63,12 @@ aspect RandomRequestGenerator{
         else if (p.getIn().equals("query"))
           pathRef = p.randomQueryParameter(pathRef);
       }
+      if (pathRef.contains("&"))
+        pathRef = pathRef.replaceFirst("&", "?");
       System.out.println("Generated path : " + pathRef);
       return pathRef;
     } catch (Exception e) {
-      System.out.println(e.toString());
+      System.out.println(e.toString() + " at Get.generateRandomUrl(String pathRef)");
       return null;
     }
   }
@@ -81,10 +87,12 @@ aspect RandomRequestGenerator{
         else if (p.getIn().equals("query"))
           pathRef = p.randomQueryParameter(pathRef);
       }
+      if (pathRef.contains("&"))
+        pathRef = pathRef.replaceFirst("&", "?");
       System.out.println("Generated path : " + pathRef);
       return pathRef;
     } catch (Exception e) {
-      System.out.println(e.toString());
+      System.out.println(e.toString() + " at Post.generateRandomUrl(String pathRef)");
       return null;
     }
   }
@@ -115,9 +123,9 @@ aspect RandomRequestGenerator{
     SchemaObject s = getSchema().schemaObject();
 
     if (s.getType().equals("string"))
-      pathRef = pathRef + "?" + getName() + "=" + generateRandomString(s.getEList());
+      pathRef = pathRef + "&" + getName() + "=" + generateRandomString(s.getEList());
     else if (s.getType().equals("integer"))
-      pathRef = pathRef + "?" + getName() + "=" + generateRandomInt(
+      pathRef = pathRef + "&" + getName() + "=" + generateRandomInt(
               -1, // s.getMinimum() != null ? s.getMinimum().intValue() : -1,
               10); // s.getMaximum() != null ? s.getMaximum().intValue() : -1
     else if (s.getType().equals("array")) {
@@ -130,7 +138,6 @@ aspect RandomRequestGenerator{
                   -1, // s.getMinimum() != null ? s.getMinimum().intValue() : -1,
                   10); // s.getMaximum() != null ? s.getMaximum().intValue() : -1
       }
-      pathRef = pathRef.replaceFirst("&", "?");
     }
     return pathRef;
   }
@@ -142,7 +149,7 @@ aspect RandomRequestGenerator{
   public String ParameterObject.generateRandomString(JastAddList<EnumObj> objs){
     Random rand = new Random();
     if (objs.getNumChild() != 0)
-      return objs.getChild(rand.nextInt(objs.getNumChild())).getEnumOb().toString();
+      return URLEncoder.encode(objs.getChild(rand.nextInt(objs.getNumChild())).getEnumOb().toString(), Charset.forName("US-ASCII"));
 
     return rand
         .ints(97, 123)
@@ -173,7 +180,7 @@ aspect RandomRequestGenerator{
   public String ParameterObject.pathWithEnum(EnumObj e, String pathRef){
     Random rand = new Random();
     return rand.nextDouble() < 0.5 ?
-            pathRef + "&" + this.getName() + "=" + e.getEnumOb() : pathRef;
+            pathRef + "&" + this.getName() + "=" + URLEncoder.encode(e.getEnumOb().toString(), Charset.forName("US-ASCII")) : pathRef;
   }
 
   /**
