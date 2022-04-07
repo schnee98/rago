@@ -33,7 +33,7 @@ public class OpenAPIMain {
      * main-method, calls the set of methods to test the OpenAPI-Generator with JastAdd
      **/
     public static void main(String[] args) throws Exception {
-        String fileName = "./src/main/resources/3.0/petstore.yaml";
+        String fileName = "./src/main/resources/APIs/1password.local/connect/1.3.0/openapi.yaml";
         OpenAPIObject jastAddObject;
         SwaggerParseResult result = new OpenAPIParser().readLocation(fileName, null, null);
         OpenAPI openAPI = result.getOpenAPI();
