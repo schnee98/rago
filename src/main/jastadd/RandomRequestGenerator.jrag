@@ -26,6 +26,10 @@ aspect RandomRequestGenerator{
     try {
       PathItemObject p = getP(i).getP().pathItemObject();
       String path = getServ(0).getUrl();
+      if (getServ(0).getNumSt() != 0){
+        for ( ServerVariablesTuple t : getServ(0).getStList() )
+          path = path.replace("{" + t.getName() + "}", t.getS().getE(0).getEnumValue());
+      }
 
       if (p.hasG()) {
         urls.add(p.getG().generateRandomUrl(path + getP(i).getRef()));
