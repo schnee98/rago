@@ -3,192 +3,241 @@ import java.nio.charset.Charset;
 
 aspect RandomRequestGenerator{
 
-  /**
-    * Calls <code>generateUrl()</code> for all paths.
-    * @return The list of String representing the generated URLs.
-    */  syn List<String> OpenAPIObject.generateRequests(){
-    List<String> urls = new ArrayList<>();
-    try {
-      for (PathsObject p : getPList())
-        urls.addAll(p.generateUrl());
-    } catch (Exception e) {
-      System.out.println(e.toString() + " at OpenAPIObject.generateRequests()");
-      return null;
+    /**
+      * Calls <code>generateUrl()</code> for all paths.
+      * @return The list of String representing the generated URLs.
+      */
+    syn List<String> OpenAPIObject.generateRequests(){
+        List<String> urls = new ArrayList<>();
+        try {
+            for (PathsObject p : getPList())
+                urls.addAll(p.generateUrl());
+        } catch (Exception e) {
+            System.out.println(e.toString() + " at OpenAPIObject.generateRequests()");
+            return null;
+        }
+        return urls;
     }
-    return urls;
-  }
 
-  /**
-    * Checks if a path has the request types <code>GET</code> and/or <code>POST</code>, and calls <code>generateRandomUrl(String pathRef)</code>.
-    * <p>Afterwards, generated URLs are saved in a list.</p>
-    * @return The list of String representing the generated URLs.
-    */
-  inh List<String> PathsObject.generateUrl();
-  eq OpenAPIObject.getP(int i).generateUrl(){
-    List<String> urls = new ArrayList<>();
-    try {
-      PathItemObject p = getP(i).getP().pathItemObject();
-      String path = getServ(0).getUrl();
-      if (getServ(0).getNumSt() != 0){
-        for ( ServerVariablesTuple t : getServ(0).getStList() )
-          path = path.replace("{" + t.getName() + "}", t.getS().getDefault());
-      }
+    /**
+      * Checks if a path has the request types <code>GET</code> and/or <code>POST</code>, and calls <code>generateRandomUrl(String pathRef)</code>.
+      * <p>Afterwards, generated URLs are saved in a list.</p>
+      * @return The list of String representing the generated URLs.
+      */
+    inh List<String> PathsObject.generateUrl();
+    eq OpenAPIObject.getP(int i).generateUrl(){
+        List<String> urls = new ArrayList<>();
+        try {
+            PathItemObject p = getP(i).getP().pathItemObject();
+            String path = getServ(0).getUrl();
+            if (getServ(0).getNumSt() != 0) {
+                for (ServerVariablesTuple t : getServ(0).getStList())
+                    path = path.replace("{" + t.getName() + "}", t.getS().getDefault());
+            }
 
-      if (p.hasG())
-        urls.add(p.getG().generateRandomUrl(path + getP(i).getRef()));
-      if (p.hasPostOb())
-        urls.add(p.getPostOb().generateRandomUrl(path + getP(i).getRef()));
+            if (p.hasG())
+                urls.add(p.getG().generateRandomUrl(path + getP(i).getRef()));
+            if (p.hasPostOb())
+                urls.add(p.getPostOb().generateRandomUrl(path + getP(i).getRef()));
 
-      return urls;
-    } catch (Exception e) {
-      System.out.println(e.toString() + " at PathsObject.generateUrl()");
-      return null;
+            return urls;
+        } catch (Exception e) {
+            System.out.println(e.toString() + " at PathsObject.generateUrl()");
+            return null;
+        }
     }
-  }
 
-  /**
-    * Checks which parameter types the targeted GET request has (Path or Query) and calls corresponding random parameter generator.
-    * <p>Afterwards, generated parameters are written in the url.</p>
-    * @return An URL with the generated parameters in String.
-    */
-  syn String Get.generateRandomUrl(String pathRef){
-    try {
-      for (ParameterOb o : getO().getPList()) {
-        ParameterObject p = o.parameterObject();
-        if (p.getIn().equals("path"))
-          pathRef = p.randomPathParameter(pathRef);
-        else if (p.getIn().equals("query"))
-          pathRef = p.randomQueryParameter(pathRef);
-      }
-      if (pathRef.contains("&"))
-        pathRef = pathRef.replaceFirst("&", "?");
-      System.out.println("Generated path : " + pathRef);
-      return pathRef;
-    } catch (Exception e) {
-      System.out.println(e.toString() + " at Get.generateRandomUrl(String pathRef)");
-      return null;
+    /**
+      * Checks which parameter types the targeted GET request has (Path or Query) and calls corresponding random parameter generator.
+      * <p>Afterwards, generated parameters are written in the url.</p>
+      * @return An URL with the generated parameters in String.
+      */
+    syn String Get.generateRandomUrl(String pathRef){
+        try {
+            for (ParameterOb o : getO().getPList()) {
+                ParameterObject p = o.parameterObject();
+                if (p.getIn().equals("path"))
+                    pathRef = p.randomPathParameter(pathRef);
+                else if (p.getIn().equals("query"))
+                    pathRef = p.randomQueryParameter(pathRef);
+            }
+            if (pathRef.contains("&"))
+                pathRef = pathRef.replaceFirst("&", "?");
+            System.out.println("Generated path : " + pathRef);
+            return pathRef;
+        } catch (Exception e) {
+            System.out.println(e.toString() + " at Get.generateRandomUrl(String pathRef)");
+            return null;
+        }
     }
-  }
 
-  /**
-    * Checks which parameter types the targeted POST request has (Path or Query) and calls corresponding random parameter generator.
-    * <p>Afterwards, generated parameters are written in the url.</p>
-    * @return An URL with the generated parameters in String.
-    */
-  syn String Post.generateRandomUrl(String pathRef){
-    try {
-      for (ParameterOb o : getO().getPList()) {
-        ParameterObject p = o.parameterObject();
-        if (p.getIn().equals("path"))
-          pathRef = p.randomPathParameter(pathRef);
-        else if (p.getIn().equals("query"))
-          pathRef = p.randomQueryParameter(pathRef);
-      }
-      if (pathRef.contains("&"))
-        pathRef = pathRef.replaceFirst("&", "?");
-      System.out.println("Generated path : " + pathRef);
-      return pathRef;
-    } catch (Exception e) {
-      System.out.println(e.toString() + " at Post.generateRandomUrl(String pathRef)");
-      return null;
+    /**
+      * Checks which parameter types the targeted POST request has (Path or Query) and calls corresponding random parameter generator.
+      * <p>Afterwards, generated parameters are written in the url.</p>
+      * @return An URL with the generated parameters in String.
+      */
+    syn String Post.generateRandomUrl(String pathRef){
+        try {
+            for (ParameterOb o : getO().getPList()) {
+                ParameterObject p = o.parameterObject();
+                if (p.getIn().equals("path"))
+                    pathRef = p.randomPathParameter(pathRef);
+                else if (p.getIn().equals("query"))
+                    pathRef = p.randomQueryParameter(pathRef);
+            }
+            if (pathRef.contains("&"))
+                pathRef = pathRef.replaceFirst("&", "?");
+            System.out.println("Generated path : " + pathRef);
+            return pathRef;
+        } catch (Exception e) {
+            System.out.println(e.toString() + " at Post.generateRandomUrl(String pathRef)");
+            return null;
+        }
     }
-  }
 
-  /**
-    * Checks which schema type the parameter has (String or Integer) and generates parameters.
-    * @return A generated Path parameter.
-    */
-  syn String ParameterObject.randomPathParameter(String pathRef){
-    SchemaObject s = getSchema().schemaObject();
-    String pathPart = pathRef.substring(pathRef.indexOf("{"), pathRef.indexOf("}") + 1);
+    /**
+      * Checks which schema type the parameter has (String or Integer) and generates parameters.
+      * @return A generated Path parameter.
+      */
+    syn String ParameterObject.randomPathParameter(String pathRef){
+        SchemaObject s = getSchema().schemaObject();
+        String pathPart = pathRef.substring(pathRef.indexOf("{"), pathRef.indexOf("}") + 1);
 
-    if (s.getType().equals("string"))
-      pathRef = pathRef.replace(pathPart, generateRandomString(s.getEList()));
-    else if (s.getType().equals("integer"))
-      pathRef = pathRef.replace(pathPart, generateRandomInt(
-              -1, // s.getMinimum() != null ? s.getMinimum().intValue() : -1,
-              10 // s.getMaximum() != null ? s.getMaximum().intValue() : -1
-      ));
-    return pathRef;
-  }
-
-  /**
-    * Checks which schema type the parameter has (String or Integer) and generates parameters.
-    * @return A generated Query parameter.
-    */
-  syn String ParameterObject.randomQueryParameter(String pathRef){
-    SchemaObject s = getSchema().schemaObject();
-
-    if (s.getType().equals("string"))
-      pathRef = pathRef + "&" + getName() + "=" + generateRandomString(s.getEList());
-    else if (s.getType().equals("integer"))
-      pathRef = pathRef + "&" + getName() + "=" + generateRandomInt(
-              -1, // s.getMinimum() != null ? s.getMinimum().intValue() : -1,
-              10); // s.getMaximum() != null ? s.getMaximum().intValue() : -1
-    else if (s.getType().equals("array")) {
-      if (s.getI().getSchema().schemaObject().getType().equals("string")) {
-        for (EnumObj e : s.getI().getSchema().schemaObject().getEList())
-          pathRef = pathWithEnum(e, pathRef);
-      } else if (s.getI().getSchema().schemaObject().getType().equals("integer")) {
-        for (int i = 0; i < 5; i++)
-          pathRef = pathRef + "&" + getName() + "=" + generateRandomInt(
-                  -1, // s.getMinimum() != null ? s.getMinimum().intValue() : -1,
-                  10); // s.getMaximum() != null ? s.getMaximum().intValue() : -1
-      }
+        if (s.getType().equals("string"))
+            pathRef = pathRef.replace(pathPart, generateRandomString(s.getEList()));
+        else if (s.getType().equals("integer"))
+            pathRef = pathRef.replace(pathPart, generateRandomInt(
+                    -1, // s.getMinimum() != null ? s.getMinimum().intValue() : -1,
+                    10 // s.getMaximum() != null ? s.getMaximum().intValue() : -1
+            ));
+        return pathRef;
     }
-    return pathRef;
-  }
 
-  /**
-    * Generates a random String value.
-    * @return A random String.
-    */
-  public String ParameterObject.generateRandomString(JastAddList<EnumObj> objs){
-    Random rand = new Random();
-    if (objs.getNumChild() != 0)
-      return URLEncoder.encode(objs.getChild(rand.nextInt(objs.getNumChild())).getEnumOb().toString(), Charset.forName("US-ASCII"));
+    /**
+      * Checks which schema type the parameter has (String or Integer) and generates parameters.
+      * @return A generated Query parameter.
+      */
+    syn String ParameterObject.randomQueryParameter(String pathRef){
+        SchemaObject s = getSchema().schemaObject();
 
-    return rand
-        .ints(97, 123)
-        .limit(10)
-        .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-        .toString();
-  }
-
-  /**
-    * Generates a random Integer value.
-    * @return A random Integer.
-    */
-  public String ParameterObject.generateRandomInt(int minimum,int maximum){
-    Random rand = new Random();
-    if (minimum > -1 && maximum > 0)
-      return String.valueOf(rand.nextInt(minimum + maximum) - minimum);
-    else if (minimum > -1)
-      return String.valueOf(rand.nextInt() + minimum);
-    else if (maximum > 0)
-      return String.valueOf(rand.nextInt(maximum));
-    return String.valueOf(rand.nextInt());
-  }
-
-  /**
-    * Generates a random value of Enum.
-    * @return A random value of Enum.
-    */
-  public String ParameterObject.pathWithEnum(EnumObj e, String pathRef){
-    Random rand = new Random();
-    return rand.nextDouble() < 0.5 ?
-            pathRef + "&" + this.getName() + "=" + URLEncoder.encode(e.getEnumOb().toString(), Charset.forName("US-ASCII")) : pathRef;
-  }
-
-  /**
-    * This is a method to avoid the duplication of Urls.
-    * @return The list of Urls.
-    */
-  syn String OpenAPIObject.getURLFromGeneratedURLs(List<String> urls, String ref){
-    for( String url : urls ){
-      if( url.contains(ref) )
-        return url;
+        if (s.getType().equals("string"))
+            pathRef = pathRef + "&" + getName() + "=" + generateRandomString(s.getEList());
+        else if (s.getType().equals("integer"))
+            pathRef = pathRef + "&" + getName() + "=" + generateRandomInt(
+                    -1, // s.getMinimum() != null ? s.getMinimum().intValue() : -1,
+                    10); // s.getMaximum() != null ? s.getMaximum().intValue() : -1
+        else if (s.getType().equals("array")) {
+            if (s.getI().getSchema().schemaObject().getType().equals("string")) {
+                for (EnumObj e : s.getI().getSchema().schemaObject().getEList())
+                    pathRef = pathWithEnum(e, pathRef);
+            } else if (s.getI().getSchema().schemaObject().getType().equals("integer")) {
+                for (int i = 0; i < 5; i++)
+                    pathRef = pathRef + "&" + getName() + "=" + generateRandomInt(
+                            -1, // s.getMinimum() != null ? s.getMinimum().intValue() : -1,
+                            10); // s.getMaximum() != null ? s.getMaximum().intValue() : -1
+            }
+        }
+        return pathRef;
     }
-    return ref;
-  }
+
+    /**
+      * Generates parameters for all paths.
+      * @return The tuple (Map) representing the generated parameter values mapped into corresponding parameter names.
+      */
+    public Map<String, List<Object>> OpenAPIObject.generateParameters() {
+        Map<String, List<Object>> parameters = new HashMap<>();
+        ParameterObject o;
+        SchemaObject s;
+
+        for (ParameterOb p : parameterObs()) {
+            List<Object> values = new ArrayList<>();
+            o = p.parameterObject();
+            s = o.getSchema().schemaObject();
+
+            if (s.getType().equals("string"))
+                values.add(o.generateRandomString(s.getEList()));
+            else if (s.getType().equals("integer"))
+                values.add(o.generateRandomInt(-1, 100)); // boundary at -1 and 100
+            else if (s.getType().equals("array")) {
+                List<Object> arrayValues = new ArrayList<>();
+                if (s.getI().getSchema().schemaObject().getType().equals("string")) {
+                    for (EnumObj e : s.getI().getSchema().schemaObject().getEList())
+                        arrayValues.add(o.randomValueFromEnum(e));
+                    values.add(arrayValues);
+                } else if (s.getI().getSchema().schemaObject().getType().equals("integer")) {
+                    for (int i = 0; i < 5; i++)
+                        arrayValues.add(o.generateRandomInt(-1, 100));
+                    values.add(arrayValues);
+                }
+            }
+
+            if( parameters.get(o.getName()) != null )
+                values.addAll(parameters.get(o.getName()));
+            parameters.put(o.getName(), values);
+        }
+
+        return parameters;
+    }
+
+    /**
+      * Generates a random String value.
+      * @return A random String.
+      */
+    public String ParameterObject.generateRandomString(JastAddList<EnumObj> objs){
+        Random rand = new Random();
+        if (objs.getNumChild() != 0)
+            return URLEncoder.encode(objs.getChild(rand.nextInt(objs.getNumChild())).getEnumOb().toString(), Charset.forName("US-ASCII"));
+
+        return rand
+                .ints(97, 123)
+                .limit(10)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+    }
+
+    /**
+      * Generates a random Integer value.
+      * @return A random Integer.
+      */
+    public String ParameterObject.generateRandomInt(int minimum,int maximum){
+        Random rand = new Random();
+        if (minimum > -1 && maximum > 0)
+            return String.valueOf(rand.nextInt(minimum + maximum) - minimum);
+        else if (minimum > -1)
+            return String.valueOf(rand.nextInt() + minimum);
+        else if (maximum > 0)
+            return String.valueOf(rand.nextInt(maximum));
+        return String.valueOf(rand.nextInt());
+    }
+
+    /**
+      * Generates a random value of Enum.
+      * @return A random value of Enum.
+      */
+    public String ParameterObject.pathWithEnum(EnumObj e, String pathRef){
+        Random rand = new Random();
+        return rand.nextDouble() < 0.5 ?
+                pathRef + "&" + this.getName() + "=" + URLEncoder.encode(e.getEnumOb().toString(), Charset.forName("US-ASCII")) : pathRef;
+    }
+
+    /**
+      * Generates a random value of Enum.
+      * @return A random value of Enum.
+      */
+    public String ParameterObject.randomValueFromEnum(EnumObj e){
+        Random rand = new Random();
+        return rand.nextDouble() < 0.5 ? URLEncoder.encode(e.getEnumOb().toString(), Charset.forName("US-ASCII")) : "";
+    }
+
+    /**
+      * This is a method to avoid the duplication of Urls.
+      * @return The list of Urls.
+      */
+    syn String OpenAPIObject.getURLFromGeneratedURLs(List<String> urls, String ref){
+        for (String url : urls) {
+            if (url.contains(ref))
+                return url;
+        }
+        return ref;
+    }
 }

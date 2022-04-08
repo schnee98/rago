@@ -10,7 +10,9 @@ import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class OpenAPIMain {
     static List<String> successfulUrls = new ArrayList<>();
@@ -19,7 +21,7 @@ public class OpenAPIMain {
      * main-method, calls the set of methods to test the OpenAPI-Generator with JastAdd
      **/
     public static void main(String[] args) throws Exception {
-        String fileName = "./src/main/resources/APIs/1password.local/connect/1.3.0/openapi.yaml";
+        String fileName = "./src/main/resources/3.0/petstore-v2.yaml";
         OpenAPIObject jastAddObject;
         SwaggerParseResult result = new OpenAPIParser().readLocation(fileName, null, null);
         OpenAPI openAPI = result.getOpenAPI();
@@ -27,6 +29,8 @@ public class OpenAPIMain {
         List<String> inferredURLs = new ArrayList<>();
 
         jastAddObject = OpenAPIObject.parseOpenAPI(openAPI);
+
+        jastAddObject.generateParameters();
 
         generatedURLs = jastAddObject.generateRequests();
         dictionary = sendRandomRequests(jastAddObject, generatedURLs);
@@ -50,6 +54,8 @@ public class OpenAPIMain {
         }
 
         System.out.println("Loading expression DSL file '" + fileName + "'.");
+
+        Map<Object, Object> parameters = new HashMap<>();
 
         if (args.length > 0) {
             fileName = args[0];
