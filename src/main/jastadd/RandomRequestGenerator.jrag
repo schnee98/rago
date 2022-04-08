@@ -9,7 +9,6 @@ aspect RandomRequestGenerator{
     */  syn List<String> OpenAPIObject.generateRequests(){
     List<String> urls = new ArrayList<>();
     try {
-      System.out.println(getNumP());
       for (PathsObject p : getPList())
         urls.addAll(p.generateUrl());
     } catch (Exception e) {
@@ -35,10 +34,8 @@ aspect RandomRequestGenerator{
           path = path.replace("{" + t.getName() + "}", t.getS().getDefault());
       }
 
-      if (p.hasG()) {
+      if (p.hasG())
         urls.add(p.getG().generateRandomUrl(path + getP(i).getRef()));
-        System.out.println(p.hasG());
-      }
       if (p.hasPostOb())
         urls.add(p.getPostOb().generateRandomUrl(path + getP(i).getRef()));
 
