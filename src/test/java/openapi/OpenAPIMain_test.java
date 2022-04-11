@@ -85,30 +85,6 @@ public class OpenAPIMain_test {
             Assertions.assertTrue(urlValidator.isValid(url), "validation of " + url + " not succeeded");
     }
 
-    /*
-    @MethodSource("resources")
-    @ParameterizedTest
-    void RandomParameterTest(File file) {
-        OpenAPIObject jastAddObject;
-        OpenAPI openAPI;
-        List<String> urls;
-        Map<String, List<Object>> parameters;
-
-        SwaggerParseResult result = new OpenAPIParser().readLocation(file.getPath(), null, null);
-        openAPI = result.getOpenAPI();
-        System.out.println("Loading expression DSL file '" + file + "'.");
-
-        jastAddObject = OpenAPIObject.parseOpenAPI(openAPI);
-        parameters = jastAddObject.generateParameters();
-        for ( String key : parameters.keySet() ){
-            for ( Object value : parameters.get(key) ) {
-                if ( value instanceof String )
-                    Assertions.assertTrue(((String) value).matches("[a-zA-Z0-9#.()/%&\\s-]{0,19}"), "validation of " + key + " : " + value + " not succeeded");
-            }
-        }
-    }
-     */
-
     static Stream<File> resources() {
         return resources.stream();
     }
