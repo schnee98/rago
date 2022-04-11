@@ -1,121 +1,137 @@
-/*
 import java.util.*;
 aspect Reference {
 
-        inh OpenAPIObject ASTNode.root();
-        eq OpenAPIObject.getChild().root() = this;
+    inh OpenAPIObject ASTNode.root();
+    eq OpenAPIObject.getChild().root() = this;
 
-        coll List<SchemaTuple> OpenAPIObject.schemaTuples() [new ArrayList<>()] root OpenAPIObject;
-        SchemaTuple contributes this
+    coll List<SchemaTuple> OpenAPIObject.schemaTuples() [new ArrayList<>()] root OpenAPIObject;
+    SchemaTuple contributes this
         to OpenAPIObject.schemaTuples();
 
-        coll List<ResponseTuple> OpenAPIObject.responseTuples() [new ArrayList<>()] root OpenAPIObject;
-        ResponseTuple contributes this
+    coll List<ResponseTuple> OpenAPIObject.responseTuples() [new ArrayList<>()] root OpenAPIObject;
+    ResponseTuple contributes this
         to OpenAPIObject.responseTuples();
 
-        coll List<ParameterTuple> OpenAPIObject.parameterTuples() [new ArrayList<>()] root OpenAPIObject;
-        ParameterTuple contributes this
+    coll List<ParameterTuple> OpenAPIObject.parameterTuples() [new ArrayList<>()] root OpenAPIObject;
+    ParameterTuple contributes this
         to OpenAPIObject.parameterTuples();
 
-        coll List<RequestBodyTuple> OpenAPIObject.requestBodyTuples() [new ArrayList<>()] root OpenAPIObject;
-        RequestBodyTuple contributes this
+    coll List<RequestBodyTuple> OpenAPIObject.requestBodyTuples() [new ArrayList<>()] root OpenAPIObject;
+    RequestBodyTuple contributes this
         to OpenAPIObject.requestBodyTuples();
 
-        coll List<HeaderTuple> OpenAPIObject.headerTuples() [new ArrayList<>()] root OpenAPIObject;
-        HeaderTuple contributes this
+    coll List<HeaderTuple> OpenAPIObject.headerTuples() [new ArrayList<>()] root OpenAPIObject;
+    HeaderTuple contributes this
         to OpenAPIObject.headerTuples();
 
-        coll List<SecuritySchemeTuple> OpenAPIObject.securitySchemeTuples() [new ArrayList<>()] root OpenAPIObject;
-        SecuritySchemeTuple contributes this
+    coll List<SecuritySchemeTuple> OpenAPIObject.securitySchemeTuples() [new ArrayList<>()] root OpenAPIObject;
+    SecuritySchemeTuple contributes this
         to OpenAPIObject.securitySchemeTuples();
 
-        coll List<LinkTuple> OpenAPIObject.linkTuples() [new ArrayList<>()] root OpenAPIObject;
-        LinkTuple contributes this
+    coll List<LinkTuple> OpenAPIObject.linkTuples() [new ArrayList<>()] root OpenAPIObject;
+    LinkTuple contributes this
         to OpenAPIObject.linkTuples();
 
-        coll List<CallbackTuple> OpenAPIObject.callbackTuples() [new ArrayList<>()] root OpenAPIObject;
-        CallbackTuple contributes this
+    coll List<CallbackTuple> OpenAPIObject.callbackTuples() [new ArrayList<>()] root OpenAPIObject;
+    CallbackTuple contributes this
         to OpenAPIObject.callbackTuples();
 
-  syn ParameterObject ParameterOb.parameterObject();
-  eq ParameterObject.parameterObject() = this;
-  eq ParameterReference.parameterObject() {
-    for (ParameterTuple t : root().parameterTuples()) {
-      if (t.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1, getRef().length())))
-        return t.getParameterOb().parameterObject();
-    }
-    return new ParameterObject();
-  }
+    coll List<PathItemTuple> OpenAPIObject.pathItemTuples() [new ArrayList<>()] root OpenAPIObject;
+    PathItemTuple contributes this
+        to OpenAPIObject.pathItemTuples();
 
-  syn SchemaObject SchemaOb.schemaObject();
-  eq SchemaObject.schemaObject() = this;
-  eq SchemaReference.schemaObject() {
-    for (SchemaTuple t : root().schemaTuples()) {
-      if (t.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1, getRef().length())))
-        return t.getSchemaOb().schemaObject();
-    }
-    return new SchemaObject();
-  }
+    coll List<ParameterOb> OpenAPIObject.parameterObs() [new ArrayList<>()] root OpenAPIObject;
+    ParameterOb contributes this
+        to OpenAPIObject.parameterObs();
 
-  syn RequestBodyObject RequestBodyOb.requestBodyObject();
-  eq RequestBodyObject.requestBodyObject() = this;
-  eq RequestBodyReference.requestBodyObject() {
-    for (RequestBodyTuple t : root().requestBodyTuples()) {
-      if (t.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1, getRef().length())))
-        return t.getRequestBodyOb().requestBodyObject();
+    syn PathItemObject PathItemOb.pathItemObject();
+    eq PathItemObject.pathItemObject() = this;
+    eq PathItemReference.pathItemObject() {
+        for (PathItemTuple t : root().pathItemTuples()) {
+            if (t.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1, getRef().length())))
+                return t.getO().pathItemObject();
+        }
+        return new PathItemObject();
     }
-    return new RequestBodyObject();
-  }
 
-  syn ResponseObject ResponseOb.responseObject();
-  eq ResponseObject.responseObject() = this;
-  eq ResponseReference.responseObject() {
-    for (ResponseTuple t : root().responseTuples()) {
-      if (t.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1, getRef().length())))
-        return t.getResponseOb().responseObject();
+    syn ParameterObject ParameterOb.parameterObject();
+    eq ParameterObject.parameterObject() = this;
+    eq ParameterReference.parameterObject() {
+        for (ParameterTuple t : root().parameterTuples()) {
+            if (t.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1, getRef().length())))
+                return t.getO().parameterObject();
+        }
+        return new ParameterObject();
     }
-    return new ResponseObject();
-  }
 
-  syn CallbackObject CallbackOb.callbackObject();
-  eq CallbackObject.callbackObject() = this;
-  eq CallbackReference.callbackObject() {
-    for (CallbackTuple t : root().callbackTuples()) {
-      if (t.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1, getRef().length())))
-        return t.getCallbackOb().callbackObject();
+    syn SchemaObject SchemaOb.schemaObject();
+    eq SchemaObject.schemaObject() = this;
+    eq SchemaReference.schemaObject() {
+        for (SchemaTuple t : root().schemaTuples()) {
+            if (t.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1, getRef().length())))
+                return t.getO().schemaObject();
+        }
+        return new SchemaObject();
     }
-    return new CallbackObject();
-  }
 
-  syn LinkObject LinkOb.linkObject();
-  eq LinkObject.linkObject() = this;
-  eq LinkReference.linkObject() {
-    for (LinkTuple t : root().linkTuples()) {
-      if (t.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1, getRef().length())))
-        return t.getLinkOb().linkObject();
+    syn RequestBodyObject RequestBodyOb.requestBodyObject();
+    eq RequestBodyObject.requestBodyObject() = this;
+    eq RequestBodyReference.requestBodyObject() {
+        for (RequestBodyTuple t : root().requestBodyTuples()) {
+            if (t.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1, getRef().length())))
+                return t.getO().requestBodyObject();
+        }
+        return new RequestBodyObject();
     }
-    return new LinkObject();
-  }
 
-  syn HeaderObject HeaderOb.headerObject();
-  eq HeaderObject.headerObject() = this;
-  eq HeaderReference.headerObject() {
-    for (HeaderTuple t : root().headerTuples()) {
-      if (t.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1, getRef().length())))
-        return t.getHeaderOb().headerObject();
+    syn ResponseObject ResponseOb.responseObject();
+    eq ResponseObject.responseObject() = this;
+    eq ResponseReference.responseObject() {
+        for (ResponseTuple t : root().responseTuples()) {
+            if (t.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1, getRef().length())))
+                return t.getO().responseObject();
+        }
+        return new ResponseObject();
     }
-    return new HeaderObject();
-  }
 
-  syn SecuritySchemeObject SecuritySchemeOb.securitySchemeObject();
-  eq SecuritySchemeObject.securitySchemeObject() = this;
-  eq SecuritySchemeReference.securitySchemeObject() {
-    for (SecuritySchemeTuple t : root().securitySchemeTuples()) {
-      if (t.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1, getRef().length())))
-        return t.getSecuritySchemeOb().securitySchemeObject();
+    syn CallbackObject CallbackOb.callbackObject();
+    eq CallbackObject.callbackObject() = this;
+    eq CallbackReference.callbackObject() {
+        for (CallbackTuple t : root().callbackTuples()) {
+            if (t.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1, getRef().length())))
+                return t.getO().callbackObject();
+        }
+        return new CallbackObject();
     }
-    return new SecuritySchemeObject();
-  }
+
+    syn LinkObject LinkOb.linkObject();
+    eq LinkObject.linkObject() = this;
+    eq LinkReference.linkObject() {
+        for (LinkTuple t : root().linkTuples()) {
+            if (t.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1, getRef().length())))
+                return t.getO().linkObject();
+        }
+        return new LinkObject();
+    }
+
+    syn HeaderObject HeaderOb.headerObject();
+    eq HeaderObject.headerObject() = this;
+    eq HeaderReference.headerObject() {
+        for (HeaderTuple t : root().headerTuples()) {
+            if (t.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1, getRef().length())))
+                return t.getO().headerObject();
+        }
+        return new HeaderObject();
+    }
+
+    syn SecuritySchemeObject SecuritySchemeOb.securitySchemeObject();
+    eq SecuritySchemeObject.securitySchemeObject() = this;
+    eq SecuritySchemeReference.securitySchemeObject() {
+        for (SecuritySchemeTuple t : root().securitySchemeTuples()) {
+            if (t.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1, getRef().length())))
+                return t.getO().securitySchemeObject();
+        }
+        return new SecuritySchemeObject();
+    }
 
 }
-*/
