@@ -7,11 +7,11 @@ aspect RandomRequestGenerator{
       * Calls <code>generateUrl()</code> for all paths.
       * @return The list of String representing the generated URLs.
       */
-    syn List<String> OpenAPIObject.generateRequests(){
+    syn List<String> OpenAPIObject.generateRequests(Map<String, List<Object>> generatedParameters){
         List<String> urls = new ArrayList<>();
         try {
             for (PathsObject p : getPList())
-                urls.addAll(p.generateUrl());
+                urls.addAll(p.generateUrl(generatedParameters));
         } catch (Exception e) {
             System.out.println(e.toString() + " at OpenAPIObject.generateRequests()");
             return null;
@@ -24,8 +24,8 @@ aspect RandomRequestGenerator{
       * <p>Afterwards, generated URLs are saved in a list.</p>
       * @return The list of String representing the generated URLs.
       */
-    inh List<String> PathsObject.generateUrl();
-    eq OpenAPIObject.getP(int i).generateUrl(){
+    inh List<String> PathsObject.generateUrl(Map<String, List<Object>> generatedParameters);
+    eq OpenAPIObject.getP(int i).generateUrl(Map<String, List<Object>> generatedParameters){
         List<String> urls = new ArrayList<>();
         try {
             PathItemObject p = getP(i).getP().pathItemObject();
@@ -36,9 +36,9 @@ aspect RandomRequestGenerator{
             }
 
             if (p.hasG())
-                urls.add(p.getG().generateRandomUrl(path + getP(i).getRef()));
+                urls.add(p.getG().generateRandomUrl(generatedParameters, path + getP(i).getRef()));
             if (p.hasPostOb())
-                urls.add(p.getPostOb().generateRandomUrl(path + getP(i).getRef()));
+                urls.add(p.getPostOb().generateRandomUrl(generatedParameters, path + getP(i).getRef()));
 
             return urls;
         } catch (Exception e) {
@@ -52,14 +52,14 @@ aspect RandomRequestGenerator{
       * <p>Afterwards, generated parameters are written in the url.</p>
       * @return An URL with the generated parameters in String.
       */
-    syn String Get.generateRandomUrl(String pathRef){
+    syn String Get.generateRandomUrl(Map<String, List<Object>> generatedParameters, String pathRef){
         try {
             for (ParameterOb o : getO().getPList()) {
                 ParameterObject p = o.parameterObject();
                 if (p.getIn().equals("path"))
-                    pathRef = p.randomPathParameter(pathRef);
+                    pathRef = p.randomPathParameter(generatedParameters.get(p.getName()), pathRef);
                 else if (p.getIn().equals("query"))
-                    pathRef = p.randomQueryParameter(pathRef);
+                    pathRef = p.randomQueryParameter(generatedParameters.get(p.getName()), pathRef);
             }
             if (pathRef.contains("&"))
                 pathRef = pathRef.replaceFirst("&", "?");
@@ -76,14 +76,14 @@ aspect RandomRequestGenerator{
       * <p>Afterwards, generated parameters are written in the url.</p>
       * @return An URL with the generated parameters in String.
       */
-    syn String Post.generateRandomUrl(String pathRef){
+    syn String Post.generateRandomUrl(Map<String, List<Object>> generatedParameters, String pathRef){
         try {
             for (ParameterOb o : getO().getPList()) {
                 ParameterObject p = o.parameterObject();
                 if (p.getIn().equals("path"))
-                    pathRef = p.randomPathParameter(pathRef);
+                    pathRef = p.randomPathParameter(generatedParameters.get(p.getName()), pathRef);
                 else if (p.getIn().equals("query"))
-                    pathRef = p.randomQueryParameter(pathRef);
+                    pathRef = p.randomQueryParameter(generatedParameters.get(p.getName()), pathRef);
             }
             if (pathRef.contains("&"))
                 pathRef = pathRef.replaceFirst("&", "?");
@@ -99,17 +99,16 @@ aspect RandomRequestGenerator{
       * Checks which schema type the parameter has (String or Integer) and generates parameters.
       * @return A generated Path parameter.
       */
-    syn String ParameterObject.randomPathParameter(String pathRef){
+    syn String ParameterObject.randomPathParameter(List<Object> generatedParameters, String pathRef){
         SchemaObject s = getSchema().schemaObject();
         String pathPart = pathRef.substring(pathRef.indexOf("{"), pathRef.indexOf("}") + 1);
 
         if (s.getType().equals("string"))
-            pathRef = pathRef.replace(pathPart, generateRandomString(s.getEList()));
+            pathRef = pathRef.replace(pathPart, parameterStringFromGen(generatedParameters));
         else if (s.getType().equals("integer"))
-            pathRef = pathRef.replace(pathPart, generateRandomInt(
-                    -1, // s.getMinimum() != null ? s.getMinimum().intValue() : -1,
-                    10 // s.getMaximum() != null ? s.getMaximum().intValue() : -1
-            ));
+            pathRef = pathRef.replace(pathPart, parameterIntFromGen(generatedParameters).toString());
+        // parameter type 'array' not included
+
         return pathRef;
     }
 
@@ -117,24 +116,17 @@ aspect RandomRequestGenerator{
       * Checks which schema type the parameter has (String or Integer) and generates parameters.
       * @return A generated Query parameter.
       */
-    syn String ParameterObject.randomQueryParameter(String pathRef){
+    syn String ParameterObject.randomQueryParameter(List<Object> generatedParameters, String pathRef){
         SchemaObject s = getSchema().schemaObject();
 
         if (s.getType().equals("string"))
-            pathRef = pathRef + "&" + getName() + "=" + generateRandomString(s.getEList());
+            pathRef = pathRef + "&" + getName() + "=" + parameterStringFromGen(generatedParameters);
         else if (s.getType().equals("integer"))
-            pathRef = pathRef + "&" + getName() + "=" + generateRandomInt(
-                    -1, // s.getMinimum() != null ? s.getMinimum().intValue() : -1,
-                    10); // s.getMaximum() != null ? s.getMaximum().intValue() : -1
+            pathRef = pathRef + "&" + getName() + "=" + parameterIntFromGen(generatedParameters);
         else if (s.getType().equals("array")) {
+            // array parameter only with "enum"
             if (s.getI().getSchema().schemaObject().getType().equals("string")) {
-                for (EnumObj e : s.getI().getSchema().schemaObject().getEList())
-                    pathRef = pathWithEnum(e, pathRef);
-            } else if (s.getI().getSchema().schemaObject().getType().equals("integer")) {
-                for (int i = 0; i < 5; i++)
-                    pathRef = pathRef + "&" + getName() + "=" + generateRandomInt(
-                            -1, // s.getMinimum() != null ? s.getMinimum().intValue() : -1,
-                            10); // s.getMaximum() != null ? s.getMaximum().intValue() : -1
+                pathRef = pathRef + parameterEnumFromGen(generatedParameters);
             }
         }
         return pathRef;
@@ -171,7 +163,7 @@ aspect RandomRequestGenerator{
                 }
             }
 
-            if( parameters.get(o.getName()) != null )
+            if (parameters.get(o.getName()) != null)
                 values.addAll(parameters.get(o.getName()));
             parameters.put(o.getName(), values);
         }
@@ -199,15 +191,15 @@ aspect RandomRequestGenerator{
       * Generates a random Integer value.
       * @return A random Integer.
       */
-    public String ParameterObject.generateRandomInt(int minimum,int maximum){
+    public Integer ParameterObject.generateRandomInt(int minimum,int maximum){
         Random rand = new Random();
         if (minimum > -1 && maximum > 0)
-            return String.valueOf(rand.nextInt(minimum + maximum) - minimum);
+            return rand.nextInt(minimum + maximum) - minimum;
         else if (minimum > -1)
-            return String.valueOf(rand.nextInt() + minimum);
+            return rand.nextInt() + minimum;
         else if (maximum > 0)
-            return String.valueOf(rand.nextInt(maximum));
-        return String.valueOf(rand.nextInt());
+            return rand.nextInt(maximum);
+        return rand.nextInt();
     }
 
     /**
@@ -239,5 +231,46 @@ aspect RandomRequestGenerator{
                 return url;
         }
         return ref;
+    }
+
+    /**
+      * This is a method to get a String parameter from the generated parameters.
+      * @return the value of String.
+      */
+    syn String ParameterObject.parameterStringFromGen(List<Object> generatedParameters){
+        for (Object value : generatedParameters) {
+            if (value instanceof String)
+                return (String) value;
+        }
+        return null;
+    }
+
+    /**
+      * This is a method to get a Integer parameter from the generated parameters.
+      * @return The value of Integer.
+      */
+    syn Integer ParameterObject.parameterIntFromGen(List<Object> generatedParameters){
+        for (Object value : generatedParameters) {
+            if (value instanceof Integer)
+                return (Integer) value;
+        }
+        return null;
+    }
+
+    /**
+      * This is a method to get a parameter of Enumeration from the generated parameters.
+      * @return The value of String.
+      */
+    syn String ParameterObject.parameterEnumFromGen(List<Object> generatedParameters){
+        SchemaObject s = getSchema().schemaObject().getI().getSchema().schemaObject();
+        String path = "";
+
+        for (EnumObj e : s.getEList()) {
+            for (Object o : generatedParameters) {
+                if (o instanceof List && ((List<Object>) o).contains(e.getEnumOb().toString()))
+                    path = path + "&" + getName() + "=" + e.getEnumOb().toString();
+            }
+        }
+        return path;
     }
 }

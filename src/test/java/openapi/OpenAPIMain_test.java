@@ -17,12 +17,14 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import javax.validation.constraints.AssertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 public class OpenAPIMain_test {
@@ -39,21 +41,21 @@ public class OpenAPIMain_test {
     @ParameterizedTest
     void parserTest(File file) throws Exception {
         OpenAPIObject jastAddObject;
-        OpenAPI POJOOpenAPI;
+        OpenAPI openAPI;
         ObjectMapper mapper = new ObjectMapper();
         List<String> validation;
 
         // parse OpenAPI in POJO, parse Json by POJO and validate OpenAPI-Json
         SwaggerParseResult result = new OpenAPIParser().readLocation(file.getPath(), null, null);
-        POJOOpenAPI = result.getOpenAPI();
+        openAPI = result.getOpenAPI();
         System.out.println("Loading expression DSL file '" + file + "'.");
-        JsonNode expectedNode = mapper.readTree(Json.mapper().writeValueAsString(POJOOpenAPI));
+        JsonNode expectedNode = mapper.readTree(Json.mapper().writeValueAsString(openAPI));
         validation = new OpenAPIV3Parser().readContents(expectedNode.toString()).getMessages();
 
         Assertions.assertFalse(validation.size() != 0, "validation of the input yaml not succeeded");
 
         // parse OpenAPI in JastAdd, transform it to OpenAPI-POJO back and validate this
-        jastAddObject = OpenAPIObject.parseOpenAPI(POJOOpenAPI);
+        jastAddObject = OpenAPIObject.parseOpenAPI(openAPI);
         OpenAPI transformedAPI = OpenAPIObject.reverseOpenAPI(jastAddObject);
         JsonNode actualNode = mapper.readTree(Json.mapper().writeValueAsString(transformedAPI));
         validation = new OpenAPIV3Parser().readContents(actualNode.toString()).getMessages();
@@ -66,22 +68,46 @@ public class OpenAPIMain_test {
 
     @MethodSource("resources")
     @ParameterizedTest
-    void RandomUrlTest(File file) throws Exception {
+    void RandomUrlTest(File file) {
         OpenAPIObject jastAddObject;
-        OpenAPI POJOOpenAPI;
+        OpenAPI openAPI;
         List<String> urls;
         UrlValidator urlValidator = new UrlValidator();
 
         SwaggerParseResult result = new OpenAPIParser().readLocation(file.getPath(), null, null);
-        POJOOpenAPI = result.getOpenAPI();
+        openAPI = result.getOpenAPI();
         System.out.println("Loading expression DSL file '" + file + "'.");
 
-        jastAddObject = OpenAPIObject.parseOpenAPI(POJOOpenAPI);
-        urls = jastAddObject.generateRequests();
+        jastAddObject = OpenAPIObject.parseOpenAPI(openAPI);
+        urls = jastAddObject.generateRequests(jastAddObject.generateParameters());
 
         for (String url : urls)
             Assertions.assertTrue(urlValidator.isValid(url), "validation of " + url + " not succeeded");
     }
+
+    /*
+    @MethodSource("resources")
+    @ParameterizedTest
+    void RandomParameterTest(File file) {
+        OpenAPIObject jastAddObject;
+        OpenAPI openAPI;
+        List<String> urls;
+        Map<String, List<Object>> parameters;
+
+        SwaggerParseResult result = new OpenAPIParser().readLocation(file.getPath(), null, null);
+        openAPI = result.getOpenAPI();
+        System.out.println("Loading expression DSL file '" + file + "'.");
+
+        jastAddObject = OpenAPIObject.parseOpenAPI(openAPI);
+        parameters = jastAddObject.generateParameters();
+        for ( String key : parameters.keySet() ){
+            for ( Object value : parameters.get(key) ) {
+                if ( value instanceof String )
+                    Assertions.assertTrue(((String) value).matches("[a-zA-Z0-9#.()/%&\\s-]{0,19}"), "validation of " + key + " : " + value + " not succeeded");
+            }
+        }
+    }
+     */
 
     static Stream<File> resources() {
         return resources.stream();
