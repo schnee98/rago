@@ -82,6 +82,8 @@ pages:
   artifacts:
     paths:
       - public/
+  only:
+    - main
 
 publish_package:
   image: openjdk:11
