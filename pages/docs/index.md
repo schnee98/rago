@@ -73,3 +73,15 @@ If there is a same schema set in a request and a response, parameters of them ar
 
 - Case-insensitive
 - Id completion in a field name (e.g. if a property has a name "id", it gets an additional field name available in the specification)
+
+
+** Notice ** : Parameter Inference is an experimental fuzzing approach inspired by the 
+Specification-based Approach[^1] and RESTTESTGEN[^2]
+
+
+## Bibliography
+
+[^1]: Hamza Ed-Douibi, Javier Luis Cánovas Izquierdo, and Jordi Cabot. “Automatic generation of test cases for REST APIs: A specification-based approach”. In: 2018 IEEE 22nd international enterprise distributed object computing conference (EDOC). IEEE. 2018, pp. 181–190
+
+
+[^2]: Emanuele Viglianisi, Michael Dallago, and Mariano Ceccato. “RestTestGen: automated black-box testing of RESTful APIs”. In: 2020 IEEE 13th International Conference on Software Testing, Validation and Verification (ICST). IEEE. 2020, pp. 142–152
