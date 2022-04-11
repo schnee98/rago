@@ -4,7 +4,7 @@ site_dir: ../public
 
 nav:
   - "Overview": index.md
-  - "Fuzzing Example": fuzzing.md
+  - "UML Class Diagram for RAGO": uml.md
   - "API documentation": ragdoc/index.html
 
 theme:
