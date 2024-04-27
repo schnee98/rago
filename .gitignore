@@ -1,6 +1,7 @@
 .gradle/
 src/gen
 src/gen-res
+src/main/resources
 .idea/
 build/
 out/
