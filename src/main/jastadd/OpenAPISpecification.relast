@@ -1,26 +1,28 @@
+abstract Extendable ::= Extensions:Extension*;
+
 //OpenAPI Object
-OpenAPIObject ::= <OpenAPI> <JsonSchemaDialect> Info:InfoObject Servers:ServerObject* Paths:PathsObject* Webhooks:Webhook* Components:ComponentsObject SecurityRequirements:SecurityRequirementObject* Tags:TagObject* [ExternalDocs:ExternalDocObject] Extensions:Extension* ;
+OpenAPIObject : Extendable ::= <OpenAPI> <JsonSchemaDialect> Info:InfoObject Servers:ServerObject* Paths:PathsObject Webhooks:Webhook* Components:ComponentsObject SecurityRequirements:SecurityRequirementObject* Tags:TagObject* [ExternalDocs:ExternalDocObject];
 Webhook ::= <Key> PathItem:PathItemType;
 
 //Info Object
-InfoObject ::= <Title> <Summary> <Description> <TermsOfService> <Version> [Contact:ContactObject] [License:LicenseObject] Extensions:Extension*;
+InfoObject : Extendable ::= <Title> <Summary> <Description> <TermsOfService> <Version> [Contact:ContactObject] [License:LicenseObject];
 
 //Contact Object
-ContactObject ::= <Name> <Url> <Email> Extensions:Extension*;
+ContactObject : Extendable ::= <Name> <Url> <Email>;
 
 //License Object
-LicenseObject ::= <Name> <Identifier> <Url> Extensions:Extension*;
+LicenseObject : Extendable ::= <Name> <Identifier> <Url>;
 
 //Server Object
-ServerObject ::= <Url> <Description> ServerVariables:ServerVariablesTuple* Extensions:Extension*;
+ServerObject : Extendable ::= <Url> <Description> ServerVariables:ServerVariablesTuple*;
 ServerVariablesTuple ::= <Name> Variable:ServerVariableObject;
 
 //Server Variable Object
-ServerVariableObject ::= <Default> <Description> Enums:Enum* Extensions:Extension*;
+ServerVariableObject : Extendable ::= <Default> <Description> Enums:Enum*;
 Enum ::= <EnumValue>;
 
 //Components Object
-ComponentsObject ::= Schemas:SchemaTuple* Responses:ResponseTuple* Parameters:ParameterTuple* Examples:ExampleTuple* RequestBodies:RequestBodyTuple* Headers:HeaderTuple* SecuritySchemes:SecuritySchemeTuple* Links:LinkTuple* Callbacks:CallbackTuple* PathItems:PathItemTuple* Extensions:Extension*;
+ComponentsObject : Extendable ::= Schemas:SchemaTuple* Responses:ResponseTuple* Parameters:ParameterTuple* Examples:ExampleTuple* RequestBodies:RequestBodyTuple* Headers:HeaderTuple* SecuritySchemes:SecuritySchemeTuple* Links:LinkTuple* Callbacks:CallbackTuple* PathItems:PathItemTuple*;
 
 SchemaTuple ::= <Key> Schema:SchemaType;
 ResponseTuple ::= <Key> Response:ResponseType;
@@ -34,29 +36,21 @@ CallbackTuple ::= <Key> Callback:CallbackType;
 PathItemTuple ::= <Key> PathItem:PathItemType;
 
 //Paths Object
-PathsObject ::= <Ref> PathItem:PathItemType Extensions:Extension*;
+PathsObject : Extendable ::= Paths:PathItemTuple*;
 
 //Path Item Object
 abstract PathItemType;
-PathItemReference : PathItemType ::= <Ref> <Summary> <Description>;
+PathItemReference : PathItemType ::= <Ref> <Summary> <Description> Extensions:Extension*;
 rel PathItemReference.reference -> PathItemObject;
-PathItemObject : PathItemType ::= <Ref> <Summary> <Description> [GetOperation:Get] [PutOperation:Put] [PostOperation:Post] [DeleteOperation:Delete] [OptionsOperation:Options] [HeadOperation:Head] [PatchOperation:Patch] [TraceOperation:Trace] Servers:ServerObject* Parameters:ParameterType* Extensions:Extension*;
+PathItemObject : PathItemType ::= <Ref> <Summary> <Description> [GetOperation:OperationObject] [PutOperation:OperationObject] [PostOperation:OperationObject] [DeleteOperation:OperationObject] [OptionsOperation:OperationObject] [HeadOperation:OperationObject] [PatchOperation:OperationObject] [TraceOperation:OperationObject] Servers:ServerObject* Parameters:ParameterType* Extensions:Extension*;
 
 //Operation Object
 OperationObject ::= <Summary> <Description> <OperationID> <Deprecated:Boolean> Tags:Tag* [ExternalDocs:ExternalDocObject] Parameters:ParameterType* [RequestBody:RequestBodyType] Responses:ResponsesObject Callbacks:CallbackTuple* SecurityRequirements:SecurityRequirementObject* Servers:ServerObject* Extensions:Extension*;
 
-Get ::= Operation:OperationObject;
-Put ::= Operation:OperationObject;
-Post ::= Operation:OperationObject;
-Delete ::= Operation:OperationObject;
-Options ::= Operation:OperationObject;
-Head ::= Operation:OperationObject;
-Patch ::= Operation:OperationObject;
-Trace ::= Operation:OperationObject;
 Tag ::= <Tag>;
 
 //External Documentation Object
-ExternalDocObject ::= <Description> <Url> Extensions:Extension*;
+ExternalDocObject : Extendable ::= <Description> <Url>;
 
 //Parameter Object
 abstract ParameterType;
@@ -72,11 +66,11 @@ rel RequestBodyReference.reference -> RequestBodyObject;
 RequestBodyObject : RequestBodyType ::= <Description> <Required:Boolean> Content:ContentTuple* Extensions:Extension*;
 
 //Media Type Object
-MediaTypeObject ::= <Example:Object> [Schema:SchemaType] Examples:ExampleTuple* Encodings:EncodingTuple* Extensions:Extension*;
+MediaTypeObject : Extendable ::= <Example:Object> [Schema:SchemaType] Examples:ExampleTuple* Encodings:EncodingTuple*;
 EncodingTuple ::= <Key> Encoding:EncodingObject;
 
 //Encoding Object
-EncodingObject ::= <ContentType> <Style> <Explode:Boolean> <AllowReserved:Boolean> Headers:HeaderTuple* Extensions:Extension*;
+EncodingObject : Extendable ::= <ContentType> <Style> <Explode:Boolean> <AllowReserved:Boolean> Headers:HeaderTuple*;
 
 //Responses Object
 ResponsesObject ::= Responses:ResponseTuple*;
@@ -117,7 +111,7 @@ rel HeaderReference.reference -> HeaderObject;
 HeaderObject : HeaderType ::= <Description> <Required:Boolean> <DeprecatedBoolean:Boolean> <AllowEmptyValue:Boolean> <Style> <Explode:Boolean> <AllowReserved:Boolean> <Example:Object> [Schema:SchemaType] Examples:ExampleTuple* Contents:ContentTuple* Extensions:Extension*;
 
 //Tag Object
-TagObject ::= <Name> <Description> [ExternalDoc:ExternalDocObject] Extensions:Extension*;
+TagObject : Extendable ::= <Name> <Description> [ExternalDoc:ExternalDocObject];
 
 //Schema Object
 abstract SchemaType;
@@ -137,11 +131,11 @@ EnumObject ::= <Enum:Object>;
 RequiredField ::= <Value>;
 
 //Discriminator Object
-DiscriminatorObject ::= <PropertyName> Mappings:MappingTuple* Extensions:Extension*;
+DiscriminatorObject : Extendable ::= <PropertyName> Mappings:MappingTuple*;
 MappingTuple ::= <Key> <Value>;
 
 //XML Object
-XmlObject ::= <Name> <Namespace> <Prefix> <Attribute:Boolean> <Wrapped:Boolean> Extensions:Extension*;
+XmlObject : Extendable ::= <Name> <Namespace> <Prefix> <Attribute:Boolean> <Wrapped:Boolean>;
 
 //Security Scheme Object
 abstract SecuritySchemeType;
@@ -150,10 +144,10 @@ rel SecuritySchemeReference.reference -> SecuritySchemeObject;
 SecuritySchemeObject : SecuritySchemeType ::= <Type> <Description> <Name> <In> <Scheme> <BearerFormat> <OpenIdConnectUrl> [OAuthFlows:OAuthFlowsObject] Extensions:Extension*;
 
 //OAuth Flows Object
-OAuthFlowsObject ::= [Implicit:OAuthFlowObject] [Password:OAuthFlowObject] [ClientCredentials:OAuthFlowObject] [AuthorizationCode:OAuthFlowObject] Extensions:Extension*;
+OAuthFlowsObject : Extendable ::= [Implicit:OAuthFlowObject] [Password:OAuthFlowObject] [ClientCredentials:OAuthFlowObject] [AuthorizationCode:OAuthFlowObject];
 
 //OAuth Flow Object
-OAuthFlowObject ::= <AuthorizationUrl> <TokenUrl> <RefreshUrl> Scopes:ScopesTuple* Extensions:Extension*;
+OAuthFlowObject : Extendable ::= <AuthorizationUrl> <TokenUrl> <RefreshUrl> Scopes:ScopesTuple*;
 ScopesTuple ::= <ScopesKey> <ScopesValue>;
 
 //Security Requirement Object
