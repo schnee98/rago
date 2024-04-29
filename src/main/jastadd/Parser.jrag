@@ -258,7 +258,7 @@ aspect Parser {
 
       Optional.ofNullable(link.getOperationRef()).ifPresent(linkObject::setOperationRef);
       Optional.ofNullable(link.getOperationId()).ifPresent(linkObject::setOperationID);
-      Optional.ofNullable(link.getParameters()).ifPresent(parameters -> parameters.forEach((key, value) -> linkObject.addLinkParameters(new LinkParameterTuple(key, value))));
+      Optional.ofNullable(link.getParameters()).ifPresent(parameters -> parameters.forEach((key, value) -> linkObject.addLinkParameter(new LinkParameterTuple(key, value))));
       Optional.ofNullable(link.getDescription()).ifPresent(linkObject::setDescription);
       Optional.ofNullable(link.getServer()).ifPresent(server -> linkObject.setServer(ServerObject.parseServer(server)));
       Optional.ofNullable(link.getExtensions()).ifPresent(extensions -> extensions.forEach((key, value) -> linkObject.addExtensions(new Extension(key, value))));

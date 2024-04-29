@@ -27,7 +27,7 @@ ComponentsObject : Extendable ::= Schemas:SchemaTuple* Responses:ResponseTuple* 
 SchemaTuple ::= <Key> Schema:SchemaType;
 ResponseTuple ::= <Key> Response:ResponseType;
 ParameterTuple ::= <Key> Parameter:ParameterType;
-ExampleTuple ::= <Keyv> Example:ExampleType;
+ExampleTuple ::= <Key> Example:ExampleType;
 RequestBodyTuple ::= <Key> RequestBody:RequestBodyType;
 HeaderTuple ::= <Key> Header:HeaderType;
 SecuritySchemeTuple ::= <Key> SecurityScheme:SecuritySchemeType;
@@ -100,7 +100,7 @@ ExampleObject : ExampleType ::= <Summary> <Description> <Value:Object> <External
 abstract LinkType;
 LinkReference : LinkType ::= <Ref> <Summary> <Description>;
 rel LinkReference.reference -> LinkObject;
-LinkObject : LinkType ::= <OperationRef> <OperationID> <LinkRequestBody:Object> <Description> LinkParameters:LinkParameterTuple* [Server:ServerObject] Extensions:Extension*;
+LinkObject : LinkType ::= <OperationRef> <OperationID> <LinkRequestBody:Object> <Description> LinkParameter:LinkParameterTuple* [Server:ServerObject] Extensions:Extension*;
 
 LinkParameterTuple ::= <Key> <Value>;
 
