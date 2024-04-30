@@ -40,98 +40,97 @@ aspect Reference {
     PathItemTuple contributes this
         to OpenAPIObject.pathItemTuples();
 
-    coll List<ParameterOb> OpenAPIObject.parameterObs() [new ArrayList<>()] root OpenAPIObject;
-    ParameterOb contributes this
-        to OpenAPIObject.parameterObs();
+    coll List<ParameterType> OpenAPIObject.parameterTypes() [new ArrayList<>()] root OpenAPIObject;
+    ParameterType contributes this
+        to OpenAPIObject.parameterTypes();
 
-    syn PathItemObject PathItemOb.pathItemObject();
+    syn PathItemObject PathItemType.pathItemObject();
     eq PathItemObject.pathItemObject() = this;
     eq PathItemReference.pathItemObject() {
-        for (PathItemTuple t : root().pathItemTuples()) {
-            if (t.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1, getRef().length())))
-                return t.getO().pathItemObject();
-        }
-        return new PathItemObject();
+      for (PathItemTuple tuple : root().pathItemTuples()) {
+        if (tuple.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1)))
+          return  tuple.getPathItem().pathItemObject();
+      }
+      return new PathItemObject();
     }
 
-    syn ParameterObject ParameterOb.parameterObject();
+    syn ParameterObject ParameterType.parameterObject();
     eq ParameterObject.parameterObject() = this;
     eq ParameterReference.parameterObject() {
-        for (ParameterTuple t : root().parameterTuples()) {
-            if (t.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1, getRef().length())))
-                return t.getO().parameterObject();
-        }
-        return new ParameterObject();
+      for (ParameterTuple tuple : root().parameterTuples()) {
+        if (tuple.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1)))
+          return tuple.getParameter().parameterObject();
+      }
+      return new ParameterObject();
     }
 
-    syn SchemaObject SchemaOb.schemaObject();
+    syn SchemaObject SchemaType.schemaObject();
     eq SchemaObject.schemaObject() = this;
     eq SchemaReference.schemaObject() {
-        for (SchemaTuple t : root().schemaTuples()) {
-            if (t.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1, getRef().length())))
-                return t.getO().schemaObject();
-        }
-        return new SchemaObject();
+      for (SchemaTuple tuple : root().schemaTuples()) {
+        if (tuple.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1)))
+          return tuple.getSchema().schemaObject();
+      }
+      return new SchemaObject();
     }
 
-    syn RequestBodyObject RequestBodyOb.requestBodyObject();
+    syn RequestBodyObject RequestBodyType.requestBodyObject();
     eq RequestBodyObject.requestBodyObject() = this;
     eq RequestBodyReference.requestBodyObject() {
-        for (RequestBodyTuple t : root().requestBodyTuples()) {
-            if (t.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1, getRef().length())))
-                return t.getO().requestBodyObject();
-        }
-        return new RequestBodyObject();
+      for (RequestBodyTuple tuple : root().requestBodyTuples()) {
+        if (tuple.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1)))
+          return tuple.getRequestBody().requestBodyObject();
+      }
+      return new RequestBodyObject();
     }
 
-    syn ResponseObject ResponseOb.responseObject();
+    syn ResponseObject ResponseType.responseObject();
     eq ResponseObject.responseObject() = this;
     eq ResponseReference.responseObject() {
-        for (ResponseTuple t : root().responseTuples()) {
-            if (t.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1, getRef().length())))
-                return t.getO().responseObject();
-        }
-        return new ResponseObject();
+      for (ResponseTuple tuple : root().responseTuples()) {
+        if (tuple.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1)))
+          return tuple.getResponse().responseObject();
+      }
+      return new ResponseObject();
     }
 
-    syn CallbackObject CallbackOb.callbackObject();
+    syn CallbackObject CallbackType.callbackObject();
     eq CallbackObject.callbackObject() = this;
     eq CallbackReference.callbackObject() {
-        for (CallbackTuple t : root().callbackTuples()) {
-            if (t.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1, getRef().length())))
-                return t.getO().callbackObject();
-        }
-        return new CallbackObject();
+      for (CallbackTuple tuple : root().callbackTuples()) {
+        if (tuple.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1)))
+          return tuple.getCallback().callbackObject();
+      }
+      return new CallbackObject();
     }
 
-    syn LinkObject LinkOb.linkObject();
+    syn LinkObject LinkType.linkObject();
     eq LinkObject.linkObject() = this;
     eq LinkReference.linkObject() {
-        for (LinkTuple t : root().linkTuples()) {
-            if (t.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1, getRef().length())))
-                return t.getO().linkObject();
-        }
-        return new LinkObject();
+      for (LinkTuple tuple : root().linkTuples()) {
+        if (tuple.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1)))
+          return tuple.getLink().linkObject();
+      }
+      return new LinkObject();
     }
 
-    syn HeaderObject HeaderOb.headerObject();
+    syn HeaderObject HeaderType.headerObject();
     eq HeaderObject.headerObject() = this;
     eq HeaderReference.headerObject() {
-        for (HeaderTuple t : root().headerTuples()) {
-            if (t.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1, getRef().length())))
-                return t.getO().headerObject();
-        }
-        return new HeaderObject();
+      for (HeaderTuple tuple : root().headerTuples()) {
+        if (tuple.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1)))
+          return tuple.getHeader().headerObject();
+      }
+      return new HeaderObject();
     }
 
-    syn SecuritySchemeObject SecuritySchemeOb.securitySchemeObject();
+    syn SecuritySchemeObject SecuritySchemeType.securitySchemeObject();
     eq SecuritySchemeObject.securitySchemeObject() = this;
     eq SecuritySchemeReference.securitySchemeObject() {
-        for (SecuritySchemeTuple t : root().securitySchemeTuples()) {
-            if (t.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1, getRef().length())))
-                return t.getO().securitySchemeObject();
-        }
-        return new SecuritySchemeObject();
+      for (SecuritySchemeTuple tuple : root().securitySchemeTuples()) {
+        if (tuple.getKey().equals(getRef().substring(getRef().lastIndexOf("/") + 1)))
+          return tuple.getSecurityScheme().securitySchemeObject();
+      }
+      return new SecuritySchemeObject();
     }
-
 }
