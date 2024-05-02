@@ -1,1035 +1,912 @@
-import java.math.BigDecimal;
-import java.util.*;
 aspect ReverseParser{
+  public static io.swagger.v3.oas.models.OpenAPI OpenAPIObject.reverseOpenAPI(OpenAPIObject openapi){
+    io.swagger.v3.oas.models.OpenAPI api = new io.swagger.v3.oas.models.OpenAPI();
+    io.swagger.v3.oas.models.Paths paths = new io.swagger.v3.oas.models.Paths();
 
-    public static OpenAPI OpenAPIObject.reverseOpenAPI(OpenAPIObject openapi){
-        OpenAPI api = new OpenAPI();
+    Optional.ofNullable(openapi.getOpenAPI())
+            .filter(openapiText -> !openapiText.isEmpty())
+            .ifPresent(api::setOpenapi);
+    Optional.ofNullable(openapi.getInfo())
+            .ifPresent(info -> api.setInfo(InfoObject.reverseInfo(info)));
+    Optional.ofNullable(openapi.getComponents())
+            .ifPresent(components -> api.setComponents(ComponentsObject.reverseComponents(components)));
+    Optional.ofNullable(openapi.getExternalDocs())
+            .ifPresent(externalDocs -> api.setExternalDocs(ExternalDocObject.reverseExternalDocs(externalDocs)));
+    Optional.ofNullable(openapi.getPaths())
+            .ifPresent(pathsObject -> {
+              pathsObject.getPathsList().forEach(tuple -> paths.addPathItem(tuple.getKey(), tuple.getPathItem().reversePath(tuple.getPathItem())));
+              pathsObject.getExtensionsList().forEach(extension -> paths.addExtension(extension.getKey(), extension.getValue()));
+            });
+    api.setPaths(paths);
 
-        if (!openapi.getOpenAPI().isEmpty())
-            api.setOpenapi(openapi.getOpenAPI());
-        if (openapi.getI() != null)
-            api.setInfo(InfoObject.reverseInfo(openapi.getI()));
-        if (openapi.getNumServ() != 0) {
-            List<Server> servers = new ArrayList<>();
-            for (ServerObject s : openapi.getServList())
-                servers.add(ServerObject.reverseServer(s));
-            api.setServers(servers);
-        }
-            Paths paths = new Paths();
-            for (PathsObject p : openapi.getPList()) {
-                if (p.getP() instanceof PathItemObject)
-                    paths.addPathItem(p.getRef(), p.getP().reversePath(p.getP()));
-                if (p.getNumEx() != 0) {
-                    for (Extension e : p.getExList())
-                        paths.addExtension(e.getKey(), e.getValue());
-                }
-            }
-            api.setPaths(paths);
-        if (openapi.getC() != null)
-            api.setComponents(ComponentsObject.reverseComponents(openapi.getC()));
-        if (openapi.getNumSr() != 0) {
-            List<io.swagger.v3.oas.models.security.SecurityRequirement> securityRequirements = new ArrayList<>();
-            for (SecurityRequirementObject s : openapi.getSrList())
-                securityRequirements.add(SecurityRequirementObject.reverseSecurityRequirement(s));
-            api.setSecurity(securityRequirements);
-        }
-        if (openapi.getNumT() != 0) {
-            List<io.swagger.v3.oas.models.tags.Tag> tags = new ArrayList<>();
-            for (TagObject t : openapi.getTList())
-                tags.add(TagObject.reverseTag(t));
-            api.setTags(tags);
-        }
-        if (openapi.hasE())
-            api.setExternalDocs(ExternalDocObject.reverseExternalDocs(openapi.getE()));
-        if (openapi.getNumEx() != 0) {
-            Map<String, Object> extensionMap = new HashMap<>();
-            for (Extension e : openapi.getExList())
-                extensionMap.put(e.getKey(), e.getValue());
-            api.setExtensions(extensionMap);
-        }
-
-        /* 3.1.0 features
-    if (openapi.getWebhook != null) ...
-    if (openapi.getJsonSchemaDialect != null) ...
-     */
-        return api;
+    if (openapi.getNumServers() != 0) {
+      for (ServerObject serverObject : openapi.getServersList())
+        api.addServersItem(ServerObject.reverseServer(serverObject));
+    }
+    if (openapi.getNumSecurityRequirements() != 0) {
+      for (SecurityRequirementObject securityRequirement : openapi.getSecurityRequirementsList())
+        api.addSecurityItem(SecurityRequirementObject.reverseSecurityRequirement(securityRequirement));
+    }
+    if (openapi.getNumTags() != 0) {
+      for (TagObject tag : openapi.getTagsList()) api.addTagsItem(TagObject.reverseTag(tag));
+    }
+    if (openapi.getNumExtensions() != 0) {
+      for (Extension extension : openapi.getExtensionsList())
+        api.addExtension(extension.getKey(), extension.getValue());
     }
 
+    return api;
+  }
+
     public static io.swagger.v3.oas.models.info.Info InfoObject.reverseInfo(InfoObject infoObject){
-        io.swagger.v3.oas.models.info.Info info = new io.swagger.v3.oas.models.info.Info();
+      io.swagger.v3.oas.models.info.Info info = new io.swagger.v3.oas.models.info.Info();
 
-        if (infoObject.getTitle() != null)
-            info.setTitle(infoObject.getTitle());
-        if (!infoObject.getVersion().isEmpty())
-            info.setVersion(infoObject.getVersion());
-        if (!infoObject.getDescription().isEmpty())
-            info.setDescription(infoObject.getDescription());
-        if (!infoObject.getTermsOfService().isEmpty())
-            info.setTermsOfService(infoObject.getTermsOfService());
-        if (infoObject.hasC())
-            info.setContact(ContactObject.reverseContact(infoObject.getC()));
-        if (infoObject.hasL())
-            info.setLicense(LicenseObject.reverseLicense(infoObject.getL()));
-        if (infoObject.getNumEx() != 0) {
-            Map<String, Object> extension = new HashMap<>();
-            for (Extension e : infoObject.getExList())
-                extension.put(e.getKey(), e.getValue());
-            info.setExtensions(extension);
-        }
+      Optional.ofNullable(infoObject.getTitle())
+              .filter(title -> !title.isEmpty())
+              .ifPresent(info::setTitle);
+      Optional.ofNullable(infoObject.getVersion())
+              .filter(version -> !version.isEmpty())
+              .ifPresent(info::setVersion);
+      Optional.ofNullable(infoObject.getDescription())
+              .filter(description -> !description.isEmpty())
+              .ifPresent(info::setDescription);
+      Optional.ofNullable(infoObject.getTermsOfService())
+              .filter(termsOfService -> !termsOfService.isEmpty())
+              .ifPresent(info::setTermsOfService);
+      Optional.ofNullable(infoObject.getContact())
+              .ifPresent(contact -> info.setContact(ContactObject.reverseContact(contact)));
+      Optional.ofNullable(infoObject.getLicense())
+              .ifPresent(license -> info.setLicense(LicenseObject.reverseLicense(license)));
+      if (infoObject.getNumExtensions() != 0) {
+        for (Extension extension : infoObject.getExtensionsList())
+          info.addExtension(extension.getKey(), extension.getValue());
+      }
 
-        return info;
+      return info;
     }
 
     public static io.swagger.v3.oas.models.info.Contact ContactObject.reverseContact(ContactObject contactObject){
-        io.swagger.v3.oas.models.info.Contact contact = new io.swagger.v3.oas.models.info.Contact();
+      io.swagger.v3.oas.models.info.Contact contact = new io.swagger.v3.oas.models.info.Contact();
 
-        if (!contactObject.getName().isEmpty())
-            contact.setName(contactObject.getName());
-        if (!contactObject.getUrl().isEmpty())
-            contact.setUrl(contactObject.getUrl());
-        if (!contactObject.getEmail().isEmpty())
-            contact.setEmail(contactObject.getEmail());
-        if (contactObject.getNumEx() != 0) {
-            Map<String, Object> extensions = new HashMap<>();
-            for (Extension e : contactObject.getExList())
-                extensions.put(e.getKey(), e.getValue());
-            contact.setExtensions(extensions);
-        }
+      Optional.ofNullable(contactObject.getName())
+          .filter(name -> !name.isEmpty())
+          .ifPresent(contact::setName);
+      Optional.ofNullable(contactObject.getUrl())
+          .filter(url -> !url.isEmpty())
+          .ifPresent(contact::setUrl);
+      Optional.ofNullable(contactObject.getEmail())
+          .filter(email -> !email.isEmpty())
+          .ifPresent(contact::setEmail);
+      if (contactObject.getNumExtensions() != 0) {
+        for (Extension extension : contactObject.getExtensionsList())
+          contact.addExtension(extension.getKey(), extension.getValue());
+      }
 
-        return contact;
+      return contact;
     }
 
     public static io.swagger.v3.oas.models.info.License LicenseObject.reverseLicense(LicenseObject licenseObject){
-        io.swagger.v3.oas.models.info.License license = new io.swagger.v3.oas.models.info.License();
+      io.swagger.v3.oas.models.info.License license = new io.swagger.v3.oas.models.info.License();
 
-        if (!licenseObject.getName().isEmpty())
-            license.setName(licenseObject.getName());
-        if (!licenseObject.getUrl().isEmpty())
-            license.setUrl(licenseObject.getUrl());
-        if (licenseObject.getNumEx() != 0) {
-            Map<String, Object> extensions = new HashMap<>();
-            for (Extension e : licenseObject.getExList())
-                extensions.put(e.getKey(), e.getValue());
-            license.setExtensions(extensions);
-        }
+      Optional.ofNullable(licenseObject.getName())
+          .filter(name -> !name.isEmpty())
+          .ifPresent(license::setName);
+      Optional.ofNullable(licenseObject.getUrl())
+          .filter(url -> !url.isEmpty())
+          .ifPresent(license::setUrl);
+      if (licenseObject.getNumExtensions() != 0) {
+        for (Extension extension : licenseObject.getExtensionsList())
+          license.addExtension(extension.getKey(), extension.getValue());
+      }
 
-        return license;
+      return license;
     }
 
-    public static Server ServerObject.reverseServer(ServerObject serverObject){
-        Server server = new Server();
+    public static io.swagger.v3.oas.models.servers.Server ServerObject.reverseServer(ServerObject serverObject){
+      io.swagger.v3.oas.models.servers.Server server = new io.swagger.v3.oas.models.servers.Server();
 
-        if (!serverObject.getUrl().isEmpty())
-            server.setUrl(serverObject.getUrl());
-        if (!serverObject.getDescription().isEmpty())
-            server.setDescription(serverObject.getDescription());
-        if (serverObject.getNumSt() != 0) {
-            ServerVariables serverVariables = new ServerVariables();
-            for (ServerVariablesTuple s : serverObject.getStList())
-                serverVariables.addServerVariable(s.getName(), ServerVariableObject.reverseServerVariable(s.getS()));
-            server.setVariables(serverVariables);
-        }
-        if (serverObject.getNumEx() != 0) {
-            Map<String, Object> extensions = new HashMap<>();
-            for (Extension e : serverObject.getExList())
-                extensions.put(e.getKey(), e.getValue());
-            server.setExtensions(extensions);
-        }
+      Optional.ofNullable(serverObject.getUrl())
+          .filter(url -> !url.isEmpty())
+          .ifPresent(server::setUrl);
+      Optional.ofNullable(serverObject.getDescription())
+          .filter(description -> !description.isEmpty())
+          .ifPresent(server::setDescription);
+      if (serverObject.getNumServerVariables() != 0) {
+        io.swagger.v3.oas.models.servers.ServerVariables serverVariables = new io.swagger.v3.oas.models.servers.ServerVariables();
+        for (ServerVariablesTuple tuple : serverObject.getServerVariablesList())
+          serverVariables.addServerVariable(tuple.getName(), ServerVariableObject.reverseServerVariable(tuple.getVariable()));
+        server.setVariables(serverVariables);
+      }
+      if (serverObject.getNumExtensions() != 0) {
+        for (Extension extension : serverObject.getExtensionsList())
+          server.addExtension(extension.getKey(), extension.getValue());
+      }
 
-        return server;
+      return server;
     }
 
-    public static ServerVariable ServerVariableObject.reverseServerVariable(ServerVariableObject serverVariableObject){
-        ServerVariable serverVariable = new ServerVariable();
+    public static io.swagger.v3.oas.models.servers.ServerVariable ServerVariableObject.reverseServerVariable(ServerVariableObject serverVariableObject){
+      io.swagger.v3.oas.models.servers.ServerVariable serverVariable = new io.swagger.v3.oas.models.servers.ServerVariable();
 
-        if (!serverVariableObject.getDefault().isEmpty())
-            serverVariable.setDefault(serverVariableObject.getDefault());
-        if (!serverVariableObject.getDescription().isEmpty())
-            serverVariable.setDescription(serverVariableObject.getDescription());
-        if (serverVariableObject.getNumE() != 0) {
-            List<String> enums = new ArrayList<>();
-            for (Enum e : serverVariableObject.getEList())
-                enums.add(e.getEnumValue());
-            serverVariable.setEnum(enums);
-        }
-        if (serverVariableObject.getNumEx() != 0) {
-            Map<String, Object> extensions = new HashMap<>();
-            for (Extension e : serverVariableObject.getExList())
-                extensions.put(e.getKey(), e.getValue());
-            serverVariable.setExtensions(extensions);
-        }
+      Optional.ofNullable(serverVariableObject.getDefault())
+          .filter(value -> !value.isEmpty())
+          .ifPresent(serverVariable::setDefault);
+      Optional.ofNullable(serverVariableObject.getDescription())
+          .filter(description -> !description.isEmpty())
+          .ifPresent(serverVariable::setDescription);
+      if (serverVariableObject.getNumEnums() != 0) {
+        for (Enum enumItem : serverVariableObject.getEnumsList()) serverVariable.addEnumItem(enumItem.getEnumValue());
+      }
+      if (serverVariableObject.getNumExtensions() != 0) {
+        for (Extension extension : serverVariableObject.getExtensionsList())
+          serverVariable.addExtension(extension.getKey(), extension.getValue());
+      }
 
-        return serverVariable;
+      return serverVariable;
     }
 
-    public static Components ComponentsObject.reverseComponents(ComponentsObject componentsObject){
-        Components components = new Components();
+    public static io.swagger.v3.oas.models.Components ComponentsObject.reverseComponents(ComponentsObject componentsObject){
+      io.swagger.v3.oas.models.Components components = new io.swagger.v3.oas.models.Components();
 
-        if (componentsObject.getNumS() != 0) {
-            Map<String, io.swagger.v3.oas.models.media.Schema> schemaMap = new HashMap<>();
-            SchemaOb s;
-            for (SchemaTuple t : componentsObject.getSList())
-                schemaMap.put(t.getKey(), t.getO().reverseSchema(t.getO()));
-            components.setSchemas(schemaMap);
-        }
-        if (componentsObject.getNumR() != 0) {
-            Map<String, ApiResponse> responseMap = new HashMap<>();
-            ResponseOb r;
-            for (ResponseTuple t : componentsObject.getRList()) {
-                r = t.getO();
-                responseMap.put(t.getKey(), r.reverseResponse(r));
-            }
-            components.setResponses(responseMap);
-        }
-        if (componentsObject.getNumP() != 0) {
-            Map<String, Parameter> parameterMap = new HashMap<>();
-            ParameterOb p;
-            for (ParameterTuple t : componentsObject.getPList()) {
-                p = t.getO();
-                parameterMap.put(t.getKey(), p.reverseParameter(p));
-            }
-            components.setParameters(parameterMap);
-        }
-        if (componentsObject.getNumE() != 0) {
-            Map<String, Example> exampleMap = new HashMap<>();
-            for (ExampleTuple t : componentsObject.getEList())
-                exampleMap.put(t.getKey(), t.getO().reverseExample(t.getO()));
-            components.setExamples(exampleMap);
-        }
-        if (componentsObject.getNumRb() != 0) {
-            Map<String, RequestBody> requestBodyMap = new HashMap<>();
-            RequestBodyOb r;
-            for (RequestBodyTuple t : componentsObject.getRbList()) {
-                r = t.getO();
-                requestBodyMap.put(t.getKey(), r.reverseRequestBody(r));
-            }
-            components.setRequestBodies(requestBodyMap);
-        }
-        if (componentsObject.getNumH() != 0) {
-            Map<String, Header> headerMap = new HashMap<>();
-            HeaderOb h;
-            for (HeaderTuple t : componentsObject.getHList()) {
-                h = t.getO();
-                headerMap.put(t.getKey(), h.reverseHeader(h));
-            }
-            components.setHeaders(headerMap);
-        }
-        if (componentsObject.getNumSc() != 0) {
-            Map<String, SecurityScheme> securitySchemeMap = new HashMap<>();
-            SecuritySchemeOb s;
-            for (SecuritySchemeTuple t : componentsObject.getScList()) {
-                s = t.getO();
-                securitySchemeMap.put(t.getKey(), s.reverseSecurityScheme(s));
-            }
-            components.setSecuritySchemes(securitySchemeMap);
-        }
-        if (componentsObject.getNumL() != 0) {
-            Map<String, Link> linkMap = new HashMap<>();
-            LinkOb l;
-            for (LinkTuple t : componentsObject.getLList()) {
-                l = t.getO();
-                linkMap.put(t.getKey(), l.reverseLink(l));
-            }
-            components.setLinks(linkMap);
-        }
-        if (componentsObject.getNumC() != 0) {
-            Map<String, Callback> callbackMap = new HashMap<>();
-            CallbackOb c;
-            for (CallbackTuple t : componentsObject.getCList()) {
-                c = t.getO();
-                callbackMap.put(t.getKey(), c.reverseCallback(c));
-            }
-            components.setCallbacks(callbackMap);
-        }
-        if (componentsObject.getNumEx() != 0) {
-            Map<String, Object> extensions = new HashMap<>();
-            for (Extension e : componentsObject.getExList())
-                extensions.put(e.getKey(), e.getValue());
-            components.setExtensions(extensions);
-        }
+      if (componentsObject.getNumSchemas() != 0) {
+        for (SchemaTuple tuple : componentsObject.getSchemasList())
+          components.addSchemas(tuple.getKey(), tuple.getSchema().reverseSchema(tuple.getSchema()));
+      }
+      if (componentsObject.getNumResponses() != 0) {
+        for (ResponseTuple tuple : componentsObject.getResponsesList())
+          components.addResponses(tuple.getKey(), tuple.getResponse().reverseResponse(tuple.getResponse()));
+      }
+      if (componentsObject.getNumParameters() != 0) {
+        for (ParameterTuple tuple : componentsObject.getParametersList())
+          components.addParameters(tuple.getKey(), tuple.getParameter().reverseParameter(tuple.getParameter()));
+      }
+      if (componentsObject.getNumExamples() != 0) {
+        for (ExampleTuple tuple : componentsObject.getExamplesList())
+          components.addExamples(tuple.getKey(), tuple.getExample().reverseExample(tuple.getExample()));
+      }
+      if (componentsObject.getNumRequestBodies() != 0) {
+        for (RequestBodyTuple tuple : componentsObject.getRequestBodiesList())
+          components.addRequestBodies(tuple.getKey(), tuple.getRequestBody().reverseRequestBody(tuple.getRequestBody()));
+      }
+      if (componentsObject.getNumHeaders() != 0) {
+        for (HeaderTuple tuple : componentsObject.getHeadersList())
+          components.addHeaders(tuple.getKey(), tuple.getHeader().reverseHeader(tuple.getHeader()));
+      }
+      if (componentsObject.getNumSecuritySchemes() != 0) {
+        for (SecuritySchemeTuple tuple : componentsObject.getSecuritySchemesList())
+          components.addSecuritySchemes(tuple.getKey(), tuple.getSecurityScheme().reverseSecurityScheme(tuple.getSecurityScheme()));
+      }
+      if (componentsObject.getNumLinks() != 0) {
+        for (LinkTuple tuple : componentsObject.getLinksList())
+          components.addLinks(tuple.getKey(), tuple.getLink().reverseLink(tuple.getLink()));
+      }
+      if (componentsObject.getNumCallbacks() != 0) {
+        for (CallbackTuple tuple : componentsObject.getCallbacksList())
+          components.addCallbacks(tuple.getKey(), tuple.getCallback().reverseCallback(tuple.getCallback()));
+      }
+      if (componentsObject.getNumExtensions() != 0) {
+        for (Extension extension : componentsObject.getExtensionsList())
+          components.addExtension(extension.getKey(), extension.getValue());
+      }
 
-        return components;
+      return components;
     }
 
-    syn PathItem PathItemOb.reversePath(PathItemOb pathItemOb);
-    eq PathItemReference.reversePath(PathItemOb pathItemOb){
-        PathItem pathItem = new PathItem();
-        PathItemReference p = (PathItemReference) pathItemOb;
+    syn io.swagger.v3.oas.models.PathItem PathItemType.reversePath(PathItemType pathItemType);
+    eq PathItemReference.reversePath(PathItemType pathItemType){
+      io.swagger.v3.oas.models.PathItem pathItem = new io.swagger.v3.oas.models.PathItem();
+      PathItemReference pathItemReference = (PathItemReference) pathItemType;
 
-        /* implement after reference implementation
-        if (!p.getRef().isEmpty()) {
-        try {
-        parameter.setReference(new org.openapi4j.core.model.v3.OAI3Context(new URL("")), new URL(""), p.getRef());
-        } catch (Exception e) {
-        e.printStackTrace();
-        }
-        }
-         */
+      Optional.ofNullable(pathItemReference.getRef())
+          .filter(ref -> !ref.isEmpty())
+          .ifPresent(pathItem::set$ref);
 
-        return pathItem;
+      return pathItem;
     }
-    eq PathItemObject.reversePath(PathItemOb pathItemOb){
-        PathItem path = new PathItem();
-        PathItemObject p = (PathItemObject) pathItemOb;
+    eq PathItemObject.reversePath(PathItemType pathItemType){
+      io.swagger.v3.oas.models.PathItem pathItem = new io.swagger.v3.oas.models.PathItem();
+      PathItemObject pathItemObject = (PathItemObject) pathItemType;
 
-        if (!p.getSummary().isEmpty())
-            path.setSummary(p.getSummary());
-        if (!p.getDescription().isEmpty())
-            path.setDescription(p.getDescription());
-        if (p.hasG())
-            path.setGet(OperationObject.reverseOperation(p.getG().getO()));
-        if (p.hasPutOb())
-            path.setPut(OperationObject.reverseOperation(p.getPutOb().getO()));
-        if (p.hasPostOb())
-            path.setPost(OperationObject.reverseOperation(p.getPostOb().getO()));
-        if (p.hasD())
-            path.setDelete(OperationObject.reverseOperation(p.getD().getO()));
-        if (p.hasO())
-            path.setOptions(OperationObject.reverseOperation(p.getO().getO()));
-        if (p.hasH())
-            path.setHead(OperationObject.reverseOperation(p.getH().getO()));
-        if (p.hasPatchOb())
-            path.setPatch(OperationObject.reverseOperation(p.getPatchOb().getO()));
-        if (p.getNumS() != 0) {
-            for (ServerObject s : p.getSList())
-                path.addServersItem(ServerObject.reverseServer(s));
-        }
-        if (p.getNumPo() != 0) {
-            for (ParameterOb e : p.getPoList())
-                path.addParametersItem(e.reverseParameter(e));
-        }
-        if (p.getNumEx() != 0) {
-            Map<String, Object> extensionMap = new HashMap<>();
-            for (Extension e : p.getExList())
-                extensionMap.put(e.getKey(), e.getValue());
-            path.setExtensions(extensionMap);
-        }
+      Optional.ofNullable(pathItemObject.getSummary())
+          .filter(summary -> !summary.isEmpty())
+          .ifPresent(pathItem::setSummary);
+      Optional.ofNullable(pathItemObject.getDescription())
+          .filter(description -> !description.isEmpty())
+          .ifPresent(pathItem::setDescription);
+      Optional.ofNullable(pathItemObject.getGetOperation())
+          .ifPresent(operation -> pathItem.setGet(OperationObject.reverseOperation(operation)));
+      Optional.ofNullable(pathItemObject.getPutOperation())
+          .ifPresent(operation -> pathItem.setPut(OperationObject.reverseOperation(operation)));
+      Optional.ofNullable(pathItemObject.getPostOperation())
+          .ifPresent(operation -> pathItem.setPost(OperationObject.reverseOperation(operation)));
+      Optional.ofNullable(pathItemObject.getDeleteOperation())
+          .ifPresent(operation -> pathItem.setDelete(OperationObject.reverseOperation(operation)));
+      Optional.ofNullable(pathItemObject.getOptionsOperation())
+          .ifPresent(operation -> pathItem.setOptions(OperationObject.reverseOperation(operation)));
+      Optional.ofNullable(pathItemObject.getHeadOperation())
+          .ifPresent(operation -> pathItem.setHead(OperationObject.reverseOperation(operation)));
+      Optional.ofNullable(pathItemObject.getPatchOperation())
+          .ifPresent(operation -> pathItem.setPatch(OperationObject.reverseOperation(operation)));
+      Optional.ofNullable(pathItemObject.getTraceOperation())
+          .ifPresent(operation -> pathItem.setTrace(OperationObject.reverseOperation(operation)));
 
-        return path;
+      if (pathItemObject.getNumServers() != 0) {
+        for (ServerObject server : pathItemObject.getServersList())
+          pathItem.addServersItem(ServerObject.reverseServer(server));
+      }
+      if (pathItemObject.getNumParameters() != 0) {
+        for (ParameterType parameter : pathItemObject.getParametersList())
+          pathItem.addParametersItem(parameter.reverseParameter(parameter));
+      }
+      if (pathItemObject.getNumExtensions() != 0) {
+        for (Extension extension : pathItemObject.getExtensionsList())
+          pathItem.addExtension(extension.getKey(), extension.getValue());
+      }
+
+      return pathItem;
     }
 
     public static io.swagger.v3.oas.models.Operation OperationObject.reverseOperation(OperationObject operationObject){
-        io.swagger.v3.oas.models.Operation operation = new io.swagger.v3.oas.models.Operation();
+      io.swagger.v3.oas.models.Operation operation = new io.swagger.v3.oas.models.Operation();
 
-        if (operationObject.getNumT() != 0) {
-            for (de.tudresden.inf.st.openapi.ast.Tag t : operationObject.getTList())
-                operation.addTagsItem(t.getTag());
-        }
-        if (!operationObject.getSummary().isEmpty())
-            operation.setSummary(operationObject.getSummary());
-        if (!operationObject.getDescription().isEmpty())
-            operation.setDescription(operationObject.getDescription());
-        if (operationObject.hasEd())
-            operation.setExternalDocs(ExternalDocObject.reverseExternalDocs(operationObject.getEd()));
-        if (!operationObject.getOperationID().isEmpty())
-            operation.setOperationId(operationObject.getOperationID());
-        if (operationObject.getNumP() != 0) {
-            for (ParameterOb p : operationObject.getPList())
-                operation.addParametersItem(p.reverseParameter(p));
-        }
-        if (operationObject.hasRb())
-            operation.setRequestBody(operationObject.getRb().reverseRequestBody(operationObject.getRb()));
-        if (operationObject.getR().getNumR() != 0) {
-            ApiResponses responses = new ApiResponses();
-            for (ResponseTuple t : operationObject.getR().getRList())
-                responses.put(t.getKey(), t.getO().reverseResponse(t.getO()));
-            operation.setResponses(responses);
-        }
-        if (operationObject.getNumC() != 0) {
-            Map<String, Callback> callbacks = new HashMap<>();
-            for (CallbackTuple t : operationObject.getCList())
-                callbacks.put(t.getKey(), t.getO().reverseCallback(t.getO()));
-            operation.setCallbacks(callbacks);
-        }
-        if (operationObject.getDeprecatedBoolean() != null)
-            operation.setDeprecated(operationObject.getDeprecatedBoolean());
-        if (operationObject.getNumSr() != 0) {
-            for (SecurityRequirementObject s : operationObject.getSrList())
-                operation.addSecurityItem(SecurityRequirementObject.reverseSecurityRequirement(s));
-        }
-        if (operationObject.getNumS() != 0) {
-            for (ServerObject s : operationObject.getSList())
-                operation.addServersItem(ServerObject.reverseServer(s));
-        }
-        if (operationObject.getNumEx() != 0) {
-            Map<String, Object> extensionMap = new HashMap<>();
-            for (Extension e : operationObject.getExList())
-                extensionMap.put(e.getKey(), e.getValue());
-            operation.setExtensions(extensionMap);
-        }
+      Optional.ofNullable(operationObject.getSummary())
+          .filter(summary -> !summary.isEmpty())
+          .ifPresent(operation::setSummary);
+      Optional.ofNullable(operationObject.getDescription())
+          .filter(description -> !description.isEmpty())
+          .ifPresent(operation::setDescription);
+      Optional.ofNullable(operationObject.getOperationID())
+          .filter(id -> !id.isEmpty())
+          .ifPresent(operation::setOperationId);
+      Optional.ofNullable(operationObject.getDeprecated())
+          .ifPresent(operation::setDeprecated);
+      Optional.ofNullable(operationObject.getExternalDocs())
+          .ifPresent(externalDocs -> operation.setExternalDocs(ExternalDocObject.reverseExternalDocs(externalDocs)));
+      Optional.ofNullable(operationObject.getRequestBody())
+          .ifPresent(requestBody -> operation.setRequestBody(requestBody.reverseRequestBody(requestBody)));
 
-        return operation;
+      if (operationObject.getNumTags() != 0) {
+        for (Tag tag : operationObject.getTagsList()) operation.addTagsItem(tag.getTag());
+      }
+      if (operationObject.getNumParameters() != 0) {
+        for (ParameterType parameterType : operationObject.getParametersList())
+          operation.addParametersItem(parameterType.reverseParameter(parameterType));
+      }
+      if (operationObject.getResponses().getNumResponses() != 0) {
+        io.swagger.v3.oas.models.responses.ApiResponses responses = new io.swagger.v3.oas.models.responses.ApiResponses();
+        for (ResponseTuple tuple : operationObject.getResponses().getResponsesList())
+          responses.put(tuple.getKey(), tuple.getResponse().reverseResponse(tuple.getResponse()));
+        operation.setResponses(responses);
+      }
+      if (operationObject.getNumCallbacks() != 0) {
+        Map<String, io.swagger.v3.oas.models.callbacks.Callback> callbacks = new HashMap<>();
+        for (CallbackTuple tuple : operationObject.getCallbacksList())
+          callbacks.put(tuple.getKey(), tuple.getCallback().reverseCallback(tuple.getCallback()));
+        operation.setCallbacks(callbacks);
+      }
+      if (operationObject.getNumSecurityRequirements() != 0) {
+        for (SecurityRequirementObject securityRequirement : operationObject.getSecurityRequirementsList())
+          operation.addSecurityItem(SecurityRequirementObject.reverseSecurityRequirement(securityRequirement));
+      }
+      if (operationObject.getNumServers() != 0) {
+        for (ServerObject serverObject : operationObject.getServersList())
+          operation.addServersItem(ServerObject.reverseServer(serverObject));
+      }
+      if (operationObject.getNumExtensions() != 0) {
+        for (Extension extension : operationObject.getExtensionsList())
+          operation.addExtension(extension.getKey(), extension.getValue());
+      }
+
+      return operation;
     }
 
     public static io.swagger.v3.oas.models.ExternalDocumentation ExternalDocObject.reverseExternalDocs(ExternalDocObject externalDocObject){
-        ExternalDocumentation externalDocs = new ExternalDocumentation();
+      io.swagger.v3.oas.models.ExternalDocumentation externalDocs = new io.swagger.v3.oas.models.ExternalDocumentation();
 
-        if (!externalDocObject.getDescription().isEmpty())
-            externalDocs.setDescription(externalDocObject.getDescription());
-        if (!externalDocObject.getUrl().isEmpty())
-            externalDocs.setUrl(externalDocObject.getUrl());
-        if (externalDocObject.getNumEx() != 0) {
-            Map<String, Object> extensionMap = new HashMap<>();
-            for (Extension e : externalDocObject.getExList())
-                extensionMap.put(e.getKey(), e.getValue());
-            externalDocs.setExtensions(extensionMap);
-        }
+      Optional.ofNullable(externalDocObject.getDescription())
+          .filter(description -> !description.isEmpty())
+          .ifPresent(externalDocs::setDescription);
+      Optional.ofNullable(externalDocObject.getUrl())
+          .filter(url -> !url.isEmpty())
+          .ifPresent(externalDocs::setUrl);
 
-        return externalDocs;
+      if (externalDocObject.getNumExtensions() != 0) {
+        for (Extension extension : externalDocObject.getExtensionsList())
+          externalDocs.addExtension(extension.getKey(), extension.getValue());
+      }
+
+      return externalDocs;
     }
 
-    syn io.swagger.v3.oas.models.parameters.Parameter ParameterOb.reverseParameter(ParameterOb parameterOb);
-    eq ParameterReference.reverseParameter(ParameterOb parameterOb){
-        io.swagger.v3.oas.models.parameters.Parameter parameter = new io.swagger.v3.oas.models.parameters.Parameter();
-        ParameterReference p = (ParameterReference) parameterOb;
+    syn io.swagger.v3.oas.models.parameters.Parameter ParameterType.reverseParameter(ParameterType parameterType);
+    eq ParameterReference.reverseParameter(ParameterType parameterType){
+      io.swagger.v3.oas.models.parameters.Parameter parameter = new io.swagger.v3.oas.models.parameters.Parameter();
+      ParameterReference parameterReference = (ParameterReference) parameterType;
 
-        if (!p.getRef().isEmpty()) {
-            parameter.set$ref(p.getRef());
-        }
+      Optional.ofNullable(parameterReference.getRef())
+          .filter(ref -> !ref.isEmpty())
+          .ifPresent(parameter::set$ref);
 
-        return parameter;
+      return parameter;
     }
-    eq ParameterObject.reverseParameter(ParameterOb parameterOb){
-        io.swagger.v3.oas.models.parameters.Parameter parameter = new io.swagger.v3.oas.models.parameters.Parameter();
-        ParameterObject p = (ParameterObject) parameterOb;
+    eq ParameterObject.reverseParameter(ParameterType parameterType){
+      io.swagger.v3.oas.models.parameters.Parameter parameter = new io.swagger.v3.oas.models.parameters.Parameter();
+      ParameterObject parameterObject = (ParameterObject) parameterType;
 
-        if (p.getName() != null)
-            parameter.setName(p.getName());
-        if (p.getIn() != null)
-            parameter.setIn(p.getIn());
-        if (p.getRequired() != null)
-            parameter.setRequired(p.getRequired());
-        if (!p.getDescription().isEmpty())
-            parameter.setDescription(p.getDescription());
-        if (p.getDeprecatedBoolean() != null)
-            parameter.setDeprecated(p.getDeprecatedBoolean());
-        switch (p.getStyle()) {
-            case "matrix":
-                parameter.setStyle(Parameter.StyleEnum.MATRIX);
-                break;
-            case "label":
-                parameter.setStyle(Parameter.StyleEnum.LABEL);
-                break;
-            case "form":
-                parameter.setStyle(Parameter.StyleEnum.FORM);
-                break;
-            case "simple":
-                parameter.setStyle(Parameter.StyleEnum.SIMPLE);
-                break;
-            case "spaceDelimited":
-                parameter.setStyle(Parameter.StyleEnum.SPACEDELIMITED);
-                break;
-            case "pipeDelimited":
-                parameter.setStyle(Parameter.StyleEnum.PIPEDELIMITED);
-                break;
-            case "deepObject":
-                parameter.setStyle(Parameter.StyleEnum.DEEPOBJECT);
-                break;
-        }
-        if (p.getAllowReserved() != null)
-            parameter.setAllowReserved(p.getAllowReserved());
-        if (p.getAllowEmptyValue() != null)
-            parameter.setAllowEmptyValue(p.getAllowEmptyValue());
-        if (p.getExplode() != null)
-            parameter.setExplode(p.getExplode());
-        if (p.getSchema() != null)
-            parameter.setSchema(p.getSchema().reverseSchema(p.getSchema()));
-        if (p.getExample() != null)
-            parameter.setExample(p.getExample());
-        if (p.getNumE() != 0) {
-            Map<String, Example> exampleMap = new HashMap<>();
-            for (ExampleTuple t : p.getEList())
-                exampleMap.put(t.getKey(), t.getO().reverseExample(t.getO()));
-            parameter.setExamples(exampleMap);
-        }
-        if (p.getNumC() != 0) {
-            io.swagger.v3.oas.models.media.Content content = new Content();
-            for (ContentTuple t : p.getCList())
-                content.put(t.getKey(), MediaTypeObject.reverseMediaType(t.getM()));
-            parameter.setContent(content);
-        }
-        if (p.getRequired() != null)
-            parameter.setRequired(p.getRequired());
-        if (p.getNumEx() != 0) {
-            Map<String, Object> extensionMap = new HashMap<>();
-            for (Extension e : p.getExList())
-                extensionMap.put(e.getKey(), e.getValue());
-            parameter.setExtensions(extensionMap);
-        }
+      Optional.ofNullable(parameterObject.getName())
+          .filter(name -> !name.isEmpty())
+          .ifPresent(parameter::setName);
+      Optional.ofNullable(parameterObject.getIn())
+          .filter(in -> !in.isEmpty())
+          .ifPresent(parameter::setIn);
+      Optional.ofNullable(parameterObject.getDescription())
+          .filter(description -> !description.isEmpty())
+          .ifPresent(parameter::setDescription);
 
-        return parameter;
+      Optional.ofNullable(parameterObject.getRequired())
+          .ifPresent(parameter::setRequired);
+      Optional.ofNullable(parameterObject.getDeprecated())
+          .ifPresent(parameter::setDeprecated);
+      Optional.ofNullable(parameterObject.getAllowReserved())
+          .ifPresent(parameter::setAllowReserved);
+      Optional.ofNullable(parameterObject.getAllowEmptyValue())
+          .ifPresent(parameter::setAllowEmptyValue);
+      Optional.ofNullable(parameterObject.getExplode())
+          .ifPresent(parameter::setExplode);
+      Optional.ofNullable(parameterObject.getExample())
+          .ifPresent(parameter::setExample);
+      Optional.ofNullable(parameterObject.getSchema())
+          .ifPresent(schema -> parameter.setSchema(schema.reverseSchema(schema)));
+
+      switch (parameterObject.getStyle()) {
+        case "matrix":
+          parameter.setStyle(io.swagger.v3.oas.models.parameters.Parameter.StyleEnum.MATRIX);
+          break;
+        case "label":
+          parameter.setStyle(io.swagger.v3.oas.models.parameters.Parameter.StyleEnum.LABEL);
+          break;
+        case "form":
+          parameter.setStyle(io.swagger.v3.oas.models.parameters.Parameter.StyleEnum.FORM);
+          break;
+        case "simple":
+          parameter.setStyle(io.swagger.v3.oas.models.parameters.Parameter.StyleEnum.SIMPLE);
+          break;
+        case "spaceDelimited":
+          parameter.setStyle(io.swagger.v3.oas.models.parameters.Parameter.StyleEnum.SPACEDELIMITED);
+          break;
+        case "pipeDelimited":
+          parameter.setStyle(io.swagger.v3.oas.models.parameters.Parameter.StyleEnum.PIPEDELIMITED);
+          break;
+        case "deepObject":
+          parameter.setStyle(io.swagger.v3.oas.models.parameters.Parameter.StyleEnum.DEEPOBJECT);
+          break;
+      }
+
+      if (parameterObject.getNumExamples() != 0) {
+        for (ExampleTuple tuple : parameterObject.getExamplesList())
+          parameter.addExample(tuple.getKey(), tuple.getExample().reverseExample(tuple.getExample()));
+      }
+      if (parameterObject.getNumContent() != 0) {
+        io.swagger.v3.oas.models.media.Content content = new io.swagger.v3.oas.models.media.Content();
+        for (ContentTuple tuple : parameterObject.getContentList())
+          content.put(tuple.getKey(), MediaTypeObject.reverseMediaType(tuple.getMediaType()));
+        parameter.setContent(content);
+      }
+      if (parameterObject.getNumContent() != 0) {
+        for (Extension extension : parameterObject.getExtensionsList())
+          parameter.addExtension(extension.getKey(), extension.getValue());
+      }
+
+      return parameter;
     }
 
-    syn RequestBody RequestBodyOb.reverseRequestBody(RequestBodyOb requestBodyOb);
-    eq RequestBodyReference.reverseRequestBody(RequestBodyOb requestBodyOb){
-        RequestBody requestBody = new RequestBody();
-        RequestBodyReference r = (RequestBodyReference) requestBodyOb;
+    syn io.swagger.v3.oas.models.parameters.RequestBody RequestBodyType.reverseRequestBody(RequestBodyType requestBodyType);
+    eq RequestBodyReference.reverseRequestBody(RequestBodyType requestBodyType){
+      io.swagger.v3.oas.models.parameters.RequestBody requestBody = new io.swagger.v3.oas.models.parameters.RequestBody();
+      RequestBodyReference requestBodyReference = (RequestBodyReference) requestBodyType;
 
-        if (!r.getRef().isEmpty()) {
-            requestBody.set$ref(r.getRef());
-        }
+      Optional.ofNullable(requestBodyReference.getRef())
+          .filter(ref -> !ref.isEmpty())
+          .ifPresent(requestBody::set$ref);
 
-        return requestBody;
+      return requestBody;
     }
-    eq RequestBodyObject.reverseRequestBody(RequestBodyOb requestBodyOb){
-        RequestBody requestBody = new RequestBody();
-        RequestBodyObject r = (RequestBodyObject) requestBodyOb;
+    eq RequestBodyObject.reverseRequestBody(RequestBodyType requestBodyType){
+      io.swagger.v3.oas.models.parameters.RequestBody requestBody = new io.swagger.v3.oas.models.parameters.RequestBody();
+      RequestBodyObject requestBodyObject = (RequestBodyObject) requestBodyType;
+      io.swagger.v3.oas.models.media.Content contents = new io.swagger.v3.oas.models.media.Content();
 
-        io.swagger.v3.oas.models.media.Content contents = new Content();
-        for (ContentTuple t : r.getCList())
-            contents.put(t.getKey(), MediaTypeObject.reverseMediaType(t.getM()));
-        requestBody.setContent(contents);
-        if (!r.getDescription().isEmpty())
-            requestBody.setDescription(r.getDescription());
-        if (r.getRequired() != null)
-            requestBody.setRequired(r.getRequired());
-        if (r.getNumEx() != 0){
-            for ( Extension e : r.getExList() )
-                requestBody.addExtension(e.getKey(), e.getValue());
-        }
+      for (ContentTuple tuple : requestBodyObject.getContentList())
+        contents.addMediaType(tuple.getKey(), MediaTypeObject.reverseMediaType(tuple.getMediaType()));
+      requestBody.setContent(contents);
+      Optional.ofNullable(requestBodyObject.getDescription())
+          .filter(description -> !description.isEmpty())
+          .ifPresent(requestBody::setDescription);
+      Optional.ofNullable(requestBodyObject.getRequired())
+          .ifPresent(requestBody::setRequired);
+      if (requestBodyObject.getNumExtensions() != 0) {
+        for (Extension extension : requestBodyObject.getExtensionsList())
+          requestBody.addExtension(extension.getKey(), extension.getValue());
+      }
 
-        return requestBody;
+      return requestBody;
     }
 
     public static io.swagger.v3.oas.models.media.MediaType MediaTypeObject.reverseMediaType(MediaTypeObject mediaTypeObject){
-        MediaType mediaType = new MediaType();
-        SchemaOb s;
+      io.swagger.v3.oas.models.media.MediaType mediaType = new io.swagger.v3.oas.models.media.MediaType();
 
-        if (mediaTypeObject.getS() != null) {
-            s = mediaTypeObject.getS();
-            mediaType.setSchema(s.reverseSchema(s));
-        }
-        if (mediaTypeObject.getExample() != null)
-            mediaType.setExample(mediaTypeObject.getExample());
-        if (mediaTypeObject.getNumE() != 0) {
-            Map<String, Example> exampleMap = new HashMap<>();
-            for (ExampleTuple t : mediaTypeObject.getEList())
-                exampleMap.put(t.getKey(), t.getO().reverseExample(t.getO()));
-            mediaType.setExamples(exampleMap);
-        }
-        if (mediaTypeObject.getNumEn() != 0) {
-            Map<String, io.swagger.v3.oas.models.media.Encoding> encodingMap = new HashMap<>();
-            for (EncodingTuple t : mediaTypeObject.getEnList())
-                encodingMap.put(t.getKey(), EncodingObject.reverseEncoding(t.getE()));
-            mediaType.setEncoding(encodingMap);
-        }
+      Optional.ofNullable(mediaTypeObject.getSchema())
+          .ifPresent(schema -> mediaType.setSchema(schema.reverseSchema(schema)));
+      Optional.ofNullable(mediaTypeObject.getExample())
+          .ifPresent(mediaType::setExample);
+      if (mediaTypeObject.getNumExamples() != 0) {
+        for (ExampleTuple tuple : mediaTypeObject.getExamplesList())
+          mediaType.addExamples(tuple.getKey(), tuple.getExample().reverseExample(tuple.getExample()));
+      }
+      if (mediaTypeObject.getNumEncodings() != 0) {
+        for (EncodingTuple tuple : mediaTypeObject.getEncodingsList())
+          mediaType.addEncoding(tuple.getKey(), tuple.getEncoding().reverseEncoding(tuple.getEncoding()));
+      }
+      if (mediaTypeObject.getNumExtensions() != 0) {
+        for (Extension extension : mediaTypeObject.getExtensionsList())
+          mediaType.addExtension(extension.getKey(), extension.getValue());
+      }
 
-        return mediaType;
+      return mediaType;
     }
 
     public static io.swagger.v3.oas.models.media.Encoding EncodingObject.reverseEncoding(EncodingObject encodingObject){
-        io.swagger.v3.oas.models.media.Encoding encodingProperty = new io.swagger.v3.oas.models.media.Encoding();
-        HeaderOb h;
+      io.swagger.v3.oas.models.media.Encoding encodingProperty = new io.swagger.v3.oas.models.media.Encoding();
 
-        if (!encodingObject.getContentType().isEmpty())
-            encodingProperty.setContentType(encodingObject.getContentType());
-        if (encodingObject.getNumH() != 0) {
-            Map<String, Header> headers = new HashMap<>();
-            for (HeaderTuple t : encodingObject.getHList()) {
-                h = t.getO();
-                headers.put(t.getKey(), h.reverseHeader(h));
-            }
-            encodingProperty.setHeaders(headers);
-        }
-        switch (encodingObject.getStyle()) {
-            case ("form") :
-                encodingProperty.setStyle(Encoding.StyleEnum.FORM);
-                break;
-            case ("spaceDelimited") :
-                encodingProperty.setStyle(Encoding.StyleEnum.SPACE_DELIMITED);
-                break;
-            case ("pipeDelimited") :
-                encodingProperty.setStyle(Encoding.StyleEnum.PIPE_DELIMITED);
-                break;
-            case ("deepObject") :
-                encodingProperty.setStyle(Encoding.StyleEnum.DEEP_OBJECT);
-                break;
-        }
-        if (encodingObject.getExplode() != null)
-            encodingProperty.setExplode(encodingObject.getExplode());
-        if (encodingObject.getNumEx() != 0) {
-            Map<String, Object> extensionMap = new HashMap<>();
-            for (Extension e : encodingObject.getExList())
-                extensionMap.put(e.getKey(), e.getValue());
-            encodingProperty.setExtensions(extensionMap);
-        }
+      Optional.ofNullable(encodingObject.getContentType())
+          .filter(contentType -> !contentType.isEmpty())
+          .ifPresent(encodingProperty::setContentType);
+      Optional.ofNullable(encodingObject.getExplode())
+          .ifPresent(encodingProperty::setExplode);
 
-        return encodingProperty;
+      switch (encodingObject.getStyle()) {
+        case ("form"):
+          encodingProperty.setStyle(io.swagger.v3.oas.models.media.Encoding.StyleEnum.FORM);
+          break;
+        case ("spaceDelimited"):
+          encodingProperty.setStyle(io.swagger.v3.oas.models.media.Encoding.StyleEnum.SPACE_DELIMITED);
+          break;
+        case ("pipeDelimited"):
+          encodingProperty.setStyle(io.swagger.v3.oas.models.media.Encoding.StyleEnum.PIPE_DELIMITED);
+          break;
+        case ("deepObject"):
+          encodingProperty.setStyle(io.swagger.v3.oas.models.media.Encoding.StyleEnum.DEEP_OBJECT);
+          break;
+      }
+
+      if (encodingObject.getNumHeaders() != 0) {
+        Map<String, io.swagger.v3.oas.models.headers.Header> headers = new HashMap<>();
+        for (HeaderTuple tuple : encodingObject.getHeadersList())
+          headers.put(tuple.getKey(), tuple.getHeader().reverseHeader(tuple.getHeader()));
+        encodingProperty.setHeaders(headers);
+      }
+      if (encodingObject.getNumExtensions() != 0) {
+        for (Extension extension : encodingObject.getExtensionsList())
+          encodingProperty.addExtension(extension.getKey(), extension.getValue());
+      }
+
+      return encodingProperty;
     }
 
-    syn ApiResponse ResponseOb.reverseResponse(ResponseOb responseOb);
-    eq ResponseReference.reverseResponse(ResponseOb responseOb){
-        ApiResponse response = new ApiResponse();
-        ResponseReference r = (ResponseReference) responseOb;
+    syn io.swagger.v3.oas.models.responses.ApiResponse ResponseType.reverseResponse(ResponseType responseType);
+    eq ResponseReference.reverseResponse(ResponseType responseType){
+      io.swagger.v3.oas.models.responses.ApiResponse response = new io.swagger.v3.oas.models.responses.ApiResponse();
+      ResponseReference responseReference = (ResponseReference) responseType;
 
-        if (!r.getRef().isEmpty()) {
-            response.set$ref(r.getRef());
-        }
+      Optional.ofNullable(responseReference.getRef())
+          .filter(ref -> !ref.isEmpty())
+          .ifPresent(response::set$ref);
 
-        return response;
+      return response;
     }
-    eq ResponseObject.reverseResponse(ResponseOb responseOb){
-        ApiResponse response = new ApiResponse();
-        ResponseObject r = (ResponseObject) responseOb;
+    eq ResponseObject.reverseResponse(ResponseType responseType){
+      io.swagger.v3.oas.models.responses.ApiResponse response = new io.swagger.v3.oas.models.responses.ApiResponse();
+      ResponseObject responseObject = (ResponseObject) responseType;
 
-        if (r.getDescription() != null)
-            response.setDescription(r.getDescription());
-        if (r.getNumH() != 0) {
-            Map<String, Header> headers = new HashMap<>();
-            for (HeaderTuple t : r.getHList())
-                headers.put(t.getKey(), t.getO().reverseHeader(t.getO()));
-            response.setHeaders(headers);
-        }
-        if (r.getNumC() != 0) {
-            io.swagger.v3.oas.models.media.Content contents = new io.swagger.v3.oas.models.media.Content();
-            for (ContentTuple t : r.getCList())
-                contents.put(t.getKey(), MediaTypeObject.reverseMediaType(t.getM()));
-            response.setContent(contents);
-        }
-        if (r.getNumL() != 0) {
-            Map<String, Link> links = new HashMap<>();
-            for (LinkTuple t : r.getLList())
-                links.put(t.getKey(), t.getO().reverseLink(t.getO()));
-            response.setLinks(links);
-        }
-        if (r.getNumEx() != 0) {
-            Map<String, Object> extensions = new HashMap<>();
-            for (Extension e : r.getExList())
-                extensions.put(e.getKey(), e.getValue());
-            response.setExtensions(extensions);
-        }
+      Optional.ofNullable(responseObject.getDescription())
+          .filter(description -> !description.isEmpty())
+          .ifPresent(response::setDescription);
 
-        return response;
+      if (responseObject.getNumHeaders() != 0) {
+        for (HeaderTuple tuple : responseObject.getHeadersList())
+          response.addHeaderObject(tuple.getKey(), tuple.getHeader().reverseHeader(tuple.getHeader()));
+      }
+      if (responseObject.getNumContents() != 0) {
+        io.swagger.v3.oas.models.media.Content content = new io.swagger.v3.oas.models.media.Content();
+        for (ContentTuple tuple : responseObject.getContentsList())
+          content.addMediaType(tuple.getKey(), MediaTypeObject.reverseMediaType(tuple.getMediaType()));
+        response.setContent(content);
+      }
+      if (responseObject.getNumLinks() != 0) {
+        Map<String, io.swagger.v3.oas.models.links.Link> links = new HashMap<>();
+        for (LinkTuple tuple : responseObject.getLinksList())
+          links.put(tuple.getKey(), tuple.getLink().reverseLink(tuple.getLink()));
+        response.setLinks(links);
+      }
+      if (responseObject.getNumExtensions() != 0) {
+        for (Extension extension : responseObject.getExtensionsList())
+          response.addExtension(extension.getKey(), extension.getValue());
+      }
+
+      return response;
     }
 
-    syn io.swagger.v3.oas.models.callbacks.Callback CallbackOb.reverseCallback(CallbackOb callbackOb);
-    eq CallbackReference.reverseCallback(CallbackOb callbackOb){
-        io.swagger.v3.oas.models.callbacks.Callback callback = new io.swagger.v3.oas.models.callbacks.Callback();
-        CallbackReference c = (CallbackReference) callbackOb;
+    syn io.swagger.v3.oas.models.callbacks.Callback CallbackType.reverseCallback(CallbackType callbackType);
+    eq CallbackReference.reverseCallback(CallbackType callbackType){
+      io.swagger.v3.oas.models.callbacks.Callback callback = new io.swagger.v3.oas.models.callbacks.Callback();
+      CallbackReference callbackReference = (CallbackReference) callbackType;
 
-        if (!c.getRef().isEmpty()) {
-            callback.set$ref(c.getRef());
-        }
+      Optional.ofNullable(callbackReference.getRef())
+          .filter(ref -> !ref.isEmpty())
+          .ifPresent(callback::set$ref);
 
-        return callback;
+      return callback;
     }
-    eq CallbackObject.reverseCallback(CallbackOb callbackOb){
-        io.swagger.v3.oas.models.callbacks.Callback callback = new io.swagger.v3.oas.models.callbacks.Callback();
-        CallbackObject c = (CallbackObject) callbackOb;
+    eq CallbackObject.reverseCallback(CallbackType callbackType){
+      io.swagger.v3.oas.models.callbacks.Callback callback = new io.swagger.v3.oas.models.callbacks.Callback();
+      CallbackObject callbackObject = (CallbackObject) callbackType;
 
-        if (c.getNumE() != 0) {
-            Map<String, Path> paths = new HashMap<>();
-            PathItemOb p;
-            for (Expression e : c.getEList())
-                callback.addPathItem(e.getName(), e.getP().reversePath(e.getP()));
-        }
+      if (callbackObject.getNumExpressions() != 0) {
+        for (Expression expression : callbackObject.getExpressionsList())
+          callback.addPathItem(expression.getName(), expression.getPathItem().reversePath(expression.getPathItem()));
+      }
+      if (callbackObject.getNumExtensions() != 0) {
+        for (Extension extension : callbackObject.getExtensionsList())
+          callback.addExtension(extension.getKey(), extension.getValue());
+      }
 
-        return callback;
-    }
-
-            syn Example ExampleOb.reverseExample(ExampleOb exampleOb);
-eq ExampleReference.reverseExample(ExampleOb exampleOb){
-        Example example = new Example();
-        ExampleReference e = (ExampleReference) exampleOb;
-
-        if(!e.getRef().isEmpty())
-            example.set$ref(e.getRef());
-
-            return example;
-}
-        eq ExampleObject.reverseExample(ExampleOb exampleOb){
-            Example example = new Example();
-            ExampleObject exampleObject = (ExampleObject) exampleOb;
-
-            if (!exampleObject.getSummary().isEmpty())
-                example.setSummary(exampleObject.getSummary());
-            if (!exampleObject.getDescription().isEmpty())
-                example.setDescription(exampleObject.getDescription());
-            if (exampleObject.getValue() != null)
-                example.setValue(exampleObject.getValue());
-            if (!exampleObject.getExternalValue().isEmpty())
-                example.setExternalValue(exampleObject.getExternalValue());
-            if (exampleObject.getNumEx() != 0) {
-                Map<String, Object> extension = new HashMap<>();
-                for (Extension e : exampleObject.getExList())
-                    extension.put(e.getKey(), e.getValue());
-                example.setExtensions(extension);
-            }
-
-            return example;
-        }
-
-    syn io.swagger.v3.oas.models.links.Link LinkOb.reverseLink(LinkOb linkOb);
-    eq LinkReference.reverseLink(LinkOb linkOb){
-        io.swagger.v3.oas.models.links.Link link = new io.swagger.v3.oas.models.links.Link();
-        LinkReference l = (LinkReference) linkOb;
-
-        if (!l.getRef().isEmpty())
-            link.set$ref(l.getRef());
-
-        return link;
-    }
-    eq LinkObject.reverseLink(LinkOb linkOb){
-        io.swagger.v3.oas.models.links.Link link = new io.swagger.v3.oas.models.links.Link();
-        LinkObject l = (LinkObject) linkOb;
-
-        if (!l.getOperationRef().isEmpty())
-            link.setOperationRef(l.getOperationRef());
-        if (!l.getOperationID().isEmpty())
-            link.setOperationId(l.getOperationID());
-        if (l.getNumL() != 0) {
-            Map<String, String> parameters = new HashMap<>();
-            for (LinkParameterTuple t : l.getLList())
-                parameters.put(t.getKey(), t.getValue());
-            link.setParameters(parameters);
-        }
-        if (!l.getDescription().isEmpty())
-            link.setDescription(l.getDescription());
-        if (l.hasS())
-            link.setServer(ServerObject.reverseServer(l.getS()));
-        if (l.getNumEx() != 0) {
-            for (Extension e : l.getExList())
-                link.addExtension(e.getKey(), e.getValue());
-        }
-
-        return link;
+      return callback;
     }
 
-    syn io.swagger.v3.oas.models.headers.Header HeaderOb.reverseHeader(HeaderOb headerOb);
-    eq HeaderReference.reverseHeader(HeaderOb headerOb){
-        io.swagger.v3.oas.models.headers.Header header = new io.swagger.v3.oas.models.headers.Header();
-        HeaderReference h = (HeaderReference) headerOb;
+    syn io.swagger.v3.oas.models.examples.Example ExampleType.reverseExample(ExampleType exampleType);
+    eq ExampleReference.reverseExample(ExampleType exampleType){
+      io.swagger.v3.oas.models.examples.Example example = new io.swagger.v3.oas.models.examples.Example();
+      ExampleReference exampleReference = (ExampleReference) exampleType;
 
-        if (!h.getRef().isEmpty()) {
-            header.set$ref(h.getRef());
-        }
+      Optional.ofNullable(exampleReference.getRef())
+          .filter(ref -> !ref.isEmpty())
+          .ifPresent(example::set$ref);
 
-        return header;
+      return example;
     }
-    eq HeaderObject.reverseHeader(HeaderOb headerOb){
-        io.swagger.v3.oas.models.headers.Header header = new io.swagger.v3.oas.models.headers.Header();
-        HeaderObject h = (HeaderObject) headerOb;
+    eq ExampleObject.reverseExample(ExampleType exampleType){
+      io.swagger.v3.oas.models.examples.Example example = new io.swagger.v3.oas.models.examples.Example();
+      ExampleObject exampleObject = (ExampleObject) exampleType;
 
-        if (h.getRequired() != null)
-            header.setRequired(h.getRequired());
-        if (!h.getDescription().isEmpty())
-            header.setDescription(h.getDescription());
-        switch (h.getStyle()) {
-            case "simple":
-                header.setStyle(Header.StyleEnum.SIMPLE);
-                break;
-        }
-        if (h.getExplode() != null)
-            header.setExplode(h.getExplode());
-        //if (h.getAllowReserved() != null)
-        //  header.setAllowReserved(h.getAllowReserved());
-        if (h.getExample() != null)
-            header.setExample(h.getExample());
-        if (h.getNumE() != 0) {
-            Map<String, Example> examples = new HashMap<>();
-            for (ExampleTuple t : h.getEList())
-                examples.put(t.getKey(), t.getO().reverseExample(t.getO()));
-            header.setExample(examples);
-        }
-        if (h.getNumC() != 0) {
-            io.swagger.v3.oas.models.media.Content contents = new io.swagger.v3.oas.models.media.Content();
-            for (ContentTuple t : h.getCList())
-                contents.put(t.getKey(), MediaTypeObject.reverseMediaType(t.getM()));
-            header.setContent(contents);
-        }
-        if (h.hasS())
-            header.setSchema(h.getS().reverseSchema(h.getS()));
-        if (h.getNumEx() != 0){
-            Map<String, Object> extensions = new HashMap<>();
-            for(Extension e : h.getExList())
-                extensions.put(e.getKey(), e.getValue());
-            header.setExtensions(extensions);
-        }
+      Optional.ofNullable(exampleObject.getSummary())
+          .filter(summmary -> !summmary.isEmpty())
+          .ifPresent(example::setSummary);
+      Optional.ofNullable(exampleObject.getDescription())
+          .filter(description -> !description.isEmpty())
+          .ifPresent(example::setDescription);
+      Optional.ofNullable(exampleObject.getExternalValue())
+          .filter(externalValue -> !externalValue.isEmpty())
+          .ifPresent(example::setExternalValue);
+      Optional.ofNullable(exampleObject.getValue())
+          .ifPresent(example::setValue);
 
-        return header;
+      if (exampleObject.getNumExtensions() != 0) {
+        for (Extension extension : exampleObject.getExtensionsList())
+          example.addExtension(extension.getKey(), extension.getValue());
+      }
+
+      return example;
     }
+
+    syn io.swagger.v3.oas.models.links.Link LinkType.reverseLink(LinkType linkType);
+    eq LinkReference.reverseLink(LinkType linkType){
+      io.swagger.v3.oas.models.links.Link link = new io.swagger.v3.oas.models.links.Link();
+      LinkReference linkReference = (LinkReference) linkType;
+
+      Optional.ofNullable(linkReference.getRef())
+          .filter(ref -> !ref.isEmpty())
+          .ifPresent(link::set$ref);
+
+      return link;
+    }
+    eq LinkObject.reverseLink(LinkType linkType){
+      io.swagger.v3.oas.models.links.Link link = new io.swagger.v3.oas.models.links.Link();
+      LinkObject linkObject = (LinkObject) linkType;
+
+      Optional.ofNullable(linkObject.getOperationRef())
+          .filter(ref -> !ref.isEmpty())
+          .ifPresent(link::setOperationRef);
+      Optional.ofNullable(linkObject.getOperationID())
+          .filter(id -> !id.isEmpty())
+          .ifPresent(link::setOperationId);
+      Optional.ofNullable(linkObject.getDescription())
+          .filter(description -> !description.isEmpty())
+          .ifPresent(link::setDescription);
+      Optional.ofNullable(linkObject.getServer())
+          .ifPresent(server -> link.setServer(ServerObject.reverseServer(server)));
+
+      if (linkObject.getNumLinkParameter() != 0) {
+        Map<String, String> parameters = new HashMap<>();
+        for (LinkParameterTuple tuple : linkObject.getLinkParameters())
+          parameters.put(tuple.getKey(), tuple.getValue());
+        link.setParameters(parameters);
+      }
+      if (linkObject.getNumExtensions() != 0) {
+        for (Extension extension : linkObject.getExtensionsList())
+          link.addExtension(extension.getKey(), extension.getValue());
+      }
+
+      return link;
+    }
+
+    syn io.swagger.v3.oas.models.headers.Header HeaderType.reverseHeader(HeaderType headerType);
+    eq HeaderReference.reverseHeader(HeaderType headerType){
+      io.swagger.v3.oas.models.headers.Header header = new io.swagger.v3.oas.models.headers.Header();
+      HeaderReference headerReference = (HeaderReference) headerType;
+
+      Optional.ofNullable(headerReference.getRef())
+          .filter(ref -> !ref.isEmpty())
+          .ifPresent(header::set$ref);
+
+      return header;
+    }
+    eq HeaderObject.reverseHeader(HeaderType headerType){
+      io.swagger.v3.oas.models.headers.Header header = new io.swagger.v3.oas.models.headers.Header();
+      HeaderObject headerObject = (HeaderObject) headerType;
+
+      Optional.ofNullable(headerObject.getRequired()).ifPresent(header::setRequired);
+      Optional.ofNullable(headerObject.getExplode()).ifPresent(header::setExplode);
+      Optional.ofNullable(headerObject.getExample()).ifPresent(header::setExample);
+      Optional.ofNullable(headerObject.getSchema())
+          .ifPresent(schema -> header.setSchema(headerObject.getSchema().reverseSchema(headerObject.getSchema())));
+      Optional.ofNullable(headerObject.getDescription())
+          .filter(description -> !description.isEmpty())
+          .ifPresent(header::setDescription);
+
+      if (headerObject.getNumExamples() != 0) {
+        Map<String, io.swagger.v3.oas.models.examples.Example> examples = new HashMap<>();
+        for (ExampleTuple tuple : headerObject.getExamplesList())
+          examples.put(tuple.getKey(), tuple.getExample().reverseExample(tuple.getExample()));
+        header.setExample(examples);
+      }
+      if (headerObject.getNumContents() != 0) {
+        io.swagger.v3.oas.models.media.Content contents = new io.swagger.v3.oas.models.media.Content();
+        for (ContentTuple tuple : headerObject.getContentsList())
+          contents.put(tuple.getKey(), MediaTypeObject.reverseMediaType(tuple.getMediaType()));
+        header.setContent(contents);
+      }
+      if (headerObject.getNumExtensions() != 0) {
+        Map<String, Object> extensions = new HashMap<>();
+        for (Extension extension : headerObject.getExtensionsList())
+          extensions.put(extension.getKey(), extension.getValue());
+        header.setExtensions(extensions);
+      }
+
+      switch (headerObject.getStyle()) {
+        case "simple":
+          header.setStyle(io.swagger.v3.oas.models.headers.Header.StyleEnum.SIMPLE);
+          break;
+      }
+
+      return header;
+    }
+
 
     public static io.swagger.v3.oas.models.tags.Tag TagObject.reverseTag(TagObject tagObject){
-        io.swagger.v3.oas.models.tags.Tag tag = new io.swagger.v3.oas.models.tags.Tag();
+      io.swagger.v3.oas.models.tags.Tag tag = new io.swagger.v3.oas.models.tags.Tag();
 
-        tag.setName(tagObject.getName());
+      tag.setName(tagObject.getName());
+      Optional.ofNullable(tagObject.getDescription())
+          .filter(name -> !name.isEmpty())
+          .ifPresent(tag::setDescription);
+      Optional.ofNullable(tagObject.getExternalDoc())
+          .ifPresent(externalDocs -> tag.setExternalDocs(ExternalDocObject.reverseExternalDocs(externalDocs)));
 
-        if (!tagObject.getDescription().isEmpty())
-            tag.setDescription(tagObject.getDescription());
-        if (tagObject.hasE())
-            tag.setExternalDocs(ExternalDocObject.reverseExternalDocs(tagObject.getE()));
-        if (tagObject.getNumEx() != 0) {
-            Map<String, Object> extensionMap = new HashMap<>();
-            for (Extension e : tagObject.getExList())
-                extensionMap.put(e.getKey(), e.getValue());
-            tag.setExtensions(extensionMap);
-        }
+      if (tagObject.getNumExtensions() != 0) {
+        Map<String, Object> extensionMap = new HashMap<>();
+        for (Extension extension : tagObject.getExtensionsList())
+          extensionMap.put(extension.getKey(), extension.getValue());
+        tag.setExtensions(extensionMap);
+      }
 
-        return tag;
+      return tag;
     }
 
+    syn io.swagger.v3.oas.models.media.Schema SchemaType.reverseSchema(SchemaType schemaType);
+    eq SchemaReference.reverseSchema(SchemaType schemaType){
+      io.swagger.v3.oas.models.media.Schema schema = new io.swagger.v3.oas.models.media.Schema();
+      SchemaReference schemaReference = (SchemaReference) schemaType;
 
-    syn io.swagger.v3.oas.models.media.Schema SchemaOb.reverseSchema(SchemaOb schemaOb);
-    eq SchemaReference.reverseSchema(SchemaOb schemaOb){
-        io.swagger.v3.oas.models.media.Schema schema = new io.swagger.v3.oas.models.media.Schema();
-        SchemaReference s = (SchemaReference) schemaOb;
+      Optional.ofNullable(schemaReference.getRef())
+          .filter(ref -> !ref.isEmpty())
+          .ifPresent(schema::set$ref);
 
-        if (!s.getRef().isEmpty()) {
-            schema.set$ref(s.getRef());
-        }
-
-        return schema;
+      return schema;
     }
-    eq SchemaObject.reverseSchema(SchemaOb schemaOb){
-        io.swagger.v3.oas.models.media.Schema<Object> schema = new io.swagger.v3.oas.models.media.Schema<>();
-        SchemaObject s = (SchemaObject) schemaOb;
+    eq SchemaObject.reverseSchema(SchemaType schemaType){
+      io.swagger.v3.oas.models.media.Schema<Object> schema = new io.swagger.v3.oas.models.media.Schema<>();
+      io.swagger.v3.oas.models.media.Schema<Object> finalSchema = schema;
+      SchemaObject schemaObject = (SchemaObject) schemaType;
 
-        if (s.hasI()) {
-            schema = new ArraySchema();
-            ((ArraySchema) schema).setItems(s.getI().getSchema().reverseSchema(s.getI().getSchema()));
-        }
-        if (s.getNumAll() != 0 || s.getNumAny() != 0 || s.getNumOne() != 0) {
-            schema = new ComposedSchema();
-            if (s.getNumAll() != 0) {
-                for (AllOfSchema a : s.getAllList())
-                    ((ComposedSchema) schema).addAllOfItem(a.getSchema().reverseSchema(a.getSchema()));
-            }
-            if (s.getNumAny() != 0) {
-                for (AnyOfSchema a : s.getAnyList())
-                    ((ComposedSchema) schema).addAnyOfItem(a.getSchema().reverseSchema(a.getSchema()));
-            }
-            if (s.getNumOne() != 0) {
-                for (OneOfSchema o : s.getOneList())
-                    ((ComposedSchema) schema).addOneOfItem(o.getSchema().reverseSchema(o.getSchema()));
-            }
-        }
+      Optional.ofNullable(schemaObject.getItemsSchema())
+          .ifPresent(itemsSchema -> ((io.swagger.v3.oas.models.media.ArraySchema) finalSchema).setItems(schemaType.reverseSchema(itemsSchema.getSchema())));
 
-        if (s.getAdditionalProperties() != null)
-            schema.setAdditionalProperties(s.getAdditionalProperties());
-        if (s.getDefaultValue() != null)
-            schema.setDefault(s.getDefaultValue());
-        if (!s.getDescription().isEmpty())
-            schema.setDescription(s.getDescription());
-        if (s.getDeprecatedBoolean() != null)
-            schema.setDeprecated(s.getDeprecatedBoolean());
-        if (s.hasD())
-            schema.setDiscriminator(DiscriminatorObject.reverseDiscriminator(s.getD()));
-        if (s.getNumE() != 0) {
-            for (EnumObj e : s.getEList())
-                schema.addEnumItemObject(e.getEnumOb());
-        }
-        // in ver 3.0, only one example is provided. In ver 3.1, optionally multiple
-        if (s.getNumEl()!=0)
-            schema.setExample(s.getEl(0).getExample());
-        if (s.getExclusiveMaximum() != null)
-            schema.setExclusiveMaximum(s.getExclusiveMaximum());
-        if (s.getExclusiveMinimum() != null)
-            schema.setExclusiveMinimum(s.getExclusiveMinimum());
-        if (s.hasExt())
-            schema.setExternalDocs(ExternalDocObject.reverseExternalDocs(s.getExt()));
-        if (!s.getFormat().isEmpty())
-            schema.setFormat(s.getFormat());
-        if (s.getMaximum() != null)
-            schema.setMaximum(s.getMaximum());
-        if (s.getMinimum() != null)
-            schema.setMinimum(s.getMinimum());
-        if (s.getMaxItems() != null)
-            schema.setMaxItems(s.getMaxItems());
-        if (s.getMinItems() != null)
-            schema.setMinItems(s.getMinItems());
-        if (s.getMaxLength() != null)
-            schema.setMaxLength(s.getMaxLength());
-        if (s.getMinLength() != null)
-            schema.setMinLength(s.getMinLength());
-        if (s.getMaxProperties() != null)
-            schema.setMaxProperties(s.getMaxProperties());
-        if (s.getMinProperties() != null)
-            schema.setMinProperties(s.getMinProperties());
-        if (s.getMultipleOf() != null)
-            schema.setMultipleOf(s.getMultipleOf());
-        if (s.hasN())
-            schema.setNot(reverseSchema(s.getN().getSchema()));
-        // Nullable will be excluded in version 3.1.0
-        if (s.getNullable() != null)
-            schema.setNullable(s.getNullable());
-        if (!s.getPattern().isEmpty())
-            schema.setPattern(s.getPattern());
-        if (s.getNumP() != 0) {
-            Map<String, io.swagger.v3.oas.models.media.Schema> properties = new HashMap<>();
-            for (PropertyItem p : s.getPList())
-                properties.put(p.getName(), p.getSchema().reverseSchema(p.getSchema()));
-            schema.setProperties(properties);
-        }
-        if (s.getNumR() != 0) {
-            for (RequiredField r : s.getRList())
-                schema.addRequiredItem(r.getValue());
-        }
-        if (s.getReadOnly() != null)
-            schema.setReadOnly(s.getReadOnly());
-        if (s.getWriteOnly() != null)
-            schema.setWriteOnly(s.getWriteOnly());
-        if (!s.getType().isEmpty())
-            schema.setType(s.getType());
-        if (!s.getTitle().isEmpty())
-            schema.setTitle(s.getTitle());
-        if (s.getUniqueItems() != null)
-            schema.setUniqueItems(s.getUniqueItems());
-        if (s.hasX())
-            schema.setXml(XmlObject.reverseXml(s.getX()));
-        if (s.getNumEx() != 0) {
-            Map<String, Object> extensionMap = new HashMap<>();
-            for (Extension e : s.getExList())
-                extensionMap.put(e.getKey(), e.getValue());
-            schema.setExtensions(extensionMap);
-        }
+      Optional.ofNullable(schemaObject.getAdditionalProperties()).ifPresent(schema::setAdditionalProperties);
+      Optional.ofNullable(schemaObject.getDefaultValue()).ifPresent(schema::setDefault);
+      Optional.ofNullable(schemaObject.getDescription()).filter(description -> !description.isEmpty()).ifPresent(schema::setDescription);
+      Optional.ofNullable(schemaObject.getDeprecatedBoolean()).ifPresent(schema::setDeprecated);
+      Optional.ofNullable(schemaObject.getDiscriminator()).ifPresent(discriminator -> finalSchema.setDiscriminator(DiscriminatorObject.reverseDiscriminator(discriminator)));
+      Optional.ofNullable(schemaObject.getExampleElements(0)).ifPresent(exampleElement -> finalSchema.setExample(exampleElement.getExample()));
+      Optional.ofNullable(schemaObject.getExclusiveMaximum()).ifPresent(schema::setExclusiveMaximum);
+      Optional.ofNullable(schemaObject.getExclusiveMinimum()).ifPresent(schema::setExclusiveMinimum);
+      Optional.ofNullable(schemaObject.getExternalDoc()).ifPresent(externalDoc -> finalSchema.setExternalDocs(ExternalDocObject.reverseExternalDocs(externalDoc)));
+      Optional.ofNullable(schemaObject.getFormat()).filter(format -> !format.isEmpty()).ifPresent(schema::setFormat);
 
-        return schema;
+      if (schemaObject.getNumAllOfSchema() != 0 || schemaObject.getNumAnyOfSchema() != 0 || schemaObject.getNumOneOfSchema() != 0) {
+        schema = new io.swagger.v3.oas.models.media.ComposedSchema();
+        Optional.ofNullable(schemaObject.getAllOfSchemaList()).ifPresent(allList -> allList.forEach(all -> ((io.swagger.v3.oas.models.media.ComposedSchema) finalSchema).addAllOfItem(all.getSchema().reverseSchema(all.getSchema()))));
+        Optional.ofNullable(schemaObject.getAnyOfSchemaList()).ifPresent(anyList -> anyList.forEach(any -> ((io.swagger.v3.oas.models.media.ComposedSchema) finalSchema).addAnyOfItem(any.getSchema().reverseSchema(any.getSchema()))));
+        Optional.ofNullable(schemaObject.getOneOfSchemaList()).ifPresent(oneList -> oneList.forEach(one -> ((io.swagger.v3.oas.models.media.ComposedSchema) finalSchema).addOneOfItem(one.getSchema().reverseSchema(one.getSchema()))));
+      }
+
+      Optional.ofNullable(schemaObject.getEnumList()).ifPresent(enums -> enums.forEach(e -> finalSchema.addEnumItemObject(e.getEnum())));
+      Optional.ofNullable(schemaObject.getPropertyItemsList()).ifPresent(propertyItems -> {
+        Map<String, io.swagger.v3.oas.models.media.Schema> properties = new HashMap<>();
+        propertyItems.forEach(item -> properties.put(item.getName(), item.getSchema().reverseSchema(item.getSchema())));
+        finalSchema.setProperties(properties);
+      });
+      Optional.ofNullable(schemaObject.getRequiredFieldsList()).ifPresent(fields -> fields.forEach(r -> finalSchema.addRequiredItem(r.getValue())));
+
+      return schema;
     }
 
     public static io.swagger.v3.oas.models.media.Discriminator DiscriminatorObject.reverseDiscriminator(DiscriminatorObject discriminatorObject){
-        io.swagger.v3.oas.models.media.Discriminator discriminator = new io.swagger.v3.oas.models.media.Discriminator();
+      io.swagger.v3.oas.models.media.Discriminator discriminator = new io.swagger.v3.oas.models.media.Discriminator();
 
-        if (!discriminatorObject.getPropertyName().isEmpty())
-            discriminator.setPropertyName(discriminatorObject.getPropertyName());
-        if (discriminatorObject.getNumM() != 0) {
-            Map<String, String> mapping = new HashMap<>();
-            for (MappingTuple m : discriminatorObject.getMList())
-                mapping.put(m.getKey(), m.getValue());
-            discriminator.setMapping(mapping);
-        }
+      Optional.ofNullable(discriminatorObject.getPropertyName())
+          .filter(propertyName -> !propertyName.isEmpty())
+          .ifPresent(discriminator::setPropertyName);
 
-        return discriminator;
+      if (discriminatorObject.getNumMappings() != 0) {
+        Map<String, String> mapping = new HashMap<>();
+        for (MappingTuple tuple : discriminatorObject.getMappingsList()) mapping.put(tuple.getKey(), tuple.getValue());
+        discriminator.setMapping(mapping);
+      }
+
+      return discriminator;
     }
 
     public static io.swagger.v3.oas.models.media.XML XmlObject.reverseXml(XmlObject xmlObject){
-        io.swagger.v3.oas.models.media.XML xml = new io.swagger.v3.oas.models.media.XML();
+      io.swagger.v3.oas.models.media.XML xml = new io.swagger.v3.oas.models.media.XML();
 
-        if (!xmlObject.getName().isEmpty())
-            xml.setName(xmlObject.getName());
-        if (!xmlObject.getNamespace().isEmpty())
-            xml.setNamespace(xmlObject.getNamespace());
-        if (!xmlObject.getPrefix().isEmpty())
-            xml.setPrefix(xmlObject.getPrefix());
-        if (xmlObject.getAttribute() != null)
-            xml.setAttribute(xmlObject.getAttribute());
-        if (xmlObject.getWrapped() != null)
-            xml.setWrapped(xmlObject.getWrapped());
-        if (xmlObject.getNumEx() != 0) {
-            for ( Extension e : xmlObject.getExList() )
-                xml.addExtension(e.getKey(), e.getValue());
-        }
+      Optional.ofNullable(xmlObject.getName())
+          .filter(name -> !name.isEmpty())
+          .ifPresent(xml::setName);
+      Optional.ofNullable(xmlObject.getNamespace())
+          .filter(namespace -> !namespace.isEmpty())
+          .ifPresent(xml::setNamespace);
+      Optional.ofNullable(xmlObject.getPrefix())
+          .filter(prefix -> !prefix.isEmpty())
+          .ifPresent(xml::setPrefix);
+      Optional.ofNullable(xmlObject.getAttribute())
+          .ifPresent(xml::setAttribute);
+      Optional.ofNullable(xmlObject.getWrapped())
+          .ifPresent(xml::setWrapped);
+      Optional.ofNullable(xmlObject.getExtensionsList())
+          .ifPresent(extensions -> extensions.forEach(extension ->
+              xml.addExtension(extension.getKey(), extension.getValue())));
 
-        return xml;
+      return xml;
     }
 
-    syn io.swagger.v3.oas.models.security.SecurityScheme SecuritySchemeOb.reverseSecurityScheme(SecuritySchemeOb securitySchemeOb);
-    eq SecuritySchemeReference.reverseSecurityScheme(SecuritySchemeOb securitySchemeOb){
-        io.swagger.v3.oas.models.security.SecurityScheme securityScheme = new io.swagger.v3.oas.models.security.SecurityScheme();
-        SecuritySchemeReference s = (SecuritySchemeReference) securitySchemeOb;
+    syn io.swagger.v3.oas.models.security.SecurityScheme SecuritySchemeType.reverseSecurityScheme(SecuritySchemeType securitySchemeType);
+    eq SecuritySchemeReference.reverseSecurityScheme(SecuritySchemeType securitySchemeType){
+      io.swagger.v3.oas.models.security.SecurityScheme securityScheme = new io.swagger.v3.oas.models.security.SecurityScheme();
+      SecuritySchemeReference securitySchemeReference = (SecuritySchemeReference) securitySchemeType;
 
-        if (!s.getRef().isEmpty()) {
-            securityScheme.set$ref(s.getRef());
-        }
+      Optional.ofNullable(securitySchemeReference.getRef())
+          .filter(ref -> !ref.isEmpty())
+          .ifPresent(securityScheme::set$ref);
 
-        return securityScheme;
+      return securityScheme;
     }
-    eq SecuritySchemeObject.reverseSecurityScheme(SecuritySchemeOb securitySchemeOb){
-        io.swagger.v3.oas.models.security.SecurityScheme securityScheme = new io.swagger.v3.oas.models.security.SecurityScheme();
-        SecuritySchemeObject s = (SecuritySchemeObject) securitySchemeOb;
+    eq SecuritySchemeObject.reverseSecurityScheme(SecuritySchemeType securitySchemeType){
+      io.swagger.v3.oas.models.security.SecurityScheme securityScheme = new io.swagger.v3.oas.models.security.SecurityScheme();
+      SecuritySchemeObject securitySchemeObject = (SecuritySchemeObject) securitySchemeType;
 
-        switch (s.getType()) {
-            case "apiKey":
-                securityScheme.setType(SecurityScheme.Type.APIKEY);
-                break;
-            case "http":
-                securityScheme.setType(SecurityScheme.Type.HTTP);
-                break;
-            case "oauth2":
-                securityScheme.setType(SecurityScheme.Type.OAUTH2);
-                break;
-            case "openIdConnect":
-                securityScheme.setType(SecurityScheme.Type.OPENIDCONNECT);
-                break;
-        }
-        if (!s.getName().isEmpty())
-            securityScheme.setName(s.getName());
-        switch (s.getIn()) {
-            case "cookie":
-                securityScheme.setIn(SecurityScheme.In.COOKIE);
-                break;
-            case "header":
-                securityScheme.setIn(SecurityScheme.In.HEADER);
-                break;
-            case "query":
-                securityScheme.setIn(SecurityScheme.In.QUERY);
-                break;
-        }
-        if (!s.getScheme().isEmpty())
-            securityScheme.setScheme(s.getScheme());
-        if (!s.getOpenIdConnectUrl().isEmpty())
-            securityScheme.setOpenIdConnectUrl(s.getOpenIdConnectUrl());
-        if (s.getO() != null)
-            securityScheme.setFlows(OAuthFlowsObject.reverseOAuthFlows(s.getO()));
-        if (!s.getDescription().isEmpty())
-            securityScheme.setDescription(s.getDescription());
-        if (!s.getBearerFormat().isEmpty())
-            securityScheme.setBearerFormat(s.getBearerFormat());
+      Map<String, io.swagger.v3.oas.models.security.SecurityScheme.Type> typeMap = Map.of(
+          "apiKey", io.swagger.v3.oas.models.security.SecurityScheme.Type.APIKEY,
+          "http", io.swagger.v3.oas.models.security.SecurityScheme.Type.HTTP,
+          "oauth2", io.swagger.v3.oas.models.security.SecurityScheme.Type.OAUTH2,
+          "openIdConnect", io.swagger.v3.oas.models.security.SecurityScheme.Type.OPENIDCONNECT);
 
-        if (s.getNumEx() != 0) {
-            Map<String, Object> extensionMap = new HashMap<>();
-            for (Extension e : s.getExList())
-                extensionMap.put(e.getKey(), e.getValue());
-            securityScheme.setExtensions(extensionMap);
-        }
+      Map<String, io.swagger.v3.oas.models.security.SecurityScheme.In> inMap = Map.of(
+          "cookie", io.swagger.v3.oas.models.security.SecurityScheme.In.COOKIE,
+          "header", io.swagger.v3.oas.models.security.SecurityScheme.In.HEADER,
+          "query", io.swagger.v3.oas.models.security.SecurityScheme.In.QUERY);
 
-        return securityScheme;
+      Optional.ofNullable(typeMap.get(securitySchemeObject.getType()))
+          .ifPresent(securityScheme::setType);
+
+      Optional.ofNullable(securitySchemeObject.getName())
+          .filter(name -> !name.isEmpty())
+          .ifPresent(securityScheme::setName);
+
+      Optional.ofNullable(inMap.get(securitySchemeObject.getIn()))
+          .ifPresent(securityScheme::setIn);
+
+      Optional.ofNullable(securitySchemeObject.getScheme())
+          .filter(scheme -> !scheme.isEmpty())
+          .ifPresent(securityScheme::setScheme);
+
+      Optional.ofNullable(securitySchemeObject.getOpenIdConnectUrl())
+          .filter(url -> !url.isEmpty())
+          .ifPresent(securityScheme::setOpenIdConnectUrl);
+
+      Optional.ofNullable(securitySchemeObject.getOAuthFlows())
+          .ifPresent(oAuthFlowsObject -> securityScheme.setFlows(OAuthFlowsObject.reverseOAuthFlows(oAuthFlowsObject)));
+
+      Optional.ofNullable(securitySchemeObject.getDescription())
+          .filter(description -> !description.isEmpty())
+          .ifPresent(securityScheme::setDescription);
+
+      Optional.ofNullable(securitySchemeObject.getBearerFormat())
+          .filter(format -> !format.isEmpty())
+          .ifPresent(securityScheme::setBearerFormat);
+
+      if (securitySchemeObject.getNumExtensions() != 0) {
+        Map<String, Object> extensionMap = new HashMap<>();
+        for (Extension extension : securitySchemeObject.getExtensionsList())
+          extensionMap.put(extension.getKey(), extension.getValue());
+        securityScheme.setExtensions(extensionMap);
+      }
+
+      return securityScheme;
     }
+
+
 
     public static io.swagger.v3.oas.models.security.OAuthFlows OAuthFlowsObject.reverseOAuthFlows(OAuthFlowsObject oAuthFlowsObject){
-        io.swagger.v3.oas.models.security.OAuthFlows oAuthFlows = new io.swagger.v3.oas.models.security.OAuthFlows();
+      io.swagger.v3.oas.models.security.OAuthFlows oAuthFlows = new io.swagger.v3.oas.models.security.OAuthFlows();
 
-        if (oAuthFlowsObject.hasI())
-            oAuthFlows.setImplicit(OAuthFlowObject.reverseOAuthFlow(oAuthFlowsObject.getI().getO()));
-        if (oAuthFlowsObject.hasP())
-            oAuthFlows.setPassword(OAuthFlowObject.reverseOAuthFlow(oAuthFlowsObject.getP().getO()));
-        if (oAuthFlowsObject.hasC())
-            oAuthFlows.setClientCredentials(OAuthFlowObject.reverseOAuthFlow(oAuthFlowsObject.getC().getO()));
-        if (oAuthFlowsObject.hasA())
-            oAuthFlows.setAuthorizationCode(OAuthFlowObject.reverseOAuthFlow(oAuthFlowsObject.getA().getO()));
+      Optional.ofNullable(oAuthFlowsObject.getImplicit()).ifPresent(implicit -> oAuthFlows.setImplicit(OAuthFlowObject.reverseOAuthFlow(implicit)));
+      Optional.ofNullable(oAuthFlowsObject.getPassword()).ifPresent(password -> oAuthFlows.setPassword(OAuthFlowObject.reverseOAuthFlow(password)));
+      Optional.ofNullable(oAuthFlowsObject.getClientCredentials()).ifPresent(clientCredentials -> oAuthFlows.setClientCredentials(OAuthFlowObject.reverseOAuthFlow(clientCredentials)));
+      Optional.ofNullable(oAuthFlowsObject.getAuthorizationCode()).ifPresent(authorizationCode -> oAuthFlows.setAuthorizationCode(OAuthFlowObject.reverseOAuthFlow(authorizationCode)));
 
-        return oAuthFlows;
+      return oAuthFlows;
     }
 
     public static io.swagger.v3.oas.models.security.OAuthFlow OAuthFlowObject.reverseOAuthFlow(OAuthFlowObject oAuthFlowObject){
-        io.swagger.v3.oas.models.security.OAuthFlow oAuthFlow = new io.swagger.v3.oas.models.security.OAuthFlow();
-        Scopes scopes = new Scopes();
+      io.swagger.v3.oas.models.security.OAuthFlow oAuthFlow = new io.swagger.v3.oas.models.security.OAuthFlow();
+      io.swagger.v3.oas.models.security.Scopes scopes = new io.swagger.v3.oas.models.security.Scopes();
 
-        if (!oAuthFlowObject.getAuthorizationUrl().isEmpty())
-            oAuthFlow.setAuthorizationUrl(oAuthFlowObject.getAuthorizationUrl());
-        if (!oAuthFlowObject.getTokenUrl().isEmpty())
-            oAuthFlow.setTokenUrl(oAuthFlowObject.getTokenUrl());
-        for (ScopesTuple t : oAuthFlowObject.getSList())
-            scopes.put(t.getScopesKey(), t.getScopesValue());
-        oAuthFlow.setScopes(scopes);
-        if (!oAuthFlowObject.getRefreshUrl().isEmpty())
-            oAuthFlow.setRefreshUrl(oAuthFlowObject.getRefreshUrl());
+      Optional.ofNullable(oAuthFlowObject.getAuthorizationUrl())
+          .filter(url -> !url.isEmpty())
+          .ifPresent(oAuthFlow::setAuthorizationUrl);
+      Optional.ofNullable(oAuthFlowObject.getTokenUrl())
+          .filter(url -> !url.isEmpty())
+          .ifPresent(oAuthFlow::setTokenUrl);
+      Optional.ofNullable(oAuthFlowObject.getRefreshUrl())
+          .filter(url -> !url.isEmpty())
+          .ifPresent(oAuthFlow::setRefreshUrl);
+      oAuthFlowObject.getScopesList().forEach(tuple -> scopes.put(tuple.getScopesKey(), tuple.getScopesValue()));
+      oAuthFlow.setScopes(scopes);
 
-        return oAuthFlow;
+      return oAuthFlow;
     }
 
     public static io.swagger.v3.oas.models.security.SecurityRequirement SecurityRequirementObject.reverseSecurityRequirement(SecurityRequirementObject securityRequirementObject){
-        io.swagger.v3.oas.models.security.SecurityRequirement securityRequirement = new io.swagger.v3.oas.models.security.SecurityRequirement();
+      io.swagger.v3.oas.models.security.SecurityRequirement securityRequirement = new io.swagger.v3.oas.models.security.SecurityRequirement();
 
-        if (securityRequirementObject.getNumTuple() != 0) {
-            Map<String, List<String>> requirements = new HashMap<>();
-            for (SecurityRequirementTuple t : securityRequirementObject.getTupleList()) {
-                List<String> values = new ArrayList<>();
-                for (SecurityRequirementValue v : t.getValueList())
-                    values.add(v.getValue());
-                securityRequirement.addList(t.getName(), values);
-            }
-        }
+      Optional.ofNullable(securityRequirementObject)
+          .map(SecurityRequirementObject::getTupleList)
+          .ifPresent(tuples -> tuples.forEach(tuple -> {
+            List<String> values = new ArrayList<>();
+            for (SecurityRequirementValue v : tuple.getValueList()) values.add(v.getValue());
+            securityRequirement.addList(tuple.getName(), values);
+          }));
 
-        return securityRequirement;
+      return securityRequirement;
     }
 }
