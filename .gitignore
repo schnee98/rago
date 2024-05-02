@@ -1,7 +1,7 @@
 .gradle/
 src/gen
 src/gen-res
-src/main/resources
+src/main/resources/APIs
 .idea/
 build/
 out/
